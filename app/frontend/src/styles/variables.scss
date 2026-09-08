@@ -1,0 +1,88 @@
+// ==================== 全局 Design Tokens ====================
+// 品牌色基准：深青色 #0F766E，来自登录页设计语言
+// 本文件为全项目唯一 Token 来源，禁止页面私有分叉
+
+// ==================== 颜色体系 (Color) ====================
+
+// 品牌色
+$color-primary: #0F766E;              // 品牌主色
+$color-primary-light: rgba(15, 118, 110, 0.12); // 主色浅底
+$color-primary-shadow: rgba(15, 118, 110, 0.25); // 主色阴影
+
+// 功能色
+$color-state-error: #ef4444;          // 危险/错误
+$color-state-success: #52c41a;        // 成功
+$color-state-warning: #faad14;        // 警告
+
+// 文字颜色
+$color-text-primary: #111827;         // 主文字
+$color-text-secondary: #334155;       // 次要文字
+$color-text-tertiary: #9ca3af;        // 辅助文字
+$color-text-on-dark: rgba(255, 255, 255, 0.92);   // 深色底主文字
+$color-text-on-dark-secondary: rgba(255, 255, 255, 0.72); // 深色底辅助文字
+$color-text-on-dark-muted: rgba(255, 255, 255, 0.48);    // 深色底弱文字
+$color-text-white: #ffffff;           // 纯白文字
+
+// 表面/背景颜色
+$color-surface-page: #f7f8fa;         // 页面背景
+$color-surface-card: #ffffff;         // 卡片背景
+$color-surface-dark: #0b1220;         // 深色页面背景（裁剪页）
+$color-surface-dark-subtle: rgba(15, 23, 42, 0.48); // 深色半透背景
+$color-surface-input: #f9fafb;        // 输入框背景
+$color-surface-ghost-on-dark: rgba(255, 255, 255, 0.08); // 深色底幽灵按钮
+
+// 边框/分割线
+$color-border-input: #e5e7eb;         // 输入框边框
+$color-border-divider: rgba(0, 0, 0, 0.06); // 分割线（若隐若现）
+$color-border-ring-on-dark: rgba(255, 255, 255, 0.04); // 深色底细环
+
+// 弹窗遮罩
+$color-overlay-dark: rgba(0, 0, 0, 0.9); // 深色弹窗遮罩
+$color-overlay-sheet: rgba(0, 0, 0, 0.36); // ActionSheet 遮罩
+
+// ==================== 间距体系 (Spacing) ====================
+
+$spacing-xs: 8rpx;
+$spacing-sm: 12rpx;
+$spacing-md: 16rpx;
+$spacing-lg: 24rpx;
+$spacing-xl: 32rpx;
+$spacing-2xl: 40rpx;
+$spacing-3xl: 48rpx;
+$spacing-4xl: 56rpx;
+
+// ==================== 圆角体系 (Radius) ====================
+
+$radius-sm: 8rpx;
+$radius-md: 12rpx;
+$radius-lg: 24rpx;
+$radius-xl: 28rpx;
+$radius-2xl: 32rpx;
+$radius-full: 999rpx;
+
+// ==================== 字体层级 (Typography) ====================
+
+$font-xs: 22rpx;
+$font-sm: 24rpx;
+$font-md: 28rpx;
+$font-lg: 30rpx;
+$font-xl: 32rpx;
+$font-title: 36rpx;
+
+// ==================== 阴影层级 (Shadow) ====================
+
+$shadow-sm: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);           // 轻阴影（卡片）
+$shadow-card: 0 8rpx 30rpx rgba(15, 23, 42, 0.08);      // 卡片阴影
+$shadow-modal: 0 18rpx 40rpx rgba(0, 0, 0, 0.24);       // 弹窗阴影
+$shadow-button-primary: 0 8rpx 20rpx rgba(15, 118, 110, 0.25); // 主按钮投影
+$shadow-avatar: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);       // 头像投影
+
+// ==================== 动效 (Motion) ====================
+
+$motion-fast: 180ms ease;             // 微交互（hover/active/focus）
+$motion-normal: 220ms ease;           // 一般过渡（弹窗/面板）
+$motion-slow: 350ms ease;            // 慢过渡
+
+// ==================== 触控 (Touch) ====================
+
+$touch-target-min: 88rpx;             // 最小触控高度 (≈44px)

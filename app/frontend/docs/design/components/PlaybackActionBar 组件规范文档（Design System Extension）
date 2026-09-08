@@ -1,0 +1,422 @@
+下面是一份**可复用 ActionBar 规范文档**，专门用于你的医疗播放页（回放/直播/专题内容页），并且严格遵循你现有的 Design System 思路：**ConsumerLayout、去卡片、去油腻、tokens 优先、状态完整、克制专业**。
+
+你可以直接丢给 Cursor 或写进 docs。
+
+---
+
+# PlaybackActionBar 组件规范文档（Design System Extension）
+
+本文档定义一个可复用组件：**PlaybackActionBar**
+用于播放页、回放页、直播详情页等内容页的顶部操作栏（收藏 / 分享 / 点赞）。
+
+**与《Playback（回放/播放）页面 UI 优化提示词（强制基于 Design 文档）》对齐**：回放/播放页的 Action 区（7.2）、收藏体系（7.3）、去社交化原则（八）与本组件规范一致；**布局为三按钮平铺整屏（等分）**、**icon + 轻标签**（收藏/分享/点赞）、点赞用 👍 等非心形、Star 与专家页一致；**防 layout shift**（固定 icon 容器、ActionBar min-height）。
+
+该组件必须与现有设计语言保持一致：
+
+* ConsumerLayout（单背景、留白分组）
+* 去卡片化（无独立卡片/阴影）
+* 去油腻（弱分割线，优先 spacing）
+* tokens 驱动（禁止硬编码颜色/圆角/间距/字体）
+* 状态完整（hover/active/focus-visible/disabled）
+* 动效统一（180–220ms）
+
+---
+
+## 一、组件定位与目标
+
+### 组件名称
+
+**PlaybackActionBar**
+
+### 组件使用场景
+
+* 回放页（Replay Detail）
+* 直播详情页（Live Detail）
+* 专题播放页（Conference/Meeting Detail）
+* 视频讲座页（Lecture Player）
+* 医学课程播放页（Course Player）
+
+### 核心目标
+
+提供统一的“内容页工具栏式操作区”，支持：
+
+* 收藏（Star）
+* 分享（Share）
+* 点赞（ThumbUp）
+
+同时保持医疗场景专业气质，避免娱乐化平台感。
+
+---
+
+## 二、Layout Pattern（强制）
+
+### Layout Pattern
+
+**ConsumerLayout**
+
+### 原则
+
+* 单背景（--home-bg）
+* 不使用卡片容器包裹 ActionBar
+* 不使用强边框/强阴影
+* 通过 spacing 建立区块节奏
+
+---
+
+## 三、视觉结构规范（结构强制）
+
+### ActionBar 的位置
+
+必须位于：
+
+* Header 信息区（标题/专家/时间）之后
+* 播放器之前（Video Player 上方）
+
+形成内容阅读顺序：
+
+```
+TitleRow
+MetaRow
+ExpertRow
+PlaybackActionBar
+VideoPlayer
+Tabs
+Content
+```
+
+---
+
+## 四、组件结构定义（DOM/Slot）
+
+### DOM 推荐结构
+
+与 **Playback 页**一致时采用 **icon + 轻标签** 形态；其他场景可为 icon-only。结构须包含固定尺寸 icon 容器（防 layout shift）。
+
+```html
+<view class="playback-actionbar">
+  <view class="action-item is-active">
+    <view class="action-icon-wrap">
+      <text class="action-icon">★</text>
+    </view>
+    <text class="action-label">收藏</text>
+  </view>
+
+  <view class="action-item">
+    <view class="action-icon-wrap">
+      <text class="action-icon">↗</text>
+    </view>
+    <text class="action-label">分享</text>
+  </view>
+
+  <view class="action-item">
+    <view class="action-icon-wrap">
+      <text class="action-icon">👍</text>
+    </view>
+    <text class="action-label">点赞</text>
+  </view>
+</view>
+```
+
+* `action-icon-wrap`：固定宽高（如 40rpx×40rpx），保证 ★/☆ 切换时无宽高变化。*
+
+---
+
+## 五、布局规则（必须全宽）
+
+### 关键规则（强制）
+
+1. ActionBar 必须占满整行宽度，**三按钮平铺整屏**（等分，每个占 1/3 宽）
+2. 每个操作必须保证点击热区 ≥44×44px
+3. icon + label（若有）垂直排列，居中对齐；与播放页轻工具栏一致时可为 icon-only
+
+---
+
+### Layout 规范（CSS 逻辑）
+
+#### ActionBar 容器
+
+* `width: 100%`
+* `display: flex`
+* `align-items: center`
+* `justify-content: space-between`（三列等分平铺整行）
+
+#### ActionItem
+
+* `flex: 1`（等分，平铺整屏）
+* `min-height` ≥44px
+* `display: flex`
+* `flex-direction: column`
+* `align-items: center`
+* `justify-content: center`
+
+---
+
+## 六、Spacing & Typography 规范（tokens only）
+
+### Spacing Tokens Used
+
+* `--home-spacing-page`
+* `--home-spacing-module`
+* `--home-spacing-inner`
+
+### 推荐间距策略
+
+* ActionBar 与上方 ExpertRow：使用 `--home-spacing-module`
+* ActionBar 与播放器：使用 `--home-spacing-inner`
+* ActionItem 内 icon 与 label：使用 `--home-spacing-inner`（或其 0.5 倍）
+
+> 备注：spacing 的具体倍率必须用 calc + token，不允许写死 px。
+
+---
+
+## 七、Icon 规范（统一风格）
+
+### Icon Size
+
+* 20px（推荐）
+* 最大不超过 22px
+
+### Icon Style
+
+* 线性 icon（line icon）
+* stroke weight 与系统 icon 保持一致
+* 不使用粗填充 icon（除 active 状态）
+
+---
+
+## 八、收藏 Star 图标一致性（强制）
+
+### 规则
+
+收藏 Star 必须与专家页收藏 Star 完全一致：
+
+* 未收藏：空心 star / outline star
+* 已收藏：实心 star / filled star
+* active 状态颜色使用 `Color.Primary`
+
+### 颜色规范（tokens only）
+
+* default：`var(--home-text2)` + opacity 0.8
+* active：`var(--home-primary)`
+* disabled：`var(--home-text2)` + opacity 0.4
+
+禁止：
+
+* 默认蓝色
+* 红色
+* 粉色
+
+---
+
+## 九、文字标签（轻标签规范）
+
+与 **Playback 页**一致时**必须**带轻标签（**icon + label** 形态）；其他场景可为 icon-only。若有 label，遵循下列规范。
+
+### Label Typography
+
+* font-size：`--home-fs-meta`
+* color：`--home-text2`
+* opacity：0.75~0.85（可通过 tokens 体系或变量实现）
+* font-weight：**normal**（禁止 bold）
+* 禁止使用 primary 作为 label 默认色
+
+### 文案规则（统一命名）
+
+* 收藏
+* 分享
+* 点赞
+
+禁止：
+
+* “喜欢”
+* “赞”
+* “转发”
+  （偏社交化）
+
+---
+
+## 十、状态规范（必须完整）
+
+### ActionItem 必须支持状态
+
+| 状态            | 说明        | 视觉表现                          |
+| ------------- | --------- | ----------------------------- |
+| default       | 默认        | Neutral icon + meta label     |
+| hover         | 悬浮（H5/PC） | opacity 提升或 icon slight scale |
+| active        | 按下        | icon scale 0.96 + opacity 0.9 |
+| selected      | 已收藏/已点赞   | icon 变 Primary（收藏为实心）；**分享**不设 selected，保持 neutral |
+| focus-visible | 键盘可访问性    | ring（Primary 低透明度）            |
+| disabled      | 不可用       | opacity 0.4，禁止交互              |
+
+---
+
+## 十一、动效规范（强制）
+
+### Motion Token
+
+* 180–220ms（推荐 200ms）
+
+### 动效内容
+
+* opacity transition
+* transform scale transition
+* color transition
+
+禁止：
+
+* bounce 动画
+* 弹性夸张动效
+* 过长动画（>240ms）
+
+---
+
+## 十二、Divider 规范（去油腻原则）
+
+ActionBar 不建议使用明显 Divider。
+
+如果需要分组，可选：
+
+* 使用 `margin-top/bottom` spacing 分组
+* 或极浅 bottom divider：
+
+```
+rgba(0,0,0,0.04 ~ 0.06)
+```
+
+但必须由 tokens 推导，不允许硬编码。
+
+---
+
+## 十三、无 Layout Shift（强制）
+
+### 禁止行为
+
+* active 状态切换时改变 icon 宽度
+* label 切换时字体变大导致换行
+* icon 从 outline 变 filled（★/☆）导致宽度变化
+
+### 推荐策略
+
+* **icon 置于固定尺寸容器内**：使用 `.action-icon-wrap` 等容器，宽高固定（如 40rpx×40rpx），图标居中，保证 ★/☆ 切换不引起布局跳动
+* 使用 absolute overlay 或同宽 svg 资源（与项目一致即可）
+* label 固定行高、文案固定（收藏/分享/点赞不随状态改字）
+* ActionBar 容器设置 min-height，避免整块高度变化
+
+---
+
+## 十四、推荐组件 API（通用性设计）
+
+### Props
+
+```ts
+type PlaybackActionBarProps = {
+  isStarred: boolean
+  isLiked: boolean
+  disabled?: boolean
+  onToggleStar: () => void
+  onToggleLike: () => void
+  onShare: () => void
+}
+```
+
+### Slots（可选扩展）
+
+支持未来扩展第四个动作：
+
+* 下载
+* 目录
+* 讲义
+* 提问
+
+但默认仍建议最多 3 个。
+
+---
+
+## 十五、验收 Checklist（必须通过）
+
+* [ ] ActionBar 占据屏幕整行 width:100%，三按钮等分平铺整屏
+* [ ] 3 个 action 等分（flex:1）同一行
+* [ ] 点击热区 ≥44×44px
+* [ ] icon size 20px，label（若有）为 meta
+* [ ] 默认 neutral，active 才 primary
+* [ ] 收藏 Star 与专家页 Star 组件一致（outline/filled/primary）
+* [ ] hover/active/focus-visible/disabled 状态完整
+* [ ] 动效 180–220ms
+* [ ] 无卡片、无阴影、无强分割线
+* [ ] 无 layout shift（选中态不跳动；icon 使用固定尺寸容器如 action-icon-wrap）
+
+---
+
+## 十六、标准实现推荐（核心 CSS 规则）
+
+> 这里只定义规范逻辑，具体数值必须用 tokens。
+
+```css
+.playback-actionbar {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  margin-top: var(--home-spacing-module);
+  padding-bottom: var(--home-spacing-inner);
+  min-height: 120rpx; /* 稳定高度，防 layout shift */
+}
+
+.playback-actionbar .action-item {
+  flex: 1;
+  min-height: 88rpx; /* >=44px, 具体用 token 推导 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* 固定尺寸 icon 容器，防止 ★/☆ 切换导致宽度变化 */
+.playback-actionbar .action-icon-wrap {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.playback-actionbar .action-icon {
+  font-size: 40rpx; /* 约 20px */
+  line-height: 1;
+  color: var(--home-text2);
+  opacity: 0.8;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.playback-actionbar .action-label {
+  margin-top: var(--home-spacing-inner);
+  font-size: var(--home-fs-meta);
+  color: var(--home-text2);
+  opacity: 0.8;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+.playback-actionbar .action-item.is-active .action-icon {
+  color: var(--home-primary);
+  opacity: 1;
+}
+```
+
+> 注意：88rpx 仅示例，最终必须使用 token 或已有 tap-size token。
+
+---
+
+## 十七、医疗场景额外原则（强制）
+
+* 禁止粉红色 CTA
+* **禁止心形 heart 图标**；点赞使用 **👍 等非心形**（与《Playback（回放/播放）页面 UI 优化提示词》及去社交化原则一致）
+* 禁止“点赞数/收藏数”作为主视觉
+* 禁止出现娱乐化按钮密度
+* 操作区必须“弱存在”，内容区必须是主角
+
+---

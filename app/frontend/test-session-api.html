@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试获取真实SessionId</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        button { padding: 10px 15px; margin: 5px; background: #007cba; color: white; border: none; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        .result { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>获取真实SessionId测试工具</h1>
+    
+    <div class="section">
+        <h3>方法1：获取所有场次列表</h3>
+        <button onclick="getAllSessions()">获取场次列表</button>
+        <div id="sessions-result" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h3>方法2：获取所有房间列表</h3>
+        <button onclick="getAllRooms()">获取房间列表</button>
+        <div id="rooms-result" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h3>方法3：测试LiveView页面</h3>
+        <p>复制上面获取到的sessionId，然后访问：</p>
+        <code>http://localhost:5173/pages/app/live/LiveView?sessionId=真实的sessionId</code>
+    </div>
+
+    <script>
+        const API_BASE = 'http://124.220.235.226:8000/api/v1';
+        
+        async function getAllSessions() {
+            const resultDiv = document.getElementById('sessions-result');
+            resultDiv.innerHTML = '正在获取场次列表...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/sessions?page=1&size=10`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <h4>✅ 获取成功！可用的SessionId：</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    
+                    // 提取sessionId
+                    if (data.data && data.data.items && data.data.items.length > 0) {
+                        const sessionIds = data.data.items.map(item => item.id);
+                        resultDiv.innerHTML += `
+                            <h4>📋 可用的SessionId列表：</h4>
+                            ${sessionIds.map(id => `<div><code>${id}</code> <button onclick="testSession('${id}')">测试此ID</button></div>`).join('')}
+                        `;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<h4>❌ 请求失败：</h4><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<h4>❌ 网络错误：</h4><pre>${error.message}</pre>`;
+            }
+        }
+        
+        async function getAllRooms() {
+            const resultDiv = document.getElementById('rooms-result');
+            resultDiv.innerHTML = '正在获取房间列表...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/rooms?page=1&size=10`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <h4>✅ 获取成功！</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<h4>❌ 请求失败：</h4><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<h4>❌ 网络错误：</h4><pre>${error.message}</pre>`;
+            }
+        }
+        
+        function testSession(sessionId) {
+            const url = `http://localhost:5173/pages/app/live/LiveView?sessionId=${sessionId}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>

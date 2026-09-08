@@ -1,0 +1,7 @@
+{
+  "comment": "多音字/特殊读音白名单（医疗领域常见姓名修正）",
+  "example": {
+    "单增哲": "shanzengzhe",
+    "丁会利": "dinghuilii"
+  }
+}

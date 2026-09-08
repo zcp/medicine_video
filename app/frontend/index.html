@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+        // 根据域名判断环境
+      const isProduction = window.location.hostname !== 'localhost' && 
+                          window.location.hostname !== '127.0.0.1' &&
+                          !window.location.hostname.includes('127.0.0.1');
+      
+      if (isProduction) {
+        // 生产环境：加载 env.prod.js
+        console.log('🌐 生产环境：加载 env.prod.js');
+        const script = document.createElement('script');
+        script.src = './config/env.prod.js';
+        script.onload = function() {
+          console.log('✅ 生产环境配置已加载:', window.__ENV);
+        };
+        script.onerror = function() {
+          console.warn('❌ 生产环境配置文件加载失败，使用默认配置');
+        };
+        document.head.appendChild(script);
+      } else {
+        // 开发环境：加载 env.js（如果需要的话）
+        console.log('🔧 开发环境：使用默认配置');
+      }
+
+      var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
+        CSS.supports('top: constant(a)'))
+      document.write(
+        '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+        (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+    </script>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title></title>
+    <!--preload-links-->
+    <!--app-context-->
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- video.js HLS playback plugin -->
+    <script src="https://unpkg.com/@videojs/http-streaming@3.1.0/dist/videojs-http-streaming.min.js"></script>
+    <!-- video.js main library -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

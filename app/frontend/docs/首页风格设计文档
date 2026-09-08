@@ -1,0 +1,770 @@
+明白：你要的是**“可直接喂给 AI 的修改提示词/修改文档”**，让它去**在你现有 uniapp+vue 代码上直接改**，而不是一份偏抽象的设计方案。
+
+下面是一份**可直接复制粘贴给代码 AI 的完整修改提示词**（按“只改 UI/样式/布局，不动业务逻辑/接口”写的）。第一～九节为历史迭代与需求说明；**第十节「当前实现与设计规范」与现有代码同步，为规范基准；前后文若与第十节不一致，以第十节为准。**
+
+---
+
+## ✅ uniapp + Vue 首页美化统一设计语言——代码修改提示词（可直接用）
+
+**目标：**
+把 `首页（Home）` 美化成与现有 `登录页（Login）` 同一套设计语言（轻背景 + 白卡 + 胶囊按钮 + 统一字体层级 + 轻阴影），并采用统一的卡片体系展示“预告/回放”内容。
+**严格要求：不改变业务逻辑、接口字段、路由、点击行为、数据绑定，仅允许修改 UI 结构/样式/组件拆分。**
+
+---
+
+### 1) 全局设计 Tokens（必须先做）
+
+**在 `uni.scss` 或 `common/styles/tokens.scss` 添加以下变量，并全局引入：**
+
+* 主色、背景、卡片色、文字色、描边色
+* 圆角（卡片/标签/胶囊按钮）
+* 阴影
+* 字号体系（标题/卡片标题/meta）
+
+> 变量命名必须统一，页面不得再硬编码颜色值（除非透明度）
+
+建议变量（可按登录页主按钮色微调）：
+
+* primary：#0F766E
+* bg：#F6F8FB
+* card：#FFFFFF
+* text1：#111827
+* text2：#6B7280
+* border：#E5E7EB
+* r-lg：16rpx
+* r-md：12rpx
+* r-pill：999rpx
+* shadow-card：0 12rpx 40rpx rgba(17,24,39,.06)
+
+同时添加公共 class：
+
+* `.page`：全局背景 + 文字色
+* `.card`：白底 + 圆角 + 轻阴影
+* `.h2`：区块标题字体
+* `.meta`：辅助文字字体与颜色
+
+---
+
+### 2) 组件基建（必须做成可复用组件）
+
+新增组件目录（不影响业务）：
+
+#### 2.1 `components/AppCard.vue`
+
+* 功能：统一卡片容器（白底、圆角、轻阴影、padding 可配置）
+* props：`padding`（默认 16rpx）、`radius`（默认 r-lg）
+
+#### 2.2 `components/PillButton.vue`
+
+* 功能：登录页同款胶囊按钮（primary/outline/ghost）
+* 高度：88rpx
+* 圆角：r-pill
+* 主按钮背景使用 primary
+* outline 使用 primary 描边 + 透明背景
+
+#### 2.3 `components/TagPill.vue`
+
+* 功能：统一标签（预告/回放/直播中）
+* props：`text`、`type`
+* 统一圆角 r-md，字体 22–24rpx，轻背景
+
+#### 2.4 `components/SectionHeader.vue`
+
+* 功能：区块头（左标题 + 右侧更多）
+* props：`title`、`moreText`（默认“更多”）
+* emit：`more`
+
+---
+
+### 3) 首页布局重构（只改 UI，不改逻辑）
+
+目标：首页结构保持但视觉统一，整体模块化：
+
+#### 3.1 页面外层
+
+* 背景：bg
+* 内容区统一 16rpx 左右边距
+* 模块间距：16–20rpx
+
+#### 3.2 顶部搜索区（保持现有功能）
+
+* 搜索框改为胶囊形：高度 44px 等价 rpx
+* 背景浅灰（比 bg 深一点），无明显边框
+* placeholder：`搜索直播、医生、医院`
+* 右侧消息/菜单图标保持，但样式统一（灰色、间距一致）
+
+#### 3.3 分类 Tabs（保持现有分类数据与点击逻辑）
+
+* 使用 `scroll-view scroll-x` 横向滚动
+* 激活态：primary 文字 + 底部 2px primary 短下划线
+* 未激活：text2
+* 禁止换行
+
+#### 3.4 Banner 轮播（不动轮播逻辑）
+
+* Banner 卡片化：圆角 16rpx + 裁切
+* 图片底部加渐变遮罩（保证白字可读）
+* 标题样式统一：两行省略
+* CTA 按钮：使用 `PillButton` 的 outline 风格
+
+---
+
+### 4) 卡片体系（首页核心必须实现）
+
+你现在首页有“预告”和“回放”，必须统一为 2 类卡片组件：
+
+#### 4.1 `components/LivePreviewCard.vue`（预告直播卡）
+
+* 用于“预告”列表（横向滑动或两列都可，但建议横滑）
+* 结构必须包含：
+
+  1. 16:9 封面图（圆角裁切）
+  2. 左上角 TagPill：预告/直播中
+  3. 标题 1 行省略
+  4. 专家信息（姓名｜职称）
+  5. 医院（1 行省略）
+  6. 底部主按钮：`预约参加`（PillButton primary）
+* 不改变点击事件和数据字段，只重新排版
+
+#### 4.2 `components/ReplayCard.vue`（回放卡）
+
+* 双列卡片瀑布布局（flex wrap）
+* 结构必须包含：
+
+  1. 封面图 16:9
+  2. 左上 TagPill：回放
+  3. 右下角时长 pill（半透明底）
+  4. 标题 2 行省略
+  5. meta 行：播放量 · 专家/医院
+* 播放量格式统一：全部中文单位（万/千）或全部英文单位（W/k），不能混用
+
+---
+
+### 5) 首页列表布局规范（必须做到一致）
+
+* 回放列表：2 列布局
+
+  * gap：16rpx
+  * 每列宽度：`calc((100% - 16rpx)/2)`（H5）或用 flex 计算
+* 小屏自动降为 1 列（H5 media query 或根据屏宽判断）
+* 卡片间距统一，不允许出现随机空白块
+
+---
+
+### 6) 状态规范（不改逻辑，仅加 UI）
+
+* loading：骨架屏（卡片矩形 + 圆角）
+* empty：统一空态（图标 + 一句话）
+* error：不弹窗，使用轻提示区域（不影响业务可用）
+
+---
+
+### 7) 登录页风格一致性校验（必须自查）
+
+改完首页后必须检查：
+
+* 主按钮颜色/高度/圆角 与登录页一致
+* 背景色一致（浅蓝灰）
+* 卡片圆角一致（16）
+* 字体层级一致（标题/正文/meta）
+* 阴影克制一致（轻阴影，不要重投影）
+
+---
+
+### 8) 不允许做的事情（硬限制）
+
+* 不允许改接口字段名、数据结构、请求逻辑
+* 不允许删功能入口（分类、搜索、轮播、预告、回放）
+* 不允许改变路由跳转目标
+* 不允许引入大而全 UI 框架重构（除非项目已在用）
+* 不允许替换业务图片 URL（可以加遮罩，不要换链接）
+
+---
+
+### 9) 交付物要求（给 AI 的验收标准）
+
+* 首页 UI 改造完成，视觉与登录页统一
+* 新增 tokens 与基础组件已复用（首页不再散落硬编码颜色）
+* 预告/回放卡片统一且信息层级清晰
+* H5 + App 适配正常（无溢出、无错位、无遮挡）
+
+---
+
+## 二、首页继续优化（专业感 + 高级感）——分析与规范
+
+### 分析结论（是否正确、是否合适）
+
+* **总体判断**：建议正确且合适，与第一节不冲突，可作为在「统一设计语言」基础上的增强。
+* **Tokens 微调**：主色 #0F766E、背景 #F6F8FB、阴影 `0 12rpx 40rpx rgba(17,24,39,.06)` 已在第一节落实；可选边框 `1px solid rgba(229,231,235,.9)` 用于 Banner/小卡时按需使用。
+* **顶部秩序感**：增加搜索与 Tabs 间 16rpx 间距、Tabs 底部分割线、激活下划线缩短为文字宽度约 60–70%、搜索框背景与 placeholder 优化——均不改变逻辑，仅提升层级与克制感，**采纳**。
+* **Banner 医疗权威风**：底部渐变遮罩加深、CTA 保持 outline、标题字重提升、默认/空态图替换为医疗学术风或渐变占位——**采纳**；不替换业务返回的 image_url，仅 fallback 与遮罩。
+* **区块标题「即将开播」「热门回放」**：从「单列表」改为「按状态分区的结构化内容」，**采纳**；保持现有请求与字段，仅在前端对 `roomList` 按 `live_status` 拆分为预告与回放两区展示。
+* **预告卡**：封面占位改为浅灰渐变（避免大灰块）、时间格式加「开播」、信息层级与「预约参加」PillButton——**采纳**；与现有 RoomCard 数据结构兼容。
+* **回放卡**：时长 pill 半透明底、播放量移至 meta 行、统一中文单位（万/千）——**采纳**；头像可保留布局，样式去噪即可。
+* **间距与栅格**：统一 16rpx 左右 padding、20rpx 模块间距、16rpx 卡片间距、小屏单列——**采纳**。
+* **状态**：骨架屏/空态/轻错误条——与第一节一致，**保持**。
+
+以下为可直接执行的补充规范（与第一节并列，不覆盖、不冲突）。
+
+---
+
+### 10) 顶部区域（补充）
+
+* 搜索区与 Tabs 区之间：**16rpx 垂直间距**（固定头内增加 spacer 或等效 margin）。
+* Tabs 区底部：**1px 分割线**，色 `#E5E7EB`（或 `var(--home-border)`）。
+* Tabs 激活下划线：**短条**，宽度约为当前 Tab 文字宽度的 60–70%（或固定约 28–32rpx），更克制。
+* 搜索框：
+  * 胶囊形（r-pill），高度保持。
+  * 背景：`rgba(17,24,39,0.04)`，不要纯白。
+  * placeholder：`搜索直播 / 医生 / 医院`。
+
+---
+
+### 11) Banner（补充）
+
+* 底部渐变遮罩（保证标题可读）：`linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0))`。
+* 标题：字重 Semibold（600），最多两行省略，行高 1.3–1.4。
+* CTA：保持 outline 胶囊（白描边+白字或 primary 描边，依遮罩深度）。
+* 默认/加载失败图：使用医疗学术相关占位或浅色渐变纹理，不替换接口返回的 `image_url`；可选在 `static/med/` 下提供 `banner_med_1.jpg` 等作 fallback。
+
+---
+
+### 12) 区块标题（必须）
+
+* 在「预告」列表前：**SectionHeader**，标题「即将开播」，右侧「更多」（可先无跳转或 emit 空实现）。
+* 在「回放」列表前：**SectionHeader**，标题「热门回放」，右侧「更多」。
+* 数据来源：同一 `roomList`，按 `live_status` 拆分为 `scheduled` 与 `replay`（及 `live` 归入回放区或单独区，由产品定），**不增加接口请求**。
+
+---
+
+### 13) 预告卡（补充）
+
+* 封面占位：无图或加载失败时使用浅灰渐变 `linear-gradient(135deg, #EEF2F7, #F7F9FC)`，避免大灰块。
+* 时间格式：统一带「开播」，如 `12月13日 10:40 开播` 或 `12-13 10:40 开播`。
+* 信息层级：标题（1 行）→ 专家名（加粗）+ 职称（灰）→ 医院（1 行省略）。
+* 主按钮：「预约参加」使用 PillButton primary，高 72–80rpx，字重 600。
+
+---
+
+### 14) 回放卡（补充）
+
+* 封面右下角时长：pill，背景 `rgba(0,0,0,.45)`，圆角 r-md，字号略小。
+* 播放量：移至卡片 meta 行（标题下方），不与时长同权重叠在封面上。
+* meta 行格式：`1.2万次播放 · 主任医师` 或 `1.2万播放 · XXX医院`；**统一中文单位**（千/万），禁止混用 9.2k/1.2W。
+* 标题两行省略，行高 1.35。
+
+---
+
+### 15) 间距与栅格（补充）
+
+* 页面左右 padding：**16rpx**。
+* 模块间距：**20rpx**。
+* 卡片间距：**16rpx**。
+* 卡片内元素：**8–12rpx**。
+* 回放双列：gap **16rpx**，单卡宽度 `(100% - 16rpx)/2`。
+* 小屏（如 &lt; 360px）：回放区**单列**（H5 media query 或屏宽判断）。
+
+---
+
+### 16) 验收标准（继续优化后）
+
+* 主色、按钮、圆角、阴影与登录页一致。
+* Banner 更「医疗权威」，无野外摄影风默认图。
+* 预告卡无大灰块，时间带「开播」，信息层级清晰。
+* 「即将开播」「热门回放」区块标题存在，结构清晰。
+* 回放卡播放量/时长/标题层级清楚，单位统一为中文万/千。
+* H5/App 不溢出、不挤压，双列间距一致。
+
+---
+
+### 文档变更摘要
+
+* **第一节**：保持不变（统一设计语言、Tokens、基础组件、布局与卡片体系、硬限制）。
+* **第二节**：新增「继续优化」分析与规范（§10–§16），仅做**补充**，不覆盖第一节；实现时两节均需满足。
+
+---
+
+## 三、本次实现变更记录（与 §10–§16 对应）
+
+以下为按第二节规范落地的代码变更摘要，便于回溯与验收。
+
+### 3.1 修改的页面与组件
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/pages/app/tabbar/home/index.vue` | 顶部：搜索与 Tabs 间 16rpx 间距；Tabs 底部分割线（`--home-border`）；传入 `scheduled-list`、`replay-list` 给 RoomCardGrid。 |
+| `src/pages/app/tabbar/home/components/SearchBar.vue` | placeholder 改为「搜索直播 / 医生 / 医院」；搜索框背景改为 `rgba(17,24,39,0.04)`。 |
+| `src/pages/app/tabbar/home/components/CategoryTabs.vue` | 激活下划线宽度改为 28rpx（短条）。 |
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | Banner 底部遮罩 `linear-gradient(to top, rgba(0,0,0,.55), transparent)`；CTA 改为白描边+白字 outline 胶囊。 |
+| `src/pages/app/tabbar/home/components/RoomCardGrid.vue` | 接收 `scheduledList`、`replayList`（可从前端从 roomList 拆分）；两区 SectionHeader「即将开播」「热门回放」+ 分区网格；模块间距 20rpx；回放区双列 gap 16rpx；小屏 &lt;360px 回放单列。 |
+| `src/components/shared/RoomCard.vue` | 预告：无封面时渐变占位 `#EEF2F7 → #F7F9FC`；时间格式加「开播」；底部「预约参加」主按钮 72rpx/字重 600；状态 Tag 半透明。回放：封面仅右下角时长 pill（rgba(0,0,0,.45)，r-md）；播放量移至 meta 行「X万次播放 · 职称」；数字统一中文单位（万/千）；标题行高 1.35。 |
+
+### 3.2 Tokens 与素材
+
+* **Tokens**：未新增；沿用 `uni.scss` 中 `--home-*`（主色、背景、阴影、圆角等），与第一节一致。
+* **默认/占位素材**：Banner 与卡片封面加载失败仍使用现有逻辑；可选后续在 `static/med/` 增加 `banner_med_1.jpg`、`cover_placeholder.png` 等并在组件内做 fallback。
+
+### 3.3 未改动的部分（符合约束）
+
+* 业务逻辑、接口请求、字段、路由、点击行为未改。
+* 首页仍使用同一套 `getHomepageRooms` 与 `roomList`，仅在前端按 `live_status` 拆为 `scheduledList`、`replayList` 展示。
+
+---
+
+## 四、本轮优化（Banner 双类型 + 回放去冗余 + 权威感）
+
+在 §10–§16 基础上，继续提升医疗专业感与视觉高级感，**不改业务逻辑/接口/路由**。
+
+### 4.1 Banner 轮播：双类型 + 即将开播入 Banner
+
+* **结构**：「即将开播」模块移入顶部 swiper，与专题并列；swiper 支持两种 item：
+  * **campaign**：专题（原焦点图 API），样式保持：背景图 + 底部渐变遮罩 + 标题 + outline CTA。
+  * **upcoming**：直播预告，最多 1–2 条，**优先排在轮播前 1–2 位**。
+* **upcoming 样式**：玻璃卡片布局——背景图（房间封面或占位）+ 渐变遮罩 + **半透明白色信息卡**（backdrop-filter），卡内：Tag「预告」、标题、开播时间、专家职称·医院、**预约参加**小胶囊（primary）。预约按钮使用 **@tap.stop**，避免触发 swiper 滑动。
+* **Banner 素材**：仅使用医疗/学术会议/医院环境/抽象医学纹理风格；占位与 fallback 放在 **static/med/**（如 `banner_med_1.jpg`、`cover_placeholder.png`），**禁止**花草、食物、生活摄影图。
+
+### 4.2 列表区：正在直播 / 回放（当前实现）
+
+* 列表区**不再**展示「即将开播」区块（已移入 Banner）。当前实现为**模块级 Tab「正在直播」「回放」**，无「热门内容」大标题；两 Tab 共用同一双栏卡片网格，数据来自同一 `roomList` 按 `live_status` 拆分。`upcomingListForBanner` 取预告前 1–2 条传入轮播。详见**第十节 10.2**。
+
+### 4.3 热门回放卡去冗余
+
+* **仅保留**：标题（两行省略）+ **一行 meta**。
+* **meta 格式**：`播放量 · 职称 · 医院`（例：`1.2万播放 · 主任医师 · XX医院`）。**播放量单位统一为「万/千播放」**，去掉「次」。
+* **删除**：重复的「医学专家·主任医师」行、头像区域（回放卡不展示头像）。
+* **头像**：无真实头像时**隐藏或替换为认证 icon**（预告卡保留专家信息行，头像处可显示小认证标识）。
+
+### 4.4 全局阴影与边框（克制、干净）
+
+* 阴影更克制：`--home-shadow-card` 调整为 `0 8rpx 24rpx rgba(17,24,39,.04)`；必要时采用**浅边框 + 轻阴影**组合。
+* 新增 `--home-border-light: rgba(229,231,235,.9)`，用于卡片/Banner 边框，保持医疗产品干净高级感。
+
+### 4.5 权威专家/专题推荐轻量模块
+
+* 在 Banner 与「热门回放」之间增加**轻量模块**（权威专家 或 专题推荐 二选一），增强医疗权威感。
+* **高度**：140–180rpx（如 160rpx），不影响首屏回放双列露出。
+* 内容示例：左「权威专家」标题 + 右「查看更多」（可先无跳转或 emit 预留）。
+
+### 4.6 验收与适配
+
+* 主色、按钮、圆角与登录页一致；Banner 无野外/生活风图；回放卡仅标题+meta 一行，单位「万/千播放」；H5/App 不溢出、双列正常。
+
+### 4.7 本轮修改文件清单（对应 §4.1–§4.5）
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/pages/app/tabbar/home/index.vue` | 传入 `upcoming-list="upcomingListForBanner"` 给轮播；新增 `AuthorityStrip`；RoomCardGrid 不再传 `scheduled-list`。 |
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | 支持 **campaign + upcoming** 双类型；接收 `upcomingList`，前 1–2 条为 upcoming 玻璃卡（tag/标题/时间/meta/预约 @tap.stop）；campaign 图 fallback 用 `static/med/banner_med_1.jpg`。 |
+| `src/pages/app/tabbar/home/components/AuthorityStrip.vue` | **新增**。权威专家轻量条，高度 160rpx，左标题右「查看更多」。 |
+| `src/pages/app/tabbar/home/components/RoomCardGrid.vue` | 移除「即将开播」区块；仅渲染「热门回放」；props 移除 `scheduledList`。 |
+| `src/components/shared/RoomCard.vue` | 回放卡：仅标题 + meta 一行（播放量·职称·医院），去掉「次」为「万/千播放」；移除回放卡头像/专家行。预告卡：无真实头像时显示认证 icon（✓）。卡片增加 `--home-border-light` 边框。 |
+| `src/common/uni.scss` | 新增 `--home-border-light`；`--home-shadow-card` 改为更克制的 `0 8rpx 24rpx rgba(17,24,39,.04)`。 |
+| `static/med/README.md` | **新增**。说明在项目根 `static/med/` 下放置医疗风 Banner/封面占位图（banner_med_1.jpg、cover_placeholder.png 等），禁止生活风素材。 |
+
+
+---
+
+## 五、精修：Banner 图片修复 + 专家模块实现 + 医疗高级感提升
+
+在第四节基础上，针对首屏每个模块做**精修优化**，提升专业感至 9/10。
+
+### 5.1 Banner 图片不显示问题修复
+
+**问题分析**：Mock 数据 image_url: ''，导致 getCampaignImageUrl 返回空字符串，模板 -if 验证失败，全部 slide 显示灰色占位。
+
+**修复方案**：
+1. **Mock 数据恢复有效 URL**：getDefaultCampaigns() 改用 https://picsum.photos/800/400?random=1–3，确保 API 返回空时 swiper 至少显示可用图片（非医疗风格但避免全灰）。
+2. **真实 API 数据保持原样**：后端返回 /media/xxx.jpg 的路径，前端通过 
+esolveMediaUrl(raw) || raw 处理，优先解析为完整 URL，解析失败则保留原始相对路径，浏览器按同源处理。
+3. **Template 层空 URL 处理**：-if=\"getCampaignImageUrl(slide.data)\" 为 falsy 时渲染 <view class=\"slide-image-placeholder\" />（医疗渐变背景），避免 broken image 图标。
+
+**变更文件**：src/pages/app/tabbar/home/components/FeaturedCarousel.vue（修改 getDefaultCampaigns、getCampaignImageUrl、getUpcomingCover）。
+
+---
+
+## 六、统一体系精修（TabBar / 标签 / 字号 / 阴影 / 间距）
+
+在第五节基础上，**仅调整样式与排版**，不改业务逻辑，统一全站设计体系。
+
+### 6.1 优化项可行性分析
+
+| 优化项 | 可行性 | 说明 |
+|--------|--------|------|
+| 底部 TabBar 字号 24/26rpx、未选中 #8E9AA6、选中字重 500、中间按钮主色+icon+文案 | ✅ 可行 | CustomTabBar 为自定义组件，直接改样式与模板即可。 |
+| 统一标签体系（高度/圆角/padding/字号 20–22rpx） | ✅ 可行 | 在 uni.scss 新增 `--home-tag-*`，预告/回放/认证/科室 tag 统一引用。 |
+| 回放卡 meta 仅一行（播放量·职称或医院）、标题 28rpx、meta 22rpx | ✅ 已实现 | getReplayMetaLine 已为两段；字号用 `--home-fs-card-title` / `--home-fs-meta`。 |
+| 统一字号层级（Banner 36 / 区块 32 / 卡片标题 28 / meta 22） | ✅ 可行 | 新增 `--home-fs-banner/section/card-title/meta`，各组件引用。 |
+| 减弱全局阴影、卡片浅边框+微阴影、背景更浅 | ✅ 可行 | `--home-shadow-card` 调低透明度，`--home-bg` 改为 #F8FAFC。 |
+| 统一 spacing（页面 16 / 模块 20 / 卡片 16 / 卡片内 12） | ✅ 可行 | 新增 `--home-spacing-page/module/card/inner`，全站引用。 |
+
+**补充**：TabBar 需使用首页主色与未选中色，确保 `uni.scss` 中 `:root` 已全局注入（或 CustomTabBar 内引用 common/uni.scss），否则需在 TabBar 所在布局能访问到 `--home-primary`、`--home-tabbar-inactive`。
+
+### 6.2 底部 TabBar
+
+* **字号**：未选中 24rpx，选中 26rpx，选中字重 500。
+* **颜色**：未选中 `--home-tabbar-inactive`（#8A94A6），选中主色 `--home-primary`。
+* **中间按钮**：主视觉「+」、文案「发起」；圆形 88rpx，五槽等距布局；详见**第十节 10.3**。
+
+### 6.3 统一标签体系
+
+* **Token**：`--home-tag-height: 40rpx`，`--home-tag-padding-x: 12rpx`，`--home-tag-padding-y: 4rpx`，`--home-tag-font: 20rpx`，`--home-tag-radius: var(--home-r-md)`。
+* **适用范围**：预告/回放/认证/科室等所有 tag，统一高度、圆角、padding、字号（20–22rpx 取 20rpx 为基准）。
+* **组件**：RoomCard（status-tag、status-replay-capsule）、FeaturedCarousel（glass-tag）、AuthorityStrip（expert-badge、expert-tag）均引用上述变量。
+
+### 6.4 回放卡 meta 与字号
+
+* **meta 行**：仅保留一行，格式「播放量 · 职称」或「播放量 · 医院」（职称优先），删除重复信息；实现已在 getReplayMetaLine 中。
+* **字号**：卡片标题 `var(--home-fs-card-title)`（28rpx），meta `var(--home-fs-meta)`（22rpx）。
+
+### 6.5 统一字号层级
+
+* **Banner 标题**：36rpx（`--home-fs-banner`），用于轮播 slide 标题、玻璃卡标题。
+* **区块标题**：32rpx（`--home-fs-section`），用于 SectionHeader、权威专家 strip 标题。
+* **卡片标题**：28rpx（`--home-fs-card-title`）。
+* **meta / 辅助文案**：22rpx（`--home-fs-meta`）。
+
+### 6.6 阴影与背景
+
+* **阴影**：`--home-shadow-card` 改为 `0 4rpx 16rpx rgba(17, 24, 39, 0.03)`，卡片采用浅边框 + 微阴影组合。
+* **背景**：`--home-bg` 改为 `#F8FAFC`，整体灰度更浅。
+* **边框**：`--home-border-light` 保持，用于卡片/Banner 浅描边。
+
+### 6.7 统一 spacing
+
+* **页面左右 padding**：16rpx（`--home-spacing-page`），Banner/权威专家/热门回放区、Tabs 内容区一致。
+* **模块间距**：20rpx（`--home-spacing-module`），Banner 与专家、专家与回放、section 之间。
+* **卡片间距**：16rpx（`--home-spacing-card`），回放双列 gap、骨架屏 gap。
+* **卡片内边距**：12rpx（`--home-spacing-inner`），卡片内部 padding、玻璃卡内部、专家卡内部。
+
+### 6.8 本轮修改文件清单
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/common/uni.scss` | 新增 `--home-tabbar-inactive`、`--home-bg` 调为 #F8FAFC；`--home-shadow-card` 改为 0 4rpx 16rpx rgba(17,24,39,.03)；新增 `--home-tag-*`（height/padding-x/padding-y/font/radius）、`--home-fs-banner/section/card-title/meta`、`--home-spacing-page/module/card/inner`。 |
+| `src/components/app/CustomTabBar.vue` | 字号 24rpx（未选中）/26rpx（选中）、字重 500（选中）、未选中色 #8E9AA6、选中色主色；中间按钮主色背景 +「开播」文案 + icon 垂直排列。 |
+| `src/components/shared/RoomCard.vue` | 标题/meta 使用 `--home-fs-card-title`、`--home-fs-meta`；room-info padding、margin-bottom、status-tag 使用 spacing/tag tokens；回放胶囊 tag 使用 tag 变量。 |
+| `src/components/app/SectionHeader.vue` | 标题 `--home-fs-section`，padding 使用 `--home-spacing-inner`。 |
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | Banner/玻璃卡标题 `--home-fs-banner`，glass-tag/glass-meta 使用 tag 与 meta 字号；间距使用 `--home-spacing-page`、`--home-spacing-module`、`--home-spacing-inner`。 |
+| `src/pages/app/tabbar/home/components/AuthorityStrip.vue` | strip-title `--home-fs-section`；expert-card/expert-badge/expert-tag 使用 tag 与 spacing tokens。 |
+| `src/pages/app/tabbar/home/components/RoomCardGrid.vue` | padding/gap/section margin、skeleton-info 使用 `--home-spacing-*`。 |
+| `src/pages/app/tabbar/home/components/CategoryTabs.vue` | tabs-container padding 使用 `--home-spacing-page`。 |
+
+### 6.9 验收要点
+
+* TabBar 未选中 24rpx、#8A94A6，选中 26rpx、字重 500、主色；中间按钮主色 +「发起」文案，五槽等距；详见**第十节**。
+* 所有 tag（预告/回放/认证/科室）统一高度与字号，视觉一致。
+* 回放卡仅一行 meta（播放量·职称或医院），标题 28rpx、meta 22rpx。
+* Banner 36rpx、区块标题 32rpx、卡片标题 28rpx、meta 22rpx 全站统一。
+* 卡片浅边框 + 微阴影，背景 #F7F9FB；页面 16rpx、模块 20rpx、卡片 16rpx、卡片内 12rpx 全站统一。
+* 业务逻辑、接口、路由无改动。
+
+---
+
+## 七、与登录页设计语言严格统一
+
+在第六节基础上，将首页与登录页在设计语言上**严格对齐**：主色、背景、按钮形态、卡片阴影、字体层级、标签与 TabBar 统一规范。登录页若后续将主按钮色改为 #0F766E，则与首页完全一致；当前首页侧统一采用 #0F766E 作为主色。
+
+### 7.1 修改项分析与结论
+
+| 修改项 | 是否合适/正确 | 说明 |
+|--------|----------------|------|
+| 主色 #0F766E，按钮/Tab 选中/更多/标签统一主色 | ✅ 合适 | 与文档第一节及登录页“建议同色”一致，全站主色唯一，避免多色混杂。 |
+| 全局背景 #F7F9FB，卡片纯白 | ✅ 合适 | 与“轻背景+白卡”一致，略浅于原 #F8FAFC，更贴近常见登录页浅灰蓝。 |
+| 所有按钮胶囊（999rpx），主按钮 primary 实心、次按钮 primary 描边 | ✅ 合适 | 与登录页主按钮 44rpx 圆角（胶囊形态）一致；首页主操作用实心，次要用描边。 |
+| 卡片“浅边框 + 极轻阴影”，避免电商浮雕感 | ✅ 合适 | 阴影改为 0 2rpx 12rpx rgba(17,24,39,.02)，与医疗克制风格一致。 |
+| 区块标题 32rpx 粗体、卡片标题 28rpx 半粗、meta 22rpx 灰色 | ✅ 合适 | 层级清晰；卡片标题字重 600（半粗）更稳重。 |
+| 标签统一高度/999rpx/padding，预告 primary 12% 透明底、认证描边或浅底 | ✅ 合适 | 预告用 `rgba(15,118,110,.12)`；认证用 primary 描边（透明底），与主色统一且不抢眼。 |
+| TabBar 24/26rpx，未选 #8A94A6，选中 primary；中间「发起」与登录页主色一致 | ✅ 合适 | 未选灰与主色对比清晰；中间按钮文案「发起」、圆 88rpx，使用 `var(--home-primary)`，见第十节。 |
+
+### 7.2 主色与背景
+
+* **主色**：全站统一 `#0F766E`（`--home-primary`），用于：主按钮、Tab 选中态、「更多」链接、预告/认证等标签主色、中间「发起」按钮。
+* **全局背景**：`#F7F9FB`（`--home-bg`）。
+* **卡片背景**：纯白 `#FFFFFF`（`--home-card`）。
+
+### 7.3 按钮规范
+
+* **形态**：所有按钮圆角 `999rpx`（`--home-r-pill`），胶囊形态。
+* **主按钮**：primary 实心填充，无描边。
+* **次按钮**：primary 描边、透明或浅底（如 Banner CTA 白描边、认证标签 primary 描边）。
+
+### 7.4 卡片与阴影
+
+* **卡片**：浅边框 `var(--home-border-light)` + 极轻阴影 `--home-shadow-card`。
+* **阴影**：`0 2rpx 12rpx rgba(17, 24, 39, 0.02)`，避免电商式强投影。
+
+### 7.5 字体层级
+
+* **区块标题**：32rpx（`--home-fs-section`），字重 600。
+* **卡片标题**：28rpx（`--home-fs-card-title`），字重 600（半粗）。
+* **meta / 辅助**：22rpx（`--home-fs-meta`），颜色 `--home-text2`（灰）。
+
+### 7.6 标签统一
+
+* **高度 / padding / 字号**：统一使用 `--home-tag-height`、`--home-tag-padding-x/y`、`--home-tag-font`。
+* **圆角**：标签统一 `999rpx`（`--home-r-pill`），与胶囊体系一致。
+* **预告标签**：背景 `rgba(15, 118, 110, 0.12)`（Token：`--home-tag-forecast-bg`），文字主色。
+* **认证标签**：primary 描边、透明底（Token：`--home-tag-cert-border`），文字主色。
+* **回放/直播**：保持现有语义色（如回放半透明黑、直播红），圆角 999rpx。
+
+### 7.7 TabBar
+
+* **字号**：未选中 24rpx，选中 26rpx，选中字重 500。
+* **颜色**：未选中 `#8A94A6`（`--home-tabbar-inactive`），选中 `--home-primary`。
+* **中间按钮**：主视觉「+」、文案「发起」；圆形 88rpx，五槽等距；详见**第十节 10.3**。
+
+### 7.8 本轮修改文件清单
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/common/uni.scss` | `--home-bg` 改为 #F7F9FB；`--home-tabbar-inactive` 改为 #8A94A6；`--home-shadow-card` 改为 0 2rpx 12rpx rgba(17,24,39,.02)；`--home-tag-radius` 改为 999rpx；新增 `--home-tag-forecast-bg`、`--home-tag-cert-border`。 |
+| `src/components/shared/RoomCard.vue` | 预告 tag 使用 `--home-tag-forecast-bg` + 主色字，圆角 999rpx；卡片标题字重 600；封面时长 pill 圆角 999rpx；预约按钮明确无描边。 |
+| `src/pages/app/tabbar/home/components/AuthorityStrip.vue` | 认证标签改为 primary 描边透明底（`--home-tag-cert-border`）；科室 tag 圆角 999rpx。 |
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | 预告 glass-tag 使用 `--home-tag-forecast-bg`、圆角 999rpx；slide 卡片阴影使用 `--home-shadow-card`。 |
+
+### 7.9 验收要点
+
+* 主色 #0F766E 贯穿按钮、Tab 选中、「更多」、预告/认证标签、中间开播按钮。
+* 全局背景 #F7F9FB，卡片纯白；卡片浅边框 + 极轻阴影，无浮雕感。
+* 所有主按钮胶囊 999rpx、primary 实心；次按钮/认证为 primary 描边。
+* 区块标题 32rpx 粗体，卡片标题 28rpx 半粗，meta 22rpx 灰。
+* 标签高度与 padding 统一，圆角 999rpx；预告 12% 透明底，认证描边。
+* TabBar 未选 #8A94A6、选中 primary，中间「发起」与主色一致，五槽等距。
+* 业务逻辑、接口、路由无改动。
+
+---
+
+## 八、最后一轮 UI 精修（与登录页统一 + 克制感）
+
+在第七节基础上做**最后一轮视觉收口**：Banner CTA 与主色体系统一、分页点更克制、专家模块文案与留白、全局「查看全部 >」、回放标签与 meta 字号、TabBar 未选色与中间按钮阴影。**不改业务逻辑。**
+
+### 8.1 Banner CTA 与分页点
+
+* **CTA 按钮**：统一为登录页主色体系——**主色描边 + 半透明主色底 + 胶囊圆角 + 字重 600**，取消灰色/白描边。
+  * 专题 slide（深色遮罩上）：`border: 2rpx solid var(--home-primary)`，`background: rgba(15,118,110,0.2)`，文字 #fff，字重 600。
+  * 预告玻璃卡上「预约参加」：主色描边 + `background: rgba(15,118,110,0.12)`，文字主色，字重 600。
+* **分页圆点**：非激活点透明度降至 0.3（`indicator-color="rgba(255,255,255,0.3)"`）；激活点保持白色。若需「激活点为胶囊短条/间距增大」需自定义 indicator 组件，当前沿用原生圆点。
+
+### 8.2 专家横滑与模块标题
+
+* **模块标题**：「权威专家」改为**「精选专家」**，与底部 TabBar「专家」入口区分语义（本周精选 vs 全部专家）。
+* **右侧入口**：统一为**「查看全部 >」**（含箭头），专家 strip 与热门回放区块一致。
+* **卡片宽度**：专家卡由 280rpx 增至 **340rpx**，一屏约显示 2.2 张，留白提升。
+* **医院信息**：字体更小更灰，`font-size: 18rpx`，`color: #9CA3AF`。
+* **认证 badge**：降低权重——更小 padding（2rpx 6rpx）、字号 18rpx、**浅底** `rgba(15,118,110,0.08)`，去掉描边。
+
+### 8.3 「更多/查看更多」统一为「查看全部 >」
+
+* **SectionHeader** 默认 `moreText` 改为 **「查看全部 >」**。
+* **热门回放**、**精选专家** 右侧均使用「查看全部 >」，不再使用「更多」「查看更多」。
+
+### 8.4 回放卡标签与 meta
+
+* **左上角「回放」标签**：半透明黑胶囊 + 播放 icon（▶），`background: rgba(0,0,0,0.5)`，`backdrop-filter: blur(6rpx)`，胶囊圆角，提升高级感。
+* **回放 meta 行**：字体 **22rpx**，颜色 **#6B7280**；标题保持 **28rpx semibold**（600）。
+
+### 8.5 TabBar
+
+* **未选中颜色**：`--home-tabbar-inactive` 为 **#8A94A6**（与第十节一致）。
+* **中间「发起」按钮**：圆形 88rpx，阴影 `var(--home-fab-shadow)`；详见**第十节 10.3**。
+
+### 8.6 本轮修改文件清单
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/common/uni.scss` | `--home-tabbar-inactive` 当前为 #8A94A6（见第十节）。 |
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | CTA：主色描边 + 半透明主色底 + 字重 600；分页非激活点透明度 0.3。 |
+| `src/pages/app/tabbar/home/components/AuthorityStrip.vue` | 标题「精选专家」；右侧「查看全部 >」；卡片 340rpx；strip-header padding-left 16rpx（合计 32rpx）。 |
+| `src/components/app/SectionHeader.vue` | 默认 moreText「查看全部 >」；标题 32rpx/700。 |
+| `src/pages/app/tabbar/home/components/RoomCardGrid.vue` | 当前为模块级 Tab「正在直播/回放」，无「热门内容」标题、无 SectionHeader 更多；见第十节。 |
+| `src/components/shared/RoomCard.vue` | 回放 tag 半透明黑胶囊 + 播放 icon；meta var(--home-text2) #6B7280。 |
+| `src/components/app/CustomTabBar.vue` | 中间「发起」圆 88rpx，阴影 var(--home-fab-shadow)，五槽等距；见第十节。 |
+
+### 8.7 验收要点
+
+* Banner CTA 为主色描边 + 半透明主色底，无灰/白 outline；分页非激活点 0.3 透明度。
+* 专家模块标题「精选专家」，右侧「查看全部 >」；卡片 340rpx，医院更小更灰，认证 badge 轻量化。
+* 全站区块右侧统一「查看全部 >」。
+* 回放卡左上角半透明黑胶囊 + 播放 icon；meta 22rpx #6B7280，标题 28rpx 600。
+* TabBar 未选 #8A94A6，中间「发起」按钮 88rpx、阴影克制。
+* 业务逻辑、接口、路由无改动。
+
+---
+
+## 九、最终轮 UI 精修（胶囊体系 / 分页 / 专家减噪 / 安全区 / 创建按钮 / 统一文案）
+
+在第八节基础上做**最终轮收口**：Banner CTA 与登录页胶囊体系一致、Swiper 分页高级化、精选专家减噪与留白、认证 Badge 更精致、回放卡封面标签、列表底部安全区、TabBar 中间按钮语义与主视觉、全站「查看全部 >」字号统一。**不改业务逻辑/接口/路由。**
+
+### 9.1 Banner CTA 统一风格
+
+* **形态**：与登录页一致的胶囊按钮体系——圆角 **999rpx**，字重 **600**，描边更清晰（2rpx 主色），**padding 更大**（14rpx 32rpx）。
+* **背景**：半透明主色 `rgba(primary, 0.18)`，确保按钮像系统组件而非贴图装饰。
+* **专题 slide**（深色遮罩上）：主色描边 + `rgba(15,118,110,0.18)` 底，文字 #fff，26rpx。
+* **预告玻璃卡「预约参加」**：主色描边 + 同透明度底，文字主色，26rpx。
+
+### 9.2 Swiper 分页指示点高级化
+
+* **关闭原生 indicator-dots**，使用**自定义分页**。
+* **非激活点**：opacity **0.25**，小圆点（12rpx × 12rpx）。
+* **激活点**：**短条胶囊**（宽 32rpx，高 12rpx），白色。
+* **点间距**：12rpx，整体更克制、更高级。
+* **位置**：叠在轮播底部（absolute bottom），z-index 保证可见。
+
+### 9.3 精选专家卡片减噪与留白
+
+* **职称行**：统一为「主任医师 · 教授」或「主任医师·教授」形式，减少多余「·」分隔。
+* **医院行**：字体 **22rpx**，颜色 **#6B7280**，超长省略。
+* **标签**：最多 2 个，样式更轻（20rpx，浅灰底 `rgba(0,0,0,0.04)`，小 padding）。
+
+### 9.4 认证 Badge 更精致
+
+* **字号**：**20rpx**。
+* **padding**：更小（2rpx 6rpx）。
+* **描边**：更淡 `rgba(primary, 0.5)`。
+* **背景**：更浅 `rgba(primary, 0.08)`。
+* 避免抢夺姓名视觉权重。
+
+### 9.5 热门回放卡封面标签
+
+* **左上角「回放」**：半透明黑胶囊 + **白色**播放 icon（▶），圆角 **999rpx**，字体 **22rpx**，背景 **rgba(0,0,0,0.45)**，符合医疗克制风格与成熟视频平台感。
+
+### 9.6 列表底部安全区
+
+* **热门回放列表**：增加底部 **padding 200rpx**，避免内容被底部 TabBar 与中间浮动按钮遮挡。
+
+### 9.7 底部 TabBar 中间按钮语义与主视觉
+
+* **语义**：按钮真实功能为「创建直播间」，主视觉 **「+」**，辅助文案 **「发起」**（当前实现，非「开播」/「创建」）。
+* **结构**：圆内「+」图标区 40rpx、字号 34rpx，下方文案「发起」22rpx、字重 500；圆形 **88rpx**，在中间槽内居中。
+* **布局**：五槽等距（flex:1），中间槽参与 flex，不挤压左右 tab；阴影 `var(--home-fab-shadow)`。
+* 列表底部 200rpx + safe-area，不遮挡内容。详见**第十节 10.3**。
+
+### 9.8 统一模块右侧入口文案
+
+* 全站「更多/查看更多」统一为 **「查看全部 >」**，**主色**，字号 **24rpx**（SectionHeader、AuthorityStrip 等一致）。
+
+### 9.9 全局统一检查
+
+* 字体层级、圆角体系（16/12/999）、tag 样式与登录页一致；无额外渐变、过重阴影、过饱和颜色。
+
+### 9.10 本轮修改文件清单
+
+| 文件 | 变更说明 |
+|------|----------|
+| `src/pages/app/tabbar/home/components/FeaturedCarousel.vue` | CTA 胶囊 padding 14rpx 32rpx、背景 rgba(primary,0.18)、字重 600；关闭原生 indicator，自定义分页（非激活 0.25 圆点、激活 32×12 短条胶囊、gap 12rpx、叠在轮播底）。 |
+| `src/pages/app/tabbar/home/components/AuthorityStrip.vue` | 医院 22rpx #6B7280；认证 badge 20rpx、padding 2rpx 6rpx、描边 rgba(primary,0.5)、底 rgba(primary,0.08)；标签更轻（20rpx、浅灰底）；「查看全部 >」24rpx。 |
+| `src/components/shared/RoomCard.vue` | 回放 tag 字体 22rpx、背景 rgba(0,0,0,0.45)、白色 icon。 |
+| `src/pages/app/tabbar/home/components/RoomCardGrid.vue` | 列表底部 padding-bottom 200rpx，避免被 TabBar/浮动按钮遮挡。 |
+| `src/components/app/CustomTabBar.vue` | 中间按钮主视觉改为「+」（48rpx）、下方「创建」22rpx；阴影 0.12；移除原「开播」文案与 add 图。 |
+| `src/components/app/SectionHeader.vue` | 「查看全部 >」字号 24rpx。 |
+
+### 9.11 验收与多端
+
+* Banner CTA 胶囊体系与登录页一致；分页为自定义短条胶囊 + 低透明度圆点。
+* 精选专家职称/医院/标签减噪，认证 badge 轻量精致。
+* 回放卡左上角半透明黑胶囊 + 白 icon，22rpx。
+* 列表底部有安全区，不被 TabBar/创建按钮遮挡。
+* TabBar 中间按钮主视觉为「+」，辅助「发起」，圆形 88rpx，阴影克制，五槽等距。
+* 全站「查看全部 >」24rpx 主色。
+* **H5/App 显示一致**，业务逻辑、接口、路由无改动。
+
+### 9.12 细节级收口（最后一轮建议采纳）
+
+在 9.1–9.11 基础上，对用户**最后一轮细节建议**做采纳判断与实施。
+
+#### 建议是否合适、必要
+
+| 建议 | 是否合适/必要 | 结论 |
+|------|----------------|------|
+| **1️⃣ Banner CTA 再稳一点**：背景再浅或纯白描边，更医疗 | ✅ 合适且必要 | 主色半透明略抢眼时，再浅一点更克制；采用 **rgba(primary, 0.10)**，保留主色描边，更医疗、更稳。 |
+| **2️⃣ 精选专家**：卡片高度略增 4~6rpx、医院字体再淡一点 | ✅ 合适且必要 | 信息层级已清晰，微调留白与退色可进一步提升可读；**卡片 padding 20rpx**（略增），**医院 #ADB5BD**（更退后）。 |
+| **3️⃣ 热门回放 meta**：播放量·职称颜色更淡，让标题更突出 | ✅ 合适且必要 | meta 为辅助信息，**#ADB5BD** 弱化后标题 28rpx 600 更突出，符合层级规范。 |
+| **4️⃣ 底部 + 发起按钮**：阴影再轻，医疗产品浮动感轻 | ✅ 合适且必要 | 阴影使用 `--home-fab-shadow`；当前实现圆 88rpx、文案「发起」，见第十节。 |
+| **5️⃣ 删除「热门内容」标题、仅保留「正在直播/回放」Tab** | ✅ 已实现 | 当前无「热门内容」大标题；仅模块级 Tab「正在直播」「回放」，标题级样式与精选专家左对齐 32rpx，见第十节。 |
+
+#### 已实施修改
+
+* **Banner CTA**：glass-btn / slide-cta 背景 **rgba(15,118,110,0.10)**，更稳、更医疗。
+* **精选专家**：expert-card **padding 20rpx**（略增留白）；expert-hospital 颜色 **#ADB5BD**（更退后）。
+* **回放 meta**：当前实现为 **var(--home-text2)**（#6B7280），与设计 token 一致，见第十节。
+* **创建按钮**：box-shadow **0 2rpx 8rpx rgba(15,118,110,0.04)**，浮动感更轻。
+* **热门内容区**：当前无「热门内容」标题；为模块级 Tab「正在直播」「回放」，无右侧「查看全部 >」，见第十节。
+
+#### 修改文件（本节）
+
+| 文件 | 变更说明 |
+|------|----------|
+| `FeaturedCarousel.vue` | CTA 背景 rgba(primary, 0.10)。 |
+| `AuthorityStrip.vue` | 卡片 padding 20rpx；医院 #ADB5BD。 |
+| `RoomCard.vue` | 回放 meta 使用 var(--home-text2) #6B7280。 |
+| `CustomTabBar.vue` | 中间「发起」圆 88rpx，阴影 var(--home-fab-shadow)；五槽等距。 |
+| `RoomCardGrid.vue` | 模块级 Tab「正在直播/回放」，标题级 30rpx/600，左对齐 32rpx，下划线 36×4rpx，liveCount 红点；无「热门内容」标题；底部 200rpx + safe-area。 |
+
+---
+
+## 十、当前实现与设计规范（与代码一致）
+
+**本节为与现有代码同步的规范摘要，前后文若与本节冲突，以本节为准。**
+
+### 10.1 全局 Tokens（uni.scss）
+
+| Token | 当前值 | 用途 |
+|-------|--------|------|
+| `--home-primary` | #0F766E | 主色 |
+| `--home-bg` | #F7F9FB | 页面背景 |
+| `--home-card` | #FFFFFF | 卡片背景 |
+| `--home-text1` | #111827 | 主文字 |
+| `--home-text2` | #6B7280 | 辅助/meta 文字 |
+| `--home-tabbar-inactive` | #8A94A6 | TabBar 未选中 |
+| `--home-border` / `--home-border-light` | #E5E7EB / rgba(229,231,235,0.9) | 边框 |
+| `--home-r-lg` / `--home-r-pill` | 16rpx / 999rpx | 卡片圆角 / 胶囊圆角 |
+| `--home-shadow-card` | 0 2rpx 12rpx rgba(17,24,39,0.02) | 卡片阴影 |
+| `--home-fab-shadow` | 0 2rpx 8rpx rgba(15,118,110,0.08) | 中间发起按钮阴影（克制） |
+| `--home-fs-section` / `--home-fs-card-title` / `--home-fs-meta` / `--home-fs-tab` | 32rpx / 28rpx / 22rpx / 24rpx | 区块标题 / 卡片标题 / meta / TabBar 文案 |
+| `--home-spacing-page` / `--home-spacing-module` / `--home-spacing-card` / `--home-spacing-inner` | 16rpx / 20rpx / 16rpx / 12rpx | 页面左右 / 模块间距 / 卡片间距 / 卡片内 |
+| `--home-tag-height` ~ `--home-tag-radius` | 40rpx 等 | 标签体系 |
+
+### 10.2 首页内容区结构（当前实现）
+
+* **页面左右 padding**：统一 **32rpx**（Banner、精选专家、直播/回放区均 32rpx）。
+* **Banner 轮播**：高度 **360rpx**，**margin-bottom: 10rpx**，padding 左右 **32rpx**；支持 campaign + upcoming 双类型。
+* **精选专家**：标题「精选专家」，右侧「查看全部 >」；padding 左右 **32rpx**；**margin-bottom: 32rpx**；strip-title 32rpx/600。**专家卡片**：仅保留 姓名 + 职称（同一行）、医院（下一行灰色 #9CA3AF）、1~2 个标签；**认证**为小图标（圆形底 + ✓），不用文字；无头像；标签 22rpx、浅灰底、圆角 999rpx、间距 8rpx；卡片宽 300rpx、圆角 16rpx。
+* **正在直播 / 回放（模块级 Tab）**：**无「热门内容」大标题**；与精选专家**清晰分割**，区域上方 **margin-top: 28rpx**。
+  * **未选** 28rpx、字重 **500**、**#7A869A**；**选中** 30rpx、字重 **600**、**#0F766E**。
+  * 选中态下划线：宽 **36rpx**，高 **4rpx**，圆角 **4rpx**，距文字底部 **6rpx**；Tab 间距 **32rpx**；模块内 margin-bottom 24rpx。
+  * 「正在直播」可带红点 + **liveCount**；回放无数量。
+  * 默认 Tab：首次加载完成后若 liveList 为空则选「回放」，否则选「正在直播」。
+* **列表**：双栏网格，gap **16rpx**；底部 **padding-bottom: 220rpx + env(safe-area-inset-bottom)**，避免被 TabBar/发起按钮遮挡。
+
+### 10.3 底部 TabBar（CustomTabBar）
+
+* **布局**：**五槽等距**，中间「发起」占 **flex:1** 与左右四 tab 同权，不重叠、不挤压。
+* **普通 tab**：icon **48rpx**，与文案间距 **8rpx**；文案 **24rpx**、line-height 1.2；选中 26rpx、字重 500、主色；未选中 `--home-tabbar-inactive`（#8A94A6）；tab-item padding 上下 12rpx，高度 108rpx。
+* **中间「+ 发起」**：
+  * 主视觉「+」，辅助文案 **「发起」**；与左右 tab 文案 baseline 对齐、icon 与文字间距一致。
+  * 圆形直径 **82rpx**，border-radius 999rpx；在中间槽内 **绝对居中** `left:50%; transform:translateX(-50%)`。
+  * 圆内：icon 区 40rpx、字号 34rpx，与文案间距 6rpx；文案「发起」22rpx、字重 500；上下 padding 10rpx。
+  * 阴影 **0 2rpx 8rpx rgba(15,118,110,0.08)**（alpha 0.08，克制无浮动感）。
+* **降级**：`flatCenter` 为 true 时，中间为普通 tab（不凸起），仅「+」icon +「发起」文案，样式与左右统一。
+
+### 10.4 卡片与回放 meta
+
+* **RoomCard**：直播角标「直播中」半透明黑胶囊 + 红点；回放角标半透明黑胶囊 + 播放 icon。**标题** 28rpx、字重 **500**（医疗克制）；**meta 行** **22rpx**、**#7A869A**，与标题间距 **6rpx**。
+
+### 10.5 区块标题与 SectionHeader
+
+* **SectionHeader**：标题 **32rpx、字重 700**；默认 moreText「查看全部 >」，24rpx 主色。
+* **精选专家**：strip-title 32rpx、字重 600；整区 padding 0 32rpx，与直播/回放区左对齐。
+
+### 10.6 与历史章节的关系
+
+* 第一～九节为**历史迭代与需求说明**，部分表述（如「开播」「创建」、热门回放单区、中间按钮 108rpx、TabBar 未选 #9CA3AF、回放 meta #ADB5BD 等）已由后续实现调整；**以本节 10.1～10.5 与当前代码为准**，避免设计文档与实现冲突。
+
+### 10.7 最后一轮高级感打磨（与代码一致）
+
+* **直播/回放 Tab**：未选 28rpx/500、#7A869A，选中 30rpx/600、#0F766E；下划线 36×4rpx、距文字 6rpx；区域上方 margin-top 28rpx 与精选专家清晰分割。
+* **间距体系**：页面左右 32rpx；模块之间 32rpx（Banner→专家 10rpx 压缩首屏，专家→直播/回放 32rpx）；双栏卡片 gap 16rpx、圆角 16rpx。
+* **精选专家卡片**：仅 姓名+职称（同行）、医院（灰色）、1~2 标签；认证为小图标（圆形底+✓），无文字、无头像；标签 22rpx、浅灰底、999rpx、gap 8rpx。
+* **回放卡**：标题字重 500；meta 22rpx #7A869A；标题与 meta 间距 6rpx。
+* **TabBar 发起**：圆 82rpx；绝对居中；阴影 0 2rpx 8rpx rgba(15,118,110,0.08)；列表底 220rpx + safe-area。
+

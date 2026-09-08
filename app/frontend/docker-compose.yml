@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # 直播SaaS前端服务
+  live-frontend:
+    build: .
+    ports:
+      - "80:80"
+    # 指定环境变量文件
+    env_file:
+      - .env.production
+    # 或者直接指定环境变量
+    environment:
+      - VITE_BASE_API_URL=https://api.yourdomain.com/api/v1
+      - VITE_AUTH_API_URL=https://auth.yourdomain.com/
+      - VITE_FRONTEND_USER_URL=https://user.yourdomain.com
+      - VITE_APP_ENV=production
+      - VITE_DEBUG=false
+    networks:
+      - live-saas-network
+
+  # 直播SaaS后端服务
+  backend:
+    image: your-registry/live-backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/live_core_test
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - live-saas-network
+
+  # 用户认证服务
+  auth-service:
+    image: your-registry/auth-service:latest
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/auth_test
+    depends_on:
+      - postgres
+    networks:
+      - live-saas-network
+
+  # 用户管理前端服务
+  user-frontend:
+    image: your-registry/user-frontend:latest
+    ports:
+      - "80:80"
+    env_file:
+      - .env.production
+    depends_on:
+      - auth-service
+    networks:
+      - live-saas-network
+
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=live_core_test
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - live-saas-network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - live-saas-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  live-saas-network:
+    driver: bridge

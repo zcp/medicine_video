@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 网络安全配置文件
+  用于配置 App 的网络请求安全策略
+  
+  说明：
+  1. Android 9 (API 28) 及以上默认禁止 HTTP 明文流量
+  2. 此配置文件允许特定域名使用 HTTP（仅开发测试用）
+  3. 生产环境建议全部使用 HTTPS
+-->
+<network-security-config>
+    <!-- 基础配置：允许系统和用户证书 -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- 信任系统预装的 CA 证书 -->
+            <certificates src="system" />
+            <!-- 信任用户安装的 CA 证书（调试用） -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- 
+      域名白名单配置
+      如果后端 API 暂时只支持 HTTP，可以在这里添加例外
+      当前项目已使用 HTTPS，保留此配置以防万一
+    -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- 允许此域名使用 HTTP（如有需要取消注释） -->
+        <!-- <domain includeSubdomains="true">124.220.235.226</domain> -->
+        
+        <!-- 本地开发调试用（如有需要取消注释） -->
+        <!-- <domain includeSubdomains="true">localhost</domain> -->
+        <!-- <domain includeSubdomains="true">127.0.0.1</domain> -->
+        <!-- <domain includeSubdomains="true">10.0.2.2</domain> -->
+    </domain-config>
+    
+    <!-- 
+      调试配置（仅开发环境）
+      生产打包时应删除此部分
+    -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- 调试时信任用户证书（如 Charles、Fiddler 等抓包工具） -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

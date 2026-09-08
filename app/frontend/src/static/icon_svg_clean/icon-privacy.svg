@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   fill="none"
+   viewBox="0 0 48 48"
+   version="1.1"
+   id="svg2"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <path
+     style="baseline-shift:baseline;display:inline;overflow:visible;vector-effect:none;fill:#333333;stroke-linejoin:round;enable-background:accumulate;stop-color:#000000;stop-opacity:1;opacity:1"
+     d="M 23.449219,1.0800781 5.4394531,6.3359375 A 2.0002,2.0002 0 0 0 4,8.2558594 V 19.029297 c 1.768e-4,12.184515 7.810904,23.018889 19.371094,26.86914 a 2.0002,2.0002 0 0 0 1.263672,-0.002 C 36.191485,42.04571 43.999769,31.214592 44,19.033203 V 8.2558594 A 2.0002,2.0002 0 0 0 42.560547,6.3359375 L 24.570312,1.0800781 a 2.0002,2.0002 0 0 0 -1.121093,0 z M 24.007812,5.0839844 40,9.7558594 V 19.033203 C 39.999806,29.275725 33.578705,38.339404 24.003906,41.833984 14.424714,38.340269 8.0001486,29.27551 8,19.029297 V 9.7558594 Z"
+     id="path1" />
+  <path
+     style="baseline-shift:baseline;display:inline;overflow:visible;vector-effect:none;fill:#333333;stroke-linecap:round;stroke-linejoin:round;enable-background:accumulate;stop-color:#000000;stop-opacity:1;opacity:1"
+     d="m 23.949219,12.949219 a 2,2 0 0 0 -2,2 v 6 h -6 a 2,2 0 0 0 -2,2 2,2 0 0 0 2,2 h 6 v 6 a 2,2 0 0 0 2,2 2,2 0 0 0 2,-2 v -6 h 6 a 2,2 0 0 0 2,-2 2,2 0 0 0 -2,-2 h -6 v -6 a 2,2 0 0 0 -2,-2 z"
+     id="path2" />
+</svg>

@@ -1,0 +1,8 @@
+# 通用组件目录
+
+存放跨平台通用的组件（H5/App/小程序共用）
+
+## 组件列表
+- AppButton.vue - 通用按钮
+- RoomCard.vue - 房间卡片
+- ModalDialog.vue - 弹窗

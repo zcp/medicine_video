@@ -1,0 +1,245 @@
+<a href="javascript:(async function(){const t='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzk1NTk4ZTYtNzc1Mi00NzVlLWEzYmEtNTkzNjAxMThmYjdhIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTYwMzkzNSwiZXhwIjoxNzY5NjA3NTM1LCJqdGkiOiI2MTNkODlmOS00MjUyLTQ0YjItODZhNy02NzRmNjZlODI3MzgiLCJyb2xlIjoiQURNSU4iLCJ1c2VybmFtZSI6ImRheWkiLCJuaWNrbmFtZSI6ImRheWkifQ.rqJ_nIg9iFFtTjavIaNa3Ez7MD1AxIIAy9bMt1u6_cA';const a='https://mp.dayilive.com/api/core';console.log('📋 加载焦点图...');const r=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});if(!r.ok)return alert('加载失败，请检查Token');const d=await r.json();const items=d.data?.items||d.data||[];console.log(`✅ 找到${items.length}个焦点图`);window.FEATURED_BACKUP=JSON.parse(JSON.stringify(items));if(!confirm('将所有焦点图截止时间批量修改为2026-02-05 08:00:00，是否继续？'))return;let s=0,f=0;const newEndAt='2026-02-05T08:00:00+08:00';for(let i=0;i<items.length;i++){const item=items[i];try{const res=await fetch(`${a}/featured-content/admin/${item.id}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${t}`},body:JSON.stringify({end_at:newEndAt})});if(res.ok){console.log(`✅ [${i+1}] ${item.title} 已更新`);s++;}else{console.error(`❌ [${i+1}] ${item.title} 失败`);f++;}}catch(e){console.error(`❌ [${i+1}] ${item.title} 异常`,e);f++;}await new Promise(r=>setTimeout(r,100));}alert(`截止时间批量修改完成！\n✅ 成功:${s}个\n❌ 失败:${f}个\n\n请查看Console详情`);})();"
+<a href="javascript:(async function(){const t='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzk1NTk4ZTYtNzc1Mi00NzVlLWEzYmEtNTkzNjAxMThmYjdhIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTYwMTM5MywiZXhwIjoxNzY5NjA0OTkzLCJqdGkiOiI1NmZjOTY2My04ZjMyLTQ0YTYtOWI0Ny02MzMwY2E3MDQzYWIiLCJyb2xlIjoiQURNSU4iLCJ1c2VybmFtZSI6ImRheWkiLCJuaWNrbmFtZSI6ImRheWkifQ.c2TyGiLs1TRXA9cFLnOo0zh_LniM90TeRYOXG8QKGBo';const a='https://mp.dayilive.com/api/core';console.log('📋 加载焦点图...');const r=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});if(!r.ok)return alert('加载失败，请检查Token');const d=await r.json();const items=d.data?.items||d.data||[];console.log(`✅ 找到${items.length}个焦点图`);window.FEATURED_BACKUP=JSON.parse(JSON.stringify(items));if(!confirm(`确定修复排序吗？\n\n将设为：0,1,2,3...\n共${items.length}个焦点图\n\n已备份原始数据`))return;items.sort((a,b)=>a.sort_order-b.sort_order);let s=0,f=0;for(let i=0;i<items.length;i++){const item=items[i];const newSort=i;if(item.sort_order===newSort){console.log(`⏭️ [${i+1}/${items.length}] ${item.title}: 已是${newSort}`);continue;}console.log(`🔄 [${i+1}/${items.length}] ${item.title}: ${item.sort_order}→${newSort}`);try{const res=await fetch(`${a}/featured-content/admin/${item.id}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${t}`},body:JSON.stringify({sort_order:newSort})});if(res.ok){console.log('✅ 成功');s++;}else{console.error('❌ 失败');f++;}}catch(e){console.error('❌ 异常',e);f++;}await new Promise(r=>setTimeout(r,100));}alert(`完成！\n✅ 成功:${s}个\n❌ 失败:${f}个\n\n请查看Console详情`);console.log('🎉 更新完成！查看最新数据...');const c=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});const cr=await c.json();console.table((cr.data?.items||cr.data).sort((a,b)=>a.sort_order-b.sort_order).map(i=>({排序:i.sort_order,标题:i.title})));})();" class="bookmarklet"
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>焦点图排序修复 - 书签工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .step-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .bookmarklet {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            cursor: move;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .bookmarklet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .instruction {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .instruction strong {
+            color: #856404;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #721c24;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #155724;
+        }
+        
+        ol, ul {
+            margin-left: 25px;
+            line-height: 1.8;
+        }
+        
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔖 焦点图管理 - 书签工具</h1>
+        <p class="subtitle">无需粘贴代码，一键修复焦点图排序和封面问题</p>
+        
+        <div class="warning">
+            <strong>⚠️ 重要说明：</strong><br>
+            所有焦点图的sort_order都是0，导致展示顺序不可控！<br>
+            使用此工具可一键修复为：0, 1, 2, 3...
+        </div>
+        
+        <div class="step-box">
+            <h2>📋 第1步：创建书签</h2>
+            <p>请<strong>拖动</strong>下面的按钮到浏览器的书签栏：</p>
+            
+            <!-- 书签1：修复排序 -->
+            <p style="margin-top: 20px; text-align: center;">
+                <a href="javascript:(async function(){const t='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzk1NTk4ZTYtNzc1Mi00NzVlLWEzYmEtNTkzNjAxMThmYjdhIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTY4MDMzOCwiZXhwIjoxNzY5NjgzOTM4LCJqdGkiOiI5MzMyMjA5Ni1hMmZmLTQ5ZmItYjM0OS1jYzVhYzgxMWZhOTciLCJyb2xlIjoiQURNSU4iLCJ1c2VybmFtZSI6ImRheWkiLCJuaWNrbmFtZSI6ImRheWkifQ.w98GQ8YWgNnkmU9aFanPJRRwORRgwwLSdTjns7LbfSE';const a='https://mp.dayilive.com/api/core';console.log('📋 加载焦点图...');const r=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});if(!r.ok)return alert('加载失败，请检查Token');const d=await r.json();const items=d.data?.items||d.data||[];console.log(`✅ 找到${items.length}个焦点图`);window.FEATURED_BACKUP=JSON.parse(JSON.stringify(items));if(!confirm(`确定修复排序吗？\n\n将设为：0,1,2,3...\n共${items.length}个焦点图\n\n已备份原始数据`))return;items.sort((a,b)=>a.sort_order-b.sort_order);let s=0,f=0;for(let i=0;i<items.length;i++){const item=items[i];const newSort=i;if(item.sort_order===newSort){console.log(`⏭️ [${i+1}/${items.length}] ${item.title}: 已是${newSort}`);continue;}console.log(`🔄 [${i+1}/${items.length}] ${item.title}: ${item.sort_order}→${newSort}`);try{const res=await fetch(`${a}/featured-content/admin/${item.id}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${t}`},body:JSON.stringify({sort_order:newSort})});if(res.ok){console.log('✅ 成功');s++;}else{console.error('❌ 失败');f++;}}catch(e){console.error('❌ 异常',e);f++;}await new Promise(r=>setTimeout(r,100));}alert(`完成！\n✅ 成功:${s}个\n❌ 失败:${f}个\n\n请查看Console详情`);console.log('🎉 更新完成！查看最新数据...');const c=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});const cr=await c.json();console.table((cr.data?.items||cr.data).sort((a,b)=>a.sort_order-b.sort_order).map(i=>({排序:i.sort_order,标题:i.title})));})();" class="bookmarklet">
+                    🔧 修复焦点图排序
+                </a>
+            </p>
+            
+            <!-- 书签2：批量修改封面 -->
+            <p style="margin-top: 20px; text-align: center;">
+                <a href="javascript:(async function(){const t='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzk1NTk4ZTYtNzc1Mi00NzVlLWEzYmEtNTkzNjAxMThmYjdhIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTY4MDMzOCwiZXhwIjoxNzY5NjgzOTM4LCJqdGkiOiI5MzMyMjA5Ni1hMmZmLTQ5ZmItYjM0OS1jYzVhYzgxMWZhOTciLCJyb2xlIjoiQURNSU4iLCJ1c2VybmFtZSI6ImRheWkiLCJuaWNrbmFtZSI6ImRheWkifQ.w98GQ8YWgNnkmU9aFanPJRRwORRgwwLSdTjns7LbfSE';const a='https://mp.dayilive.com/api/core';const coverUrl='https://n.sinaimg.cn/news/1_img/upload/d8010f78/172/w2048h1324/20251209/9605-629a074b8fa2eb55f96542206f90c904.jpg';console.log('📋 加载焦点图...');const r=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});if(!r.ok)return alert('加载失败，请检查Token');const d=await r.json();const items=d.data?.items||d.data||[];console.log(`✅ 找到${items.length}个焦点图`);window.FEATURED_BACKUP=JSON.parse(JSON.stringify(items));if(!confirm(`确定将所有焦点图封面统一修改为：\n${coverUrl}\n\n共${items.length}个焦点图\n\n已备份原始数据`))return;let s=0,f=0;for(let i=0;i<items.length;i++){const item=items[i];console.log(`🔄 [${i+1}/${items.length}] ${item.title}`);console.log(`   旧封面: ${item.image_url}`);console.log(`   新封面: ${coverUrl}`);try{const res=await fetch(`${a}/featured-content/admin/${item.id}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${t}`},body:JSON.stringify({image_url:coverUrl})});if(res.ok){console.log(`✅ [${i+1}] ${item.title} 封面已更新`);s++;}else{console.error(`❌ [${i+1}] ${item.title} 失败`);f++;}}catch(e){console.error(`❌ [${i+1}] ${item.title} 异常`,e);f++;}await new Promise(r=>setTimeout(r,100));}alert(`封面批量修改完成！\n✅ 成功:${s}个\n❌ 失败:${f}个\n\n请查看Console详情`);console.log('🎉 更新完成！查看最新数据...');const c=await fetch(`${a}/featured-content/admin`,{headers:{Authorization:`Bearer ${t}`}});const cr=await c.json();console.table((cr.data?.items||cr.data).sort((a,b)=>a.sort_order-b.sort_order).map(i=>({排序:i.sort_order,标题:i.title,封面:i.image_url})));})();" class="bookmarklet" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    🖼️ 批量修改封面
+                </a>
+            </p>
+            <div class="instruction">
+                <strong>💡 如何拖动到书签栏：</strong><br>
+                1. 鼠标按住上面的蓝色按钮不放<br>
+                2. 拖动到浏览器顶部的书签栏<br>
+                3. 松开鼠标<br>
+                4. ✅ 书签创建完成！
+            </div>
+        </div>
+        
+        <div class="step-box">
+            <h2>🚀 第2步：使用书签</h2>
+            <h3 style="margin-top: 15px; color: #667eea;">📌 功能1：修复排序</h3>
+            <ol>
+                <li>访问 <a href="https://mp.dayilive.com" target="_blank">https://mp.dayilive.com</a></li>
+                <li>点击书签栏的 <strong>"🔧 修复焦点图排序"</strong> 书签</li>
+                <li>在弹窗中点击"确定"</li>
+                <li>✅ 等待完成提示</li>
+            </ol>
+            
+            <h3 style="margin-top: 20px; color: #f5576c;">🖼️ 功能2：批量修改封面</h3>
+            <ol>
+                <li>访问 <a href="https://mp.dayilive.com" target="_blank">https://mp.dayilive.com</a></li>
+                <li>点击书签栏的 <strong>"🖼️ 批量修改封面"</strong> 书签</li>
+                <li>确认封面URL后点击"确定"</li>
+                <li>✅ 等待完成提示</li>
+            </ol>
+            
+            <div class="success">
+                <strong>✅ 优点：</strong><br>
+                • 无需粘贴代码到Console<br>
+                • 一键执行，简单快捷<br>
+                • 自动备份原始数据<br>
+                • 可以重复使用<br>
+                • 支持批量修改封面URL
+            </div>
+        </div>
+        
+        <div class="step-box">
+            <h2>🛡️ 安全说明</h2>
+            <ul>
+                <li>✅ 排序工具：只修改 <code>sort_order</code> 字段</li>
+                <li>✅ 封面工具：只修改 <code>image_url</code> 字段</li>
+                <li>✅ Token已内置，无需登录即可使用</li>
+                <li>✅ 自动备份到 <code>window.FEATURED_BACKUP</code></li>
+                <li>✅ 控制台有详细执行日志</li>
+                <li>⚠️ 执行前会二次确认</li>
+            </ul>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>📝 封面URL说明：</strong><br>
+                当前统一封面地址：<br>
+                <code style="word-break: break-all; display: block; margin-top: 5px;">https://n.sinaimg.cn/news/1_img/upload/d8010f78/172/w2048h1324/20251209/9605-629a074b8fa2eb55f96542206f90c904.jpg</code><br>
+                <small style="color: #666; margin-top: 5px; display: block;">这是所有房间通用的可访问封面地址</small>
+            </div>
+        </div>
+        
+        <div class="step-box">
+            <h2>🔄 如何回滚（如果需要）</h2>
+            <p>如果需要恢复原始排序，在Console运行：</p>
+            <pre>allow pasting  // 先输入这个解锁粘贴
+// 然后粘贴下面的代码
+async function rollback() {
+    if (!window.FEATURED_BACKUP) return alert('无备份数据');
+    const t = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzk1NTk4ZTYtNzc1Mi00NzVlLWEzYmEtNTkzNjAxMThmYjdhIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2OTY4MDMzOCwiZXhwIjoxNzY5NjgzOTM4LCJqdGkiOiI5MzMyMjA5Ni1hMmZmLTQ5ZmItYjM0OS1jYzVhYzgxMWZhOTciLCJyb2xlIjoiQURNSU4iLCJ1c2VybmFtZSI6ImRheWkiLCJuaWNrbmFtZSI6ImRheWkifQ.w98GQ8YWgNnkmU9aFanPJRRwORRgwwLSdTjns7LbfSE';
+    const a = 'https://mp.dayilive.com/api/core';
+    for (const item of window.FEATURED_BACKUP) {
+        await fetch(`${a}/featured-content/admin/${item.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${t}`
+            },
+            body: JSON.stringify({ sort_order: item.sort_order })
+        });
+        await new Promise(r => setTimeout(r, 100));
+    }
+    alert('回滚完成！');
+}
+await rollback();</pre>
+        </div>
+        
+        <div class="instruction">
+            <strong>📝 温馨提示：</strong><br>
+            • 建议在非高峰时段操作<br>
+            • 确保没有其他管理员同时修改<br>
+            • 执行后刷新首页查看效果<br>
+            • 如有问题，立即使用回滚功能
+        </div>
+    </div>
+</body>
+</html>

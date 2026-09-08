@@ -1,0 +1,709 @@
+/* uni.scss */
+
+/* 全局布局优化：防止横向滚动，确保页面自适应屏幕宽度 */
+page {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* 确保所有页面容器都自适应 */
+page,
+view,
+scroll-view {
+  box-sizing: border-box;
+}
+
+/* 按照 BEM 规范，-- 表示修饰符 */
+/* 新增：定义全局过渡动画，用于交互反馈 */
+:root {
+  --transition-base: all 0.2s ease-in-out;
+
+  /* 1. 色彩体系 (Color Palette) */
+  /* 主色调 - 品牌深青（与登录页设计语言对齐，清洗历史遗留亮蓝色） */
+  --color-primary: #0F766E;
+  --color-primary-hover: #0E7490;
+  --color-primary-light-1: rgba(15, 118, 110, 0.12);
+  --color-success: #52c41a;
+  --color-danger: #ef4444;
+  --color-warning: #faad14;
+  --color-info: #6C757D;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6C757D;
+  --color-text-placeholder: #adb5bd;
+  --color-text-on-primary: #ffffff;
+  --color-background: #F8F9FA;
+  --color-background-light: #FFF;
+  --color-border: #E9ECEF;
+
+  /* 2. 字体与排版 (Typography) */
+  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-small: 10px;
+  --font-size-base: 12px;
+  --font-size-medium: 14px;
+  --font-size-large: 18px;
+  --spacing-small: 4px;
+  --spacing-medium: 6px;
+  --spacing-large: 10px;
+  --spacing-xlarge: 20px;
+  --radius-base: 12rpx;
+  --radius-large: 16rpx;
+  --radius-circle: 50%;
+  --shadow-base: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 18rpx 40rpx rgba(0, 0, 0, 0.24);
+}
+
+/* 首页/登录统一设计语言（轻背景+白卡+胶囊按钮，主色 #0F766E） */
+:root {
+  /* 主色与背景（与登录页统一） */
+  --color-primary: #0F766E;
+  --home-primary: #0F766E;
+  --home-primary-hover: #0E7490;
+  --home-bg: #F7F9FB;
+  --home-card: #FFFFFF;
+  --home-text1: #111827;
+  --home-text2: #6B7280;
+  --home-tabbar-inactive: #8A94A6;
+  --home-border: #E5E7EB;
+  --home-border-light: rgba(229, 231, 235, 0.9);
+  /* 圆角体系：卡片 16rpx，标签/角标/按钮 999rpx */
+  --radius-card: 16rpx;
+  --home-r-lg: 16rpx;
+  --home-r-md: 12rpx;
+  --home-r-pill: 999rpx;
+  /* 阴影：浅边框+极轻阴影，禁止重阴影 */
+  --shadow-card: 0 2rpx 12rpx rgba(17, 24, 39, 0.02);
+  --home-shadow-card: 0 2rpx 12rpx rgba(17, 24, 39, 0.02);
+  /* 统一标签体系：高度/圆角 999rpx/padding/字号 */
+  --home-tag-height: 40rpx;
+  --home-tag-padding-x: 12rpx;
+  --home-tag-padding-y: 4rpx;
+  --home-tag-font: 20rpx;
+  --home-tag-radius: 999rpx;
+  --home-tag-forecast-bg: rgba(15, 118, 110, 0.12);
+  --home-tag-cert-border: 1rpx solid var(--home-primary);
+  /* 字号层级：模块标题 32rpx/700，卡片标题 28rpx/600，meta 22rpx/#6B7280，tab 24rpx */
+  --home-fs-banner: 36rpx;
+  --home-fs-section: 32rpx;
+  --home-fs-card-title: 28rpx;
+  --home-fs-meta: 22rpx;
+  --home-fs-tab: 24rpx;
+  /* 统一 spacing */
+  --home-spacing-page: 16rpx;
+  --home-spacing-module: 20rpx;
+  --home-spacing-card: 16rpx;
+  --home-spacing-inner: 12rpx;
+  /* 专家列表安全区：Index 贴边距离；列表内容区右侧预留（Star 栏位 + Index 栏位 + gap） */
+  --home-expert-index-inset: 8px;
+  --home-expert-list-padding-right: 64px;
+  /* 专家列表 Action Column 体系（集中管理，与 Index 永不冲突） */
+  --expert-action-col-width: 52px;
+  --expert-action-col-inset: 8px;
+  --expert-index-inset: 8px;
+  --expert-icon-tap-size: 88rpx;
+  /* 对齐与安全区（name-row 中心对齐 Star、Content Safe Area 公式化；右侧收紧以加宽内容栏） */
+  --expert-name-lineheight: 44rpx;
+  --expert-action-icon-size: 40rpx;
+  --expert-index-gap: 8px;
+  --expert-index-rail-width: 20px;
+  --expert-content-safe-right: calc(
+    var(--expert-action-col-width) + var(--expert-index-gap) + var(--expert-index-rail-width) + var(--expert-index-inset)
+  );
+  /* 向后兼容：旧 token 引用新体系 */
+  --home-expert-index-inset: var(--expert-index-inset);
+  --home-expert-list-padding-right: var(--expert-content-safe-right);
+  /* FAB 阴影克制 */
+  --home-fab-shadow: 0 4rpx 12rpx rgba(15, 118, 110, 0.1);
+  /* 管理后台统一组件 token（去油腻：极浅分割线 + 统一输入框背景 + 操作按钮语义色） */
+  --home-divider: rgba(17, 24, 39, 0.06);
+  --home-input-bg: #F5F5F7;
+  --home-action-secondary-bg: rgba(0, 0, 0, 0.04);
+  --home-action-primary-bg: rgba(22, 163, 74, 0.08);
+  --home-action-primary-text: #15803d;
+  --home-action-danger-bg: rgba(220, 38, 38, 0.06);
+  --home-action-danger-text: #dc2626;
+  --home-badge-verified-bg: rgba(22, 163, 74, 0.08);
+  --home-badge-verified-text: #15803d;
+  --home-badge-pending-bg: rgba(234, 179, 8, 0.10);
+  --home-badge-pending-text: #a16207;
+  --home-badge-featured-bg: rgba(15, 118, 110, 0.08);
+  --home-badge-featured-text: #0F766E;
+  /* 状态徽章家族补全（与 verified/pending/featured 命名一致；只新增，不改旧语义） */
+  --home-badge-muted-bg: rgba(100, 116, 139, 0.15);
+  --home-badge-muted-text: #64748b;
+  --home-badge-danger-bg: rgba(220, 38, 38, 0.12);
+  --home-badge-danger-text: #b91c1c;
+  /* 角色徽章信息蓝（协管员 MODERATOR；命名与 --home-badge-* 家族一致，只新增不改旧语义） */
+  --home-badge-info-bg: rgba(59, 130, 246, 0.10);
+  --home-badge-info-text: #2563eb;
+  /* 个人中心头部（ProfileHeader）微渐变：品牌色点缀 + 未登录中性态，克制不抢信息 */
+  --home-profile-bg: linear-gradient(135deg, rgba(15, 118, 110, 0.08) 0%, rgba(15, 118, 110, 0.04) 100%);
+  --home-profile-bg-muted: linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.06) 100%);
+  /* 搜索框统一（B站风格）：白底 + 细边 + 圆角矩形 + iconfont 叉号清除；只新增，不改旧语义 */
+  --search-bg: #FFFFFF;              /* 白底（默认态即最终态） */
+  --search-border: #C9CDD4;          /* 细边框（深灰，比 #E5E7EB 更明显；B站观感） */
+  --search-icon: #999999;            /* 线稿灰图标，与边框同色系 */
+  --search-placeholder: #6B7280;     /* 占位文字（与 --home-text2 同值，保证白底对比度） */
+  --search-clear-icon: #6B7280;      /* 清除钮叉号颜色（无圆底，iconfont 直出） */
+  --search-radius: 999rpx;           /* 全胶囊（两端半圆；与首页伪框形态一致，B 站截图两端圆润） */
+  /* wot-design-uni 主题色覆盖（弹窗统一治理 P0.1）：全库主色 → 品牌青绿；
+     仅此 1 个 token（圆角/分割线/字重不映射，避免两套体系抢戏）；映射表随使用扩展 */
+  --wot-color-theme: #0F766E;
+}
+
+/* 首页/登录公共 class（可复用） */
+.page {
+  background-color: var(--home-bg);
+  color: var(--home-text1);
+}
+.card {
+  background-color: var(--home-card);
+  border-radius: var(--home-r-lg);
+  box-shadow: var(--home-shadow-card);
+}
+.h2 {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--home-text1);
+}
+.meta {
+  font-size: 24rpx;
+  color: var(--home-text2);
+}
+
+/* 搜索框统一容器（B站风格）：白底 + 细边 + 胶囊；页面按场景覆盖高度（C端72/管理端64/导航64） */
+.app-search-field {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: var(--search-bg);
+  border: 1rpx solid var(--search-border);
+  border-radius: var(--search-radius);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  position: relative; /* 悬浮清除钮定位基准（v1.14 最终结构） */
+}
+.app-search-field__icon {
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: var(--search-icon);
+  margin-right: 12rpx;
+  line-height: 1;
+}
+.app-search-field__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  font-size: 28rpx;
+  color: var(--home-text1);
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+}
+/* H5 生效；小程序端 placeholder 颜色走 input 的 placeholder-class（传 --search-placeholder 值） */
+.app-search-field__input::placeholder {
+  color: var(--search-placeholder);
+}
+
+/* 悬浮清除钮槽（v1.14 最终结构）：absolute 右端，不参与 flex → 显隐零布局变化；
+   页面模板：清除钮外包 <view class="search-clear-slot">；input 需恒定 padding-right 预留（约 56rpx） */
+.search-clear-slot {
+  position: absolute;
+  right: 10rpx;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+/* 微信小程序兼容性处理 */
+/* #ifdef MP-WEIXIN */
+:root {
+  /* 为微信小程序提供具体的颜色值 */
+  --nav-bg-color: #ffffff;
+  --bg-color: #f7f8fa;
+}
+/* #endif */
+
+/* #ifndef MP-WEIXIN */
+:root {
+  /* 其他平台使用 CSS 变量 */
+  --nav-bg-color: var(--color-background-light);
+  --bg-color: var(--color-background);
+}
+/* #endif */
+
+/* 全局输入框美化样式 */
+/* 覆盖 uni-input 和 uni-textarea 内部真实输入框的样式 */
+
+/* uni-app 组件容器样式 */
+uni-input,
+uni-textarea {
+  display: block;
+  width: 100%;
+  /* 移除容器本身的样式，让内部元素处理 */
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 真实输入框样式 */
+.form-input,
+.form-textarea,
+.uni-input-input,
+.uni-textarea-textarea,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="datetime-local"],
+textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  padding: 6px 6px;
+  font-size: var(--font-size-medium);
+  color: var(--color-text-primary);
+  background: var(--color-background-light);
+  transition: var(--transition-base);
+  box-sizing: border-box;
+  font-family: var(--font-family-sans-serif);
+  line-height: 1.5;
+  
+  /* 移除默认样式 */
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* 增加轻微的阴影和美化效果 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  
+  /* 确保过渡效果 */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 输入框悬停和聚焦高亮 - 高优先级 */
+.form-input:hover,
+.form-textarea:hover,
+.uni-input-input:hover,
+.uni-textarea-textarea:hover,
+input[type="text"]:hover,
+input[type="password"]:hover,
+input[type="email"]:hover,
+input[type="number"]:hover,
+input[type="tel"]:hover,
+input[type="url"]:hover,
+input[type="search"]:hover,
+input[type="datetime-local"]:hover,
+textarea:hover {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.uni-input-input:focus,
+.uni-textarea-textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  outline: none !important;
+}
+
+/* uni-app 组件特殊处理 */
+.uni-input-input,
+.uni-textarea-textarea {
+  /* 确保内部input/textarea正确显示 */
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 44px; /* 确保有足够的高度 */
+  box-sizing: border-box !important;
+  /* 移除可能的内边距冲突 */
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  /* 确保可以正常输入 */
+  pointer-events: auto !important;
+  z-index: 2 !important; /* 提高层级，确保在占位符之上 */
+  position: relative !important;
+  /* 确保样式直接应用到真实输入元素 */
+  /* 注意：真实输入框的边框与背景在下方统一置为透明，由外层容器负责可视化样式 */
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-base) !important;
+  background: var(--color-background-light) !important;
+  color: var(--color-text-primary) !important;
+  font-size: var(--font-size-medium) !important;
+  font-family: var(--font-family-sans-serif) !important;
+  line-height: 1.5 !important;
+  outline: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* 修复 uni-textarea 占位符问题 */
+.uni-textarea-placeholder {
+  pointer-events: none !important; /* 禁用占位符的点击事件 */
+  z-index: 1 !important; /* 降低占位符层级 */
+  position: absolute !important;
+  top: 12px !important;
+  left: 16px !important;
+  color: var(--color-text-placeholder) !important;
+  font-size: var(--font-size-medium) !important;
+}
+
+/* uni-input 组件容器样式 */
+uni-input {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+/* uni-textarea 组件容器样式 */
+uni-textarea {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+/* 彻底移除 uni-textarea-wrapper 的视觉效果 */
+.uni-textarea-wrapper {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+  position: relative !important;
+  /* 移除所有可能的边框和背景 */
+  box-shadow: none !important;
+  outline: none !important;
+  /* 隐藏滚动条 */
+  overflow: hidden !important;
+}
+
+/* 隐藏 textarea 的滚动条 */
+.uni-textarea-textarea,
+textarea {
+  /* 隐藏滚动条但保持功能 */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+/* Webkit 浏览器的滚动条隐藏 */
+.uni-textarea-textarea::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* 确保 uni-textarea 内部的真实 textarea 元素可见和可交互 */
+uni-textarea .uni-textarea-textarea,
+.uni-textarea-textarea {
+  display: block !important;
+  width: 100% !important;
+  min-height: 60px !important; /* 减小最小高度 */
+  max-height: 80px !important; /* 添加最大高度限制 */
+  padding: 12px 16px !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-base) !important;
+  font-size: var(--font-size-medium) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-background-light) !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  pointer-events: auto !important;
+  z-index: 2 !important;
+  resize: none !important; /* 禁用手动调整大小，避免出现调整手柄 */
+  line-height: 1.6 !important;
+  position: relative !important;
+  /* 确保没有多余的视觉效果 */
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* 确保 uni-input 内部的真实 input 元素可见和可交互 */
+uni-input .uni-input-input {
+  display: block !important;
+  width: 100% !important;
+  height: 44px !important;
+  padding: 12px 16px !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-base) !important;
+  font-size: var(--font-size-medium) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-background-light) !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  pointer-events: auto !important;
+  z-index: 1 !important;
+}
+
+/* 聚焦状态 */
+.form-input:focus,
+.form-textarea:focus,
+.uni-input-input:focus,
+.uni-textarea-textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-background-light);
+  transform: translateY(-1px);
+}
+
+/* 错误状态 */
+.form-input.input-error,
+.form-textarea.input-error,
+.uni-input-input.input-error,
+.uni-textarea-textarea.input-error,
+input[type="text"].input-error,
+input[type="password"].input-error,
+input[type="email"].input-error,
+input[type="number"].input-error,
+input[type="tel"].input-error,
+input[type="url"].input-error,
+input[type="search"].input-error,
+input[type="datetime-local"].input-error,
+textarea.input-error {
+  border-color: var(--color-danger);
+  background: rgba(220, 53, 69, 0.02);
+}
+
+/* 错误状态聚焦 */
+.form-input.input-error:focus,
+.form-textarea.input-error:focus,
+.uni-input-input.input-error:focus,
+.uni-textarea-textarea.input-error:focus,
+input[type="text"].input-error:focus,
+input[type="password"].input-error:focus,
+input[type="email"].input-error:focus,
+input[type="number"].input-error:focus,
+input[type="tel"].input-error:focus,
+input[type="url"].input-error:focus,
+input[type="search"].input-error:focus,
+input[type="datetime-local"].input-error:focus,
+textarea.input-error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* 占位符样式 */
+.form-input::placeholder,
+.form-textarea::placeholder,
+.uni-input-input::placeholder,
+.uni-textarea-textarea::placeholder,
+input[type="text"]::placeholder,
+input[type="password"]::placeholder,
+input[type="email"]::placeholder,
+input[type="number"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="url"]::placeholder,
+input[type="search"]::placeholder,
+input[type="datetime-local"]::placeholder,
+textarea::placeholder {
+  color: var(--color-text-placeholder);
+  font-size: var(--font-size-medium);
+}
+
+/* 禁用状态 */
+.form-input:disabled,
+.form-textarea:disabled,
+.uni-input-input:disabled,
+.uni-textarea-textarea:disabled,
+input[type="text"]:disabled,
+input[type="password"]:disabled,
+input[type="email"]:disabled,
+input[type="number"]:disabled,
+input[type="tel"]:disabled,
+input[type="url"]:disabled,
+input[type="search"]:disabled,
+input[type="datetime-local"]:disabled,
+textarea:disabled {
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* textarea 特殊样式 */
+.form-textarea,
+.uni-textarea-textarea,
+textarea {
+  min-height: 60px; /* 减小最小高度 */
+  max-height: 80px; /* 添加最大高度限制 */
+  resize: none; /* 禁用手动调整大小 */
+  line-height: 1.6;
+  /* 隐藏滚动条 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* 隐藏所有 textarea 的滚动条 */
+.form-textarea::-webkit-scrollbar,
+.uni-textarea-textarea::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  display: none;
+}
+
+/* 表单组样式 */
+.form-group {
+  margin-bottom: var(--spacing-xlarge);
+  
+  .form-label {
+    display: block;
+    font-weight: bold;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-medium);
+    font-size: var(--font-size-medium);
+    line-height: 1.4;
+    
+    .required {
+      color: var(--color-danger);
+      margin-left: var(--spacing-small);
+      font-weight: bold;
+    }
+  }
+  
+  .form-error {
+    color: var(--color-danger);
+    font-size: var(--font-size-small);
+    margin-top: var(--spacing-small);
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+    
+    &::before {
+      content: '⚠';
+      margin-right: var(--spacing-small);
+      font-size: 12px;
+    }
+  }
+}
+
+/* 输入框尺寸变体 */
+.form-input-small,
+.uni-input-input.form-input-small {
+  padding: 8px 12px;
+  font-size: var(--font-size-base);
+}
+
+.form-input-large,
+.uni-input-input.form-input-large {
+  padding: 16px 20px;
+  font-size: var(--font-size-large);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .form-input,
+  .form-textarea,
+  .uni-input-input,
+  .uni-textarea-textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="datetime-local"],
+  textarea {
+    padding: 14px 16px;
+    font-size: 16px; /* 移动端防止缩放 */
+  }
+  
+  .form-group {
+    margin-bottom: var(--spacing-large);
+  }
+}
+
+/* 兼容性处理 */
+/* 针对某些浏览器的特殊处理 */
+.form-input::-webkit-outer-spin-button,
+.form-input::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;  /* 标准属性，兼容现代浏览器 */
+  margin: 0;
+}
+
+.form-input[type=number],
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;  /* 标准属性，兼容现代浏览器 */
+} 
+
+/* ------------------------------------------------------------
+   覆盖策略：仅由外层容器显示边框，内部真实输入透明
+   目的：避免 uni 组件产生的“双层描边/白边”问题
+------------------------------------------------------------- */
+
+/* 外层容器（开发者在模板上写的 class）作为唯一可视边框载体 */
+.form-input,
+.form-textarea {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important; /* 由内部真实输入提供内边距 */
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-base) !important;
+  background: var(--color-background-light) !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* 悬停与聚焦（使用 focus-within 监听内部真实输入聚焦态） */
+.form-input:hover,
+.form-textarea:hover {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+.form-input:focus-within,
+.form-textarea:focus-within {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 内部真实输入：透明化边框与阴影，仅保留内边距与文字样式 */
+.form-input .uni-input-input,
+.form-textarea .uni-textarea-textarea {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 12px 16px !important;
+}
+
+/* 兼容直接使用原生 input/textarea（H5）且外层挂了 form- 类名的情况 */
+.form-input input,
+.form-textarea textarea {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}

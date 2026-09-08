@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji功能测试工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .test-section {
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .test-section:last-child {
+      border-bottom: none;
+    }
+
+    .test-section h2 {
+      color: #1890ff;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .test-item {
+      margin-bottom: 20px;
+    }
+
+    .test-label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #1890ff;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .emoji-display {
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      min-height: 50px;
+      font-size: 24px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      margin-top: 10px;
+    }
+
+    .emoji-samples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .emoji-btn {
+      padding: 8px 12px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .emoji-btn:hover {
+      background: #e8f4ff;
+      border-color: #1890ff;
+      transform: scale(1.1);
+    }
+
+    .emoji-btn:active {
+      transform: scale(0.95);
+    }
+
+    .info-box {
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 12px 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .warning-box {
+      background: #fff7e6;
+      border-left: 4px solid #faad14;
+      padding: 12px 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .success-box {
+      background: #f6ffed;
+      border-left: 4px solid #52c41a;
+      padding: 12px 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e5e5e5;
+    }
+
+    .stat-label {
+      color: #666;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #1890ff;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #40a9ff;
+    }
+
+    button:active {
+      background: #096dd9;
+    }
+
+    .test-result {
+      margin-top: 15px;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .keyboard-hint {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .hint-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #666;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎭 Emoji功能测试工具</h1>
+    <p class="subtitle">测试emoji的输入、显示和编码兼容性</p>
+
+    <!-- 测试1：基础输入 -->
+    <div class="test-section">
+      <h2>📝 测试1：Emoji输入测试</h2>
+      <div class="test-item">
+        <div class="test-label">请在下方输入框中输入emoji表情：</div>
+        <input 
+          type="text" 
+          id="emojiInput" 
+          placeholder="在这里输入emoji... 😊🎉💬"
+          maxlength="500"
+        >
+        <div class="keyboard-hint">
+          <div class="hint-item">
+            <span>iOS:</span>
+            <span class="kbd">😊</span>
+          </div>
+          <div class="hint-item">
+            <span>Android:</span>
+            <span>长按逗号键</span>
+          </div>
+          <div class="hint-item">
+            <span>Windows:</span>
+            <span class="kbd">Win</span> + <span class="kbd">.</span>
+          </div>
+          <div class="hint-item">
+            <span>Mac:</span>
+            <span class="kbd">⌃</span> + <span class="kbd">⌘</span> + <span class="kbd">Space</span>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 提示：使用系统自带的emoji键盘输入表情，或点击下方的emoji快速插入
+        </div>
+      </div>
+
+      <div class="test-item">
+        <div class="test-label">快速插入常用emoji：</div>
+        <div class="emoji-samples">
+          <button class="emoji-btn" onclick="insertEmoji('😀')">😀</button>
+          <button class="emoji-btn" onclick="insertEmoji('😊')">😊</button>
+          <button class="emoji-btn" onclick="insertEmoji('😂')">😂</button>
+          <button class="emoji-btn" onclick="insertEmoji('🥰')">🥰</button>
+          <button class="emoji-btn" onclick="insertEmoji('😎')">😎</button>
+          <button class="emoji-btn" onclick="insertEmoji('👋')">👋</button>
+          <button class="emoji-btn" onclick="insertEmoji('👍')">👍</button>
+          <button class="emoji-btn" onclick="insertEmoji('❤️')">❤️</button>
+          <button class="emoji-btn" onclick="insertEmoji('🎉')">🎉</button>
+          <button class="emoji-btn" onclick="insertEmoji('🔥')">🔥</button>
+          <button class="emoji-btn" onclick="insertEmoji('💯')">💯</button>
+          <button class="emoji-btn" onclick="insertEmoji('✨')">✨</button>
+        </div>
+      </div>
+
+      <div class="test-item">
+        <div class="test-label">显示效果：</div>
+        <div class="emoji-display" id="emojiDisplay">
+          （这里会实时显示你输入的emoji...）
+        </div>
+      </div>
+
+      <div class="test-item">
+        <div class="test-label">字符统计：</div>
+        <div>
+          <div class="stat-item">
+            <span class="stat-label">字符数（包含emoji）：</span>
+            <span class="stat-value" id="charCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">字节数（UTF-8）：</span>
+            <span class="stat-value" id="byteCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Unicode码点数：</span>
+            <span class="stat-value" id="codePointCount">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 测试2：混合内容 -->
+    <div class="test-section">
+      <h2>🎨 测试2：混合内容测试</h2>
+      <div class="test-item">
+        <div class="test-label">输入文字+emoji混合内容：</div>
+        <textarea 
+          id="mixedInput" 
+          placeholder="例如：今天天气真不错😊 来一起学习吧🎉"
+        ></textarea>
+        <button onclick="analyzeMixedContent()">分析内容</button>
+        <div class="test-result" id="mixedResult"></div>
+      </div>
+    </div>
+
+    <!-- 测试3：编码测试 -->
+    <div class="test-section">
+      <h2>🔬 测试3：编码兼容性测试</h2>
+      <div class="test-item">
+        <div class="test-label">预设测试用例：</div>
+        <div class="emoji-samples">
+          <button onclick="testCase('基础emoji', '😀😃😄😁')">基础emoji</button>
+          <button onclick="testCase('组合emoji', '👨‍👩‍👧‍👦👨‍💻👩‍⚕️')">组合emoji</button>
+          <button onclick="testCase('肤色变体', '👋🏻👋🏼👋🏽👋🏾👋🏿')">肤色变体</button>
+          <button onclick="testCase('国旗', '🇨🇳🇺🇸🇬🇧🇯🇵')">国旗</button>
+          <button onclick="testCase('混合内容', '你好😊World🌍')">混合内容</button>
+        </div>
+        <div class="test-result" id="encodeResult"></div>
+      </div>
+    </div>
+
+    <!-- 测试4：数据库兼容性 -->
+    <div class="test-section">
+      <h2>💾 测试4：数据库编码检查</h2>
+      <div class="test-item">
+        <div class="success-box">
+          ✅ 当前页面编码：<strong>UTF-8</strong>（支持emoji）
+        </div>
+        <div class="warning-box">
+          ⚠️ 数据库要求：必须使用 <strong>utf8mb4</strong> 编码才能存储emoji
+        </div>
+        <div class="info-box">
+          <strong>MySQL数据库检查命令：</strong><br>
+          <code style="background: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+            SHOW CREATE TABLE room_messages;
+          </code><br><br>
+          <strong>转换命令（如果需要）：</strong><br>
+          <code style="background: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; display: block; margin-top: 5px;">
+            ALTER TABLE room_messages CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- 测试5：JSON序列化 -->
+    <div class="test-section">
+      <h2>📦 测试5：JSON序列化测试</h2>
+      <div class="test-item">
+        <div class="test-label">模拟API数据：</div>
+        <button onclick="testJSON()">测试JSON序列化/反序列化</button>
+        <div class="test-result" id="jsonResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const emojiInput = document.getElementById('emojiInput');
+    const emojiDisplay = document.getElementById('emojiDisplay');
+    const charCount = document.getElementById('charCount');
+    const byteCount = document.getElementById('byteCount');
+    const codePointCount = document.getElementById('codePointCount');
+    const mixedInput = document.getElementById('mixedInput');
+    const mixedResult = document.getElementById('mixedResult');
+    const encodeResult = document.getElementById('encodeResult');
+    const jsonResult = document.getElementById('jsonResult');
+
+    // 实时更新显示
+    emojiInput.addEventListener('input', function() {
+      const text = this.value;
+      emojiDisplay.textContent = text || '（这里会实时显示你输入的emoji...）';
+      
+      // 更新统计
+      charCount.textContent = Array.from(text).length;
+      byteCount.textContent = new Blob([text]).size;
+      codePointCount.textContent = [...text].length;
+    });
+
+    // 插入emoji
+    function insertEmoji(emoji) {
+      const input = emojiInput;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      
+      input.value = text.substring(0, start) + emoji + text.substring(end);
+      input.focus();
+      input.setSelectionRange(start + emoji.length, start + emoji.length);
+      
+      // 触发input事件更新显示
+      input.dispatchEvent(new Event('input'));
+    }
+
+    // 分析混合内容
+    function analyzeMixedContent() {
+      const text = mixedInput.value;
+      if (!text) {
+        mixedResult.textContent = '请先输入内容';
+        return;
+      }
+
+      const chars = Array.from(text);
+      const analysis = {
+        totalChars: chars.length,
+        totalBytes: new Blob([text]).size,
+        emojiCount: 0,
+        textCount: 0,
+        breakdown: []
+      };
+
+      chars.forEach((char, index) => {
+        const isEmoji = /\p{Emoji}/u.test(char);
+        if (isEmoji) {
+          analysis.emojiCount++;
+        } else {
+          analysis.textCount++;
+        }
+        
+        analysis.breakdown.push({
+          index: index + 1,
+          char,
+          type: isEmoji ? 'Emoji' : 'Text',
+          codePoint: char.codePointAt(0).toString(16).toUpperCase(),
+          bytes: new Blob([char]).size
+        });
+      });
+
+      // 显示分析结果
+      let result = `📊 内容分析结果：\n\n`;
+      result += `总字符数: ${analysis.totalChars}\n`;
+      result += `总字节数: ${analysis.totalBytes} bytes\n`;
+      result += `Emoji数量: ${analysis.emojiCount}\n`;
+      result += `文本字符数: ${analysis.textCount}\n\n`;
+      result += `详细分解：\n`;
+      result += `${'='.repeat(60)}\n`;
+      
+      analysis.breakdown.forEach(item => {
+        result += `[${item.index}] ${item.char} | 类型: ${item.type} | Unicode: U+${item.codePoint} | ${item.bytes}字节\n`;
+      });
+
+      mixedResult.textContent = result;
+    }
+
+    // 测试用例
+    function testCase(name, testString) {
+      const chars = Array.from(testString);
+      let result = `🧪 测试用例: ${name}\n\n`;
+      result += `原始字符串: ${testString}\n`;
+      result += `字符数: ${chars.length}\n`;
+      result += `字节数: ${new Blob([testString]).size} bytes\n\n`;
+      result += `Unicode编码：\n`;
+      
+      chars.forEach((char, index) => {
+        const codePoint = char.codePointAt(0);
+        result += `${char} → U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}\n`;
+      });
+
+      // 测试JSON序列化
+      result += `\nJSON序列化测试:\n`;
+      const jsonStr = JSON.stringify({ content: testString });
+      result += `序列化: ${jsonStr}\n`;
+      const parsed = JSON.parse(jsonStr);
+      result += `反序列化: ${parsed.content}\n`;
+      result += `是否一致: ${parsed.content === testString ? '✅ 通过' : '❌ 失败'}\n`;
+
+      encodeResult.textContent = result;
+    }
+
+    // JSON测试
+    function testJSON() {
+      const testMessage = {
+        id: "msg-001",
+        user_id: "user-123",
+        content: "你好😊 测试emoji功能🎉👋",
+        created_at: new Date().toISOString(),
+        extra: {
+          user_display_name: "测试用户",
+          user_avatar: "/avatar.jpg"
+        }
+      };
+
+      let result = `📦 模拟聊天消息JSON测试\n\n`;
+      result += `原始对象：\n`;
+      result += JSON.stringify(testMessage, null, 2);
+      result += `\n\n`;
+      
+      // 序列化
+      const jsonString = JSON.stringify(testMessage);
+      result += `序列化后（模拟发送给后端）：\n`;
+      result += jsonString;
+      result += `\n\n`;
+      
+      // 反序列化
+      const parsed = JSON.parse(jsonString);
+      result += `反序列化后（模拟从后端接收）：\n`;
+      result += JSON.stringify(parsed, null, 2);
+      result += `\n\n`;
+      
+      // 验证
+      result += `验证结果：\n`;
+      result += `Content一致性: ${parsed.content === testMessage.content ? '✅ 通过' : '❌ 失败'}\n`;
+      result += `Emoji保留: ${parsed.content.includes('😊') && parsed.content.includes('🎉') ? '✅ 通过' : '❌ 失败'}\n`;
+
+      jsonResult.textContent = result;
+    }
+
+    // 页面加载时显示提示
+    window.addEventListener('load', function() {
+      const userAgent = navigator.userAgent;
+      let platform = 'Desktop';
+      if (/iPhone|iPad|iPod/.test(userAgent)) {
+        platform = 'iOS';
+      } else if (/Android/.test(userAgent)) {
+        platform = 'Android';
+      }
+      
+      console.log(`%c🎭 Emoji测试工具已加载`, 'font-size: 16px; color: #1890ff; font-weight: bold;');
+      console.log(`%c当前平台: ${platform}`, 'color: #666;');
+      console.log(`%c页面编码: UTF-8`, 'color: #52c41a;');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>焦点图Subtitle测试</title>
+  <style>
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h1 { color: #333; }
+    button {
+      background: #1890ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover { background: #40a9ff; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .data-table th,
+    .data-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    .data-table th {
+      background: #1890ff;
+      color: white;
+    }
+    .has-value { background: #d4edda; }
+    .no-value { background: #f8d7da; }
+    .log {
+      background: #000;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 焦点图 Subtitle 数据检查工具</h1>
+    
+    <div>
+      <button onclick="loadData()">🔄 加载最新数据（无缓存）</button>
+      <button onclick="compareData()">📊 对比数据变化</button>
+    </div>
+
+    <table class="data-table" id="dataTable">
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>标题</th>
+          <th>副标题(subtitle)</th>
+          <th>CTA文本(cta_text)</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody id="dataBody">
+        <tr>
+          <td colspan="5" style="text-align: center; color: #999;">点击"加载最新数据"按钮</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    let previousData = null;
+
+    function log(message, isError = false) {
+      const logEl = document.getElementById('log');
+      const time = new Date().toLocaleTimeString();
+      const color = isError ? '#f5222d' : '#52c41a';
+      logEl.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function loadData() {
+      log('开始加载焦点图数据...');
+      
+      try {
+        // 添加时间戳防止缓存
+        const timestamp = Date.now();
+        const url = `https://mp.dayilive.com/api/core/featured-content?_t=${timestamp}`;
+        
+        log('请求URL: ' + url);
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        log(`成功获取 ${result.data.length} 条数据`);
+
+        // 保存数据用于对比
+        previousData = result.data;
+
+        // 渲染表格
+        renderTable(result.data);
+
+        // 统计
+        const withSubtitle = result.data.filter(item => item.subtitle).length;
+        const withCta = result.data.filter(item => item.cta_text).length;
+        
+        log(`统计: ${withSubtitle} 条有副标题, ${withCta} 条有CTA文本`);
+
+        // 检查问题
+        result.data.forEach((item, index) => {
+          if (!item.subtitle && !item.cta_text) {
+            log(`⚠️ 焦点图 ${index + 1} "${item.title}" 缺少副标题和CTA文本`, true);
+          }
+        });
+
+      } catch (error) {
+        log('❌ 加载失败: ' + error.message, true);
+        console.error('详细错误:', error);
+      }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('dataBody');
+      tbody.innerHTML = '';
+
+      data.forEach((item, index) => {
+        const hasSubtitle = !!item.subtitle;
+        const hasCta = !!item.cta_text;
+        const status = hasSubtitle || hasCta ? '✅ 有CTA' : '❌ 无CTA';
+        const rowClass = hasSubtitle || hasCta ? 'has-value' : 'no-value';
+
+        const row = document.createElement('tr');
+        row.className = rowClass;
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.title || '-'}</td>
+          <td>${item.subtitle || '<span style="color: #999;">空</span>'}</td>
+          <td>${item.cta_text || '<span style="color: #999;">空</span>'}</td>
+          <td>${status}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function compareData() {
+      if (!previousData) {
+        log('请先加载数据', true);
+        return;
+      }
+
+      log('\n--- 开始对比 ---');
+      log('建议：在管理后台修改焦点图，然后点此按钮查看变化');
+      
+      loadData().then(() => {
+        log('对比完成，请查看表格中的变化');
+      });
+    }
+
+    // 页面加载时自动执行
+    window.onload = function() {
+      log('工具已就绪，点击"加载最新数据"按钮开始检查');
+      loadData();
+    };
+  </script>
+</body>
+</html>

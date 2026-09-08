@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>焦点图创建工具 - 管理员专用</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e5e9;
+        }
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        .response {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .response.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .security-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .required {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 焦点图创建工具</h1>
+            <p>管理员专用 - 安全创建焦点图配置</p>
+        </div>
+
+        <div class="security-notice">
+            <strong>🔒 安全提醒：</strong> 请确保您拥有管理员权限，且Token有效。所有操作将被记录日志。输入数据将在客户端和服务器端进行验证。
+        </div>
+
+        <form id="featuredForm">
+            <div class="form-group">
+                <label for="token">JWT Token <span class="required">*</span></label>
+                <input type="password" id="token" required placeholder="输入有效的管理员JWT Token">
+            </div>
+
+            <div class="form-group">
+                <label for="title">标题 <span class="required">*</span></label>
+                <input type="text" id="title" required placeholder="焦点图标题，如：年度医学峰会">
+            </div>
+
+            <div class="form-group">
+                <label for="imageUrl">图片URL <span class="required">*</span></label>
+                <input type="url" id="imageUrl" required placeholder="/media/featured/summit2025.jpg">
+            </div>
+
+            <div class="form-group">
+                <label for="targetType">目标类型 <span class="required">*</span></label>
+                <select id="targetType" required>
+                    <option value="">请选择目标类型</option>
+                    <option value="room">直播间 (room)</option>
+                    <option value="session">场次 (session)</option>
+                    <option value="topic">专题 (topic)</option>
+                    <option value="external">外部链接 (external)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="targetId">目标ID</label>
+                <input type="text" id="targetId" placeholder="目标资源ID (room/session/topic的UUID)">
+            </div>
+
+            <div class="form-group">
+                <label for="targetUrl">目标URL</label>
+                <input type="url" id="targetUrl" placeholder="外部链接URL (当target_type为external时)">
+            </div>
+
+            <div class="form-group">
+                <label for="ctaText">CTA文本</label>
+                <input type="text" id="ctaText" placeholder="行动召唤文本，如：立即报名">
+            </div>
+
+            <div class="form-group">
+                <label for="sortOrder">排序顺序</label>
+                <input type="number" id="sortOrder" value="0" min="0" placeholder="数字，越小越靠前">
+            </div>
+
+            <div class="form-group">
+                <label for="startAt">开始时间 <span class="required">*</span></label>
+                <input type="datetime-local" id="startAt" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endAt">结束时间 <span class="required">*</span></label>
+                <input type="datetime-local" id="endAt" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary">🚀 创建焦点图</button>
+                <button type="button" class="btn-secondary" onclick="clearForm()">🗑️ 清空表单</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在创建焦点图...</p>
+        </div>
+
+        <div class="response" id="response"></div>
+    </div>
+
+    <script>
+        // 🔧 正确的API路径（已验证）
+        // ✅ 正确: /api/core/featured-content/admin (401需要认证)
+        // ❌ 错误: /api/core/admin/featured-content (404不存在)
+        const USE_DIRECT_IP = false; // 使用域名代理
+        
+        const API_CONFIG = {
+            // 域名代理方式（正确路径）
+            proxy: {
+                base: 'https://mp.dayilive.com/api/core',
+                endpoint: '/featured-content/admin', // ✅ 修正：顺序是 featured-content/admin
+                full: 'https://mp.dayilive.com/api/core/featured-content/admin'
+            },
+            // 直接IP方式
+            direct: {
+                base: 'http://124.220.235.226:8000',
+                endpoint: '/api/v1/featured-content/admin', // ✅ 修正路径
+                full: 'http://124.220.235.226:8000/api/v1/featured-content/admin'
+            }
+        };
+        
+        const currentConfig = USE_DIRECT_IP ? API_CONFIG.direct : API_CONFIG.proxy;
+        const API_BASE_URL = currentConfig.base;
+        const API_ENDPOINT = currentConfig.endpoint;
+        const FULL_API_URL = currentConfig.full;
+        
+        console.log('🔧 API配置（已修正路径）:', {
+            mode: USE_DIRECT_IP ? '直接访问后端IP' : '通过域名代理',
+            base: API_BASE_URL,
+            endpoint: API_ENDPOINT,
+            full: FULL_API_URL,
+            verified: '✅ 路径已通过401验证，API存在'
+        });
+
+        // 表单提交处理
+        document.getElementById('featuredForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = getFormData();
+            if (!validateForm(formData)) return;
+
+            showLoading(true);
+            hideResponse();
+
+            try {
+                const response = await createFeaturedContent(formData);
+                showResponse(response, 'success');
+            } catch (error) {
+                showResponse(error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // 获取表单数据
+        function getFormData() {
+            return {
+                token: document.getElementById('token').value.trim(),
+                title: document.getElementById('title').value.trim(),
+                image_url: document.getElementById('imageUrl').value.trim(),
+                target_type: document.getElementById('targetType').value,
+                target_id: document.getElementById('targetId').value.trim() || null,
+                target_url: document.getElementById('targetUrl').value.trim() || null,
+                cta_text: document.getElementById('ctaText').value.trim() || null,
+                sort_order: parseInt(document.getElementById('sortOrder').value) || 0,
+                start_at: formatDateTime(document.getElementById('startAt').value),
+                end_at: formatDateTime(document.getElementById('endAt').value)
+            };
+        }
+
+        // 客户端验证
+        function validateForm(data) {
+            if (!data.token) {
+                alert('请输入有效的JWT Token');
+                return false;
+            }
+
+            if (!data.title) {
+                alert('请输入标题');
+                return false;
+            }
+
+            if (!data.image_url) {
+                alert('请输入图片URL');
+                return false;
+            }
+            
+            // 检查图片URL是否过长（可能是完整HTML而非URL）
+            if (data.image_url.length > 500) {
+                alert('⚠️ 图片URL过长\n\n' +
+                      '图片URL应该是简短的路径，如：\n' +
+                      '/media/featured/summit2025.jpg\n\n' +
+                      '或完整URL：\n' +
+                      'https://example.com/image.jpg\n\n' +
+                      '请不要粘贴HTML代码');
+                return false;
+            }
+
+            if (!data.target_type) {
+                alert('请选择目标类型');
+                return false;
+            }
+
+            // 目标类型验证
+            if (data.target_type === 'external') {
+                if (!data.target_url) {
+                    alert('外部链接类型必须提供target_url');
+                    return false;
+                }
+            } else {
+                if (!data.target_id) {
+                    alert('非外部链接类型必须提供target_id');
+                    return false;
+                }
+                
+                // 验证target_id格式（应该是UUID）
+                const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (!uuidPattern.test(data.target_id)) {
+                    const confirmResult = confirm(
+                        '⚠️ target_id格式警告\n\n' +
+                        `当前值: "${data.target_id}"\n\n` +
+                        'target_id应该是UUID格式（如: 123e4567-e89b-12d3-a456-426614174000）\n' +
+                        '当前输入不符合UUID格式，可能导致404错误。\n\n' +
+                        '是否仍要继续提交？'
+                    );
+                    if (!confirmResult) {
+                        return false;
+                    }
+                }
+            }
+
+            // 日期验证
+            if (!data.start_at || !data.end_at) {
+                alert('请选择开始和结束时间');
+                return false;
+            }
+
+            const startDate = new Date(data.start_at);
+            const endDate = new Date(data.end_at);
+
+            if (startDate >= endDate) {
+                alert('结束时间必须晚于开始时间');
+                return false;
+            }
+
+            return true;
+        }
+
+        // 格式化日期时间为ISO字符串
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return null;
+            const date = new Date(dateTimeStr);
+            return date.toISOString();
+        }
+
+        // 发送API请求
+        async function createFeaturedContent(data) {
+            const requestBody = {
+                title: data.title,
+                image_url: data.image_url,
+                target_type: data.target_type,
+                target_id: data.target_id,
+                target_url: data.target_url,
+                cta_text: data.cta_text,
+                sort_order: data.sort_order,
+                start_at: data.start_at,
+                end_at: data.end_at
+            };
+
+            console.log('🚀 发送创建焦点图请求:', {
+                url: FULL_API_URL,
+                method: 'POST',
+                title: requestBody.title,
+                target_type: requestBody.target_type
+            });
+
+            const response = await fetch(FULL_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${data.token}`,
+                    'X-Requested-With': 'XMLHttpRequest' // CSRF防护标识
+                },
+                body: JSON.stringify(requestBody),
+                credentials: 'include' // 包含凭证
+            });
+
+            console.log('📥 收到服务器响应:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ 
+                    message: '网络错误或服务器无响应' 
+                }));
+                
+                console.error('❌ 请求失败:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    errorData: errorData,
+                    requestUrl: FULL_API_URL
+                });
+                
+                // 根据状态码提供友好的错误提示
+                if (response.status === 401) {
+                    throw new Error('❌ Token无效或已过期，请重新登录获取新Token');
+                } else if (response.status === 403) {
+                    throw new Error('❌ 权限不足，需要ADMIN或SUPERADMIN管理员权限');
+                } else if (response.status === 404) {
+                    throw new Error('❌ API端点不存在(404)\n\n可能原因：\n1. API路径配置错误\n2. 后端服务未启动\n3. target_id对应的资源不存在\n\n请求URL: ' + FULL_API_URL);
+                } else if (response.status === 422) {
+                    const detail = errorData.detail ? JSON.stringify(errorData.detail, null, 2) : errorData.message;
+                    throw new Error('❌ 数据验证失败(422):\n' + detail);
+                } else {
+                    throw new Error(`❌ HTTP ${response.status}: ${response.statusText}\n\n错误详情: ${errorData.message || '未知错误'}\n\n请求URL: ${FULL_API_URL}`);
+                }
+            }
+
+            const result = await response.json();
+            console.log('✅ 焦点图创建成功:', result);
+            return result;
+        }
+
+        // 显示加载状态
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // 显示响应
+        function showResponse(message, type) {
+            const responseEl = document.getElementById('response');
+            responseEl.className = `response ${type}`;
+            responseEl.innerHTML = `<pre>${JSON.stringify(message, null, 2)}</pre>`;
+            responseEl.style.display = 'block';
+        }
+
+        // 隐藏响应
+        function hideResponse() {
+            document.getElementById('response').style.display = 'none';
+        }
+
+        // 清空表单
+        function clearForm() {
+            document.getElementById('featuredForm').reset();
+            hideResponse();
+        }
+
+        // 目标类型变更处理
+        document.getElementById('targetType').addEventListener('change', function() {
+            const targetType = this.value;
+            const targetIdField = document.getElementById('targetId');
+            const targetUrlField = document.getElementById('targetUrl');
+
+            if (targetType === 'external') {
+                targetIdField.required = false;
+                targetIdField.disabled = true;
+                targetUrlField.required = true;
+                targetUrlField.disabled = false;
+            } else {
+                targetIdField.required = true;
+                targetIdField.disabled = false;
+                targetUrlField.required = false;
+                targetUrlField.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

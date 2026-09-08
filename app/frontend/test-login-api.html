@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录API测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .input-group input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        button.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .result h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+            border: 1px solid #e0e0e0;
+        }
+        .loading {
+            color: #667eea;
+            font-weight: 500;
+        }
+        .error {
+            color: #f5576c;
+            padding: 15px;
+            background: #fff5f5;
+            border-radius: 8px;
+            border-left: 4px solid #f5576c;
+        }
+        .success {
+            color: #00c853;
+            padding: 15px;
+            background: #f1f8f4;
+            border-radius: 8px;
+            border-left: 4px solid #00c853;
+        }
+        .warning {
+            color: #fa8c16;
+            padding: 15px;
+            background: #fff7e6;
+            border-radius: 8px;
+            border-left: 4px solid #fa8c16;
+        }
+        .info-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .info-card h5 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .info-card p {
+            color: #666;
+            font-size: 13px;
+            margin: 4px 0;
+        }
+        .captcha-image {
+            max-width: 200px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .token-display {
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .stat-card .value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 登录API测试工具</h1>
+            <p>测试后端认证API的连通性和功能完整性</p>
+        </div>
+
+        <div class="content">
+            <!-- API配置 -->
+            <div class="section">
+                <h3>⚙️ API配置</h3>
+                <div class="input-group">
+                    <label for="api-base-input">后端API地址：</label>
+                    <input type="text" id="api-base-input" value="https://mp.dayilive.com/api/users" placeholder="https://mp.dayilive.com/api/users">
+                </div>
+                <p style="margin-top: 10px; color: #666; font-size: 13px;">
+                    💡 测试账号：testuser / Test@123<br>
+                    💡 如需修改后端地址，请在上方输入框中编辑
+                </p>
+            </div>
+
+            <!-- 第1步：获取验证码 -->
+            <div class="section">
+                <h3>🔢 第1步：获取图形验证码</h3>
+                <div class="button-group">
+                    <button onclick="testGetCaptcha()">获取验证码</button>
+                    <button class="secondary" onclick="clearResult('captcha-result')">清空结果</button>
+                </div>
+                <div id="captcha-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第2步：用户登录 -->
+            <div class="section">
+                <h3>🔑 第2步：用户登录</h3>
+                <div class="input-group">
+                    <label for="username-input">用户名/邮箱/手机号：</label>
+                    <input type="text" id="username-input" value="testuser" placeholder="testuser">
+                </div>
+                <div class="input-group">
+                    <label for="password-input">密码：</label>
+                    <input type="password" id="password-input" value="Test@123" placeholder="Test@123">
+                </div>
+                <div class="input-group">
+                    <label for="captcha-solution-input">验证码（来自第1步）：</label>
+                    <input type="text" id="captcha-solution-input" placeholder="1234" maxlength="4">
+                </div>
+                <div class="button-group">
+                    <button onclick="testLogin()">登录</button>
+                    <button class="secondary" onclick="clearResult('login-result')">清空结果</button>
+                </div>
+                <div id="login-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第3步：获取用户信息 -->
+            <div class="section">
+                <h3>👤 第3步：获取当前用户信息</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    需要先登录获取Access Token
+                </p>
+                <div class="button-group">
+                    <button onclick="testGetCurrentUser()">获取用户信息</button>
+                    <button class="secondary" onclick="clearResult('user-result')">清空结果</button>
+                </div>
+                <div id="user-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第4步：刷新Token -->
+            <div class="section">
+                <h3>🔄 第4步：刷新Access Token</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    使用Refresh Token获取新的Access Token（需要先登录）
+                </p>
+                <div class="button-group">
+                    <button onclick="testRefreshToken()">刷新Token</button>
+                    <button class="secondary" onclick="clearResult('refresh-result')">清空结果</button>
+                </div>
+                <div id="refresh-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第5步：登出 -->
+            <div class="section">
+                <h3>🚪 第5步：用户登出</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    需要Access Token（需要先登录）
+                </p>
+                <div class="button-group">
+                    <button class="danger" onclick="testLogout()">登出</button>
+                    <button class="secondary" onclick="clearResult('logout-result')">清空结果</button>
+                </div>
+                <div id="logout-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第6步：接口连通性诊断 -->
+            <div class="section" style="border-left-color: #fa8c16;">
+                <h3>🔍 第6步：接口连通性诊断</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    快速检测所有接口是否可访问（不验证功能，只检查HTTP状态）
+                </p>
+                <div class="button-group">
+                    <button class="secondary" onclick="testAllEndpoints()">🩺 诊断所有接口</button>
+                    <button class="secondary" onclick="clearResult('diagnostic-result')">清空结果</button>
+                </div>
+                <div id="diagnostic-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第7步：一键完整测试 -->
+            <div class="section" style="border-left-color: #00c853;">
+                <h3>🚀 第7步：一键完整流程测试</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    自动执行：获取验证码 → 登录 → 获取用户信息 → 刷新Token → 登出
+                </p>
+                <div class="button-group">
+                    <button class="success" onclick="testFullFlow()">🎯 一键测试完整流程</button>
+                    <button class="secondary" onclick="clearResult('full-flow-result')">清空结果</button>
+                </div>
+                <div id="full-flow-result" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局状态
+        let currentCaptchaId = '';
+        let currentAccessToken = '';
+        let currentRefreshToken = '';
+
+        function getApiBase() {
+            return document.getElementById('api-base-input').value.trim();
+        }
+
+        // 工具函数：发送API请求
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    data = { raw: text };
+                }
+
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                };
+            } catch (error) {
+                return {
+                    ok: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // 清空结果
+        function clearResult(elementId) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'none';
+            el.innerHTML = '';
+        }
+
+        // 显示结果
+        function showResult(elementId, html) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.innerHTML = html;
+        }
+
+        // 诊断所有接口连通性
+        async function testAllEndpoints() {
+            const resultDiv = 'diagnostic-result';
+            const API_BASE = getApiBase();
+            
+            showResult(resultDiv, '<p class="loading">⏳ 正在诊断所有接口...</p>');
+
+            const endpoints = [
+                { name: '获取验证码', method: 'GET', url: `${API_BASE}/auth/captcha` },
+                { name: '用户登录', method: 'POST', url: `${API_BASE}/auth/login`, body: {} },
+                { name: '获取用户信息', method: 'GET', url: `${API_BASE}/users/me` },
+                { name: '刷新Token', method: 'POST', url: `${API_BASE}/auth/refresh`, body: {} },
+                { name: '用户登出', method: 'POST', url: `${API_BASE}/auth/logout`, body: {} }
+            ];
+
+            let html = '<h4>🔍 接口连通性诊断报告</h4>';
+            let totalOk = 0;
+            let totalFailed = 0;
+
+            for (const endpoint of endpoints) {
+                const startTime = Date.now();
+                const result = await apiRequest(endpoint.url, {
+                    method: endpoint.method,
+                    body: endpoint.body ? JSON.stringify(endpoint.body) : undefined
+                });
+                const duration = Date.now() - startTime;
+
+                const status = result.status || 'Network Error';
+                const isOk = result.ok || (result.status >= 200 && result.status < 500); // 4xx也算可达
+
+                if (isOk) totalOk++;
+                else totalFailed++;
+
+                const statusColor = result.ok ? '#00c853' : 
+                                   (result.status >= 400 && result.status < 500) ? '#fa8c16' : '#f5576c';
+
+                html += `
+                    <div class="info-card" style="border-left: 4px solid ${statusColor};">
+                        <h5>${isOk ? '✅' : '❌'} ${endpoint.name}</h5>
+                        <p><strong>接口：</strong><code>${endpoint.method} ${endpoint.url.replace(API_BASE, '')}</code></p>
+                        <p><strong>状态：</strong><span style="color: ${statusColor}; font-weight: bold;">${status}</span></p>
+                        <p><strong>响应时间：</strong>${duration}ms</p>
+                        ${!isOk ? `<p style="color: #f5576c;"><strong>错误：</strong>${result.error || result.statusText || '未知错误'}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="stats">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #00c853 0%, #00e676 100%);">
+                        <div class="label">可访问</div>
+                        <div class="value">${totalOk} / ${endpoints.length}</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f5576c 0%, #ff6b6b 100%);">
+                        <div class="label">不可访问</div>
+                        <div class="value">${totalFailed} / ${endpoints.length}</div>
+                    </div>
+                </div>
+            `;
+
+            if (totalFailed > 0) {
+                html += `
+                    <div class="warning" style="margin-top: 20px;">
+                        <h4>⚠️ 部分接口不可访问</h4>
+                        <p style="margin-top: 10px;">可能的原因：</p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>后端服务部分功能未启动</li>
+                            <li>API路由配置问题</li>
+                            <li>502 Bad Gateway: 后端服务崩溃或nginx配置错误</li>
+                            <li>CORS跨域限制</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="success" style="margin-top: 20px;">
+                        <h4>✅ 所有接口均可访问！</h4>
+                        <p style="margin-top: 10px;">可以进行功能测试了</p>
+                    </div>
+                `;
+            }
+
+            showResult(resultDiv, html);
+        }
+
+        // 测试1：获取验证码
+        async function testGetCaptcha() {
+            const resultDiv = 'captcha-result';
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取验证码...</p>');
+
+            const API_BASE = getApiBase();
+            const result = await apiRequest(`${API_BASE}/auth/captcha`);
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 获取验证码失败</h4>
+                        <p><strong>状态码：</strong>${result.status || 'Network Error'}</p>
+                        <p><strong>错误信息：</strong>${result.error || result.statusText || '未知错误'}</p>
+                        <p style="margin-top: 10px;">可能的原因：</p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>后端服务未启动（确认 ${API_BASE} 是否可访问）</li>
+                            <li>CORS跨域限制（后端需配置允许跨域）</li>
+                            <li>API路径错误（检查 /auth/captcha 是否存在）</li>
+                        </ul>
+                    </div>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `);
+                return;
+            }
+
+            const responseData = result.data.data || result.data;
+            currentCaptchaId = responseData.captcha_id;
+            const imageBase64 = responseData.image_base64;
+
+            if (!currentCaptchaId || !imageBase64) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>⚠️ 验证码数据格式错误</h4>
+                        <p>API返回成功，但数据格式不符合预期</p>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                    </div>
+                `);
+                return;
+            }
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ 验证码获取成功！</h4>
+                </div>
+                <div class="info-card">
+                    <h5>📋 验证码信息</h5>
+                    <p><strong>验证码ID：</strong><code>${currentCaptchaId}</code></p>
+                    <p style="margin-top: 10px;"><strong>验证码图片：</strong></p>
+                    <img src="${imageBase64}" class="captcha-image" alt="验证码">
+                    <p style="margin-top: 10px; color: #fa8c16;">
+                        💡 请手动识别验证码，并在第2步中填入
+                    </p>
+                </div>
+                <h4 style="margin-top: 20px;">完整响应：</h4>
+                <pre>${JSON.stringify(result.data, null, 2)}</pre>
+            `);
+
+            // 自动填充captcha_id到登录表单（如果可能）
+            // document.getElementById('captcha-id-input').value = currentCaptchaId;
+        }
+
+        // 测试2：用户登录
+        async function testLogin() {
+            const resultDiv = 'login-result';
+            const username = document.getElementById('username-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            const captchaSolution = document.getElementById('captcha-solution-input').value.trim();
+
+            if (!username || !password) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 请填写用户名和密码</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            if (!currentCaptchaId) {
+                showResult(resultDiv, `
+                    <div class="warning">
+                        <h4>⚠️ 请先获取验证码（第1步）</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            if (!captchaSolution) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 请输入验证码</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 正在登录...</p>');
+
+            const API_BASE = getApiBase();
+            const result = await apiRequest(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    captcha_id: currentCaptchaId,
+                    captcha_solution: captchaSolution
+                })
+            });
+
+            if (!result.ok) {
+                const errorData = result.data;
+                const errorCode = errorData.code;
+                const errorMessage = errorData.message || result.statusText;
+
+                let errorHint = '';
+                if (errorCode === 3001) {
+                    errorHint = '<p style="color: #f5576c;">💡 验证码错误或已过期，请重新获取验证码</p>';
+                } else if (errorCode === 4003) {
+                    errorHint = '<p style="color: #f5576c;">💡 用户名或密码错误</p>';
+                } else if (result.status === 429) {
+                    errorHint = '<p style="color: #f5576c;">💡 请求过于频繁，请稍后再试</p>';
+                }
+
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 登录失败</h4>
+                        <p><strong>状态码：</strong>${result.status}</p>
+                        <p><strong>错误码：</strong>${errorCode || '无'}</p>
+                        <p><strong>错误信息：</strong>${errorMessage}</p>
+                        ${errorHint}
+                    </div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `);
+                return;
+            }
+
+            const responseData = result.data.data || result.data;
+            currentAccessToken = responseData.access_token;
+            currentRefreshToken = responseData.refresh_token;
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ 登录成功！</h4>
+                </div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="label">Token类型</div>
+                        <div class="value">${responseData.token_type || 'bearer'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Access Token长度</div>
+                        <div class="value">${currentAccessToken.length} 字符</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Refresh Token长度</div>
+                        <div class="value">${currentRefreshToken.length} 字符</div>
+                    </div>
+                </div>
+                <div class="info-card" style="margin-top: 15px;">
+                    <h5>🔑 Access Token</h5>
+                    <div class="token-display">${currentAccessToken}</div>
+                </div>
+                <div class="info-card">
+                    <h5>🔄 Refresh Token</h5>
+                    <div class="token-display">${currentRefreshToken}</div>
+                </div>
+                <p style="margin-top: 15px; color: #00c853;">
+                    💡 Token已保存，可以继续测试第3、4、5步
+                </p>
+                <h4 style="margin-top: 20px;">完整响应：</h4>
+                <pre>${JSON.stringify(result.data, null, 2)}</pre>
+            `);
+        }
+
+        // 测试3：获取用户信息
+        async function testGetCurrentUser() {
+            const resultDiv = 'user-result';
+
+            if (!currentAccessToken) {
+                showResult(resultDiv, `
+                    <div class="warning">
+                        <h4>⚠️ 请先登录（第2步）</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取用户信息...</p>');
+
+            const API_BASE = getApiBase();
+            const result = await apiRequest(`${API_BASE}/users/me`, {
+                headers: {
+                    'Authorization': `Bearer ${currentAccessToken}`
+                }
+            });
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 获取用户信息失败</h4>
+                        <p><strong>状态码：</strong>${result.status}</p>
+                        <p><strong>错误信息：</strong>${result.data.message || result.statusText}</p>
+                        ${result.status === 401 ? '<p style="color: #f5576c;">💡 Token已失效，请重新登录</p>' : ''}
+                    </div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `);
+                return;
+            }
+
+            const user = result.data.data || result.data;
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ 获取用户信息成功！</h4>
+                </div>
+                <div class="info-card">
+                    <h5>👤 用户信息</h5>
+                    <p><strong>用户ID：</strong><code>${user.uuid || user.user_id}</code></p>
+                    <p><strong>用户名：</strong>${user.username}</p>
+                    <p><strong>邮箱：</strong>${user.email}</p>
+                    <p><strong>昵称：</strong>${user.nickname || '无'}</p>
+                    <p><strong>角色：</strong><span style="color: #667eea; font-weight: bold;">${user.role}</span></p>
+                    <p><strong>状态：</strong><span style="color: ${user.status === 'NORMAL' ? '#00c853' : '#f5576c'};">${user.status}</span></p>
+                    <p><strong>邮箱验证：</strong>${user.is_email_verified ? '✅ 已验证' : '❌ 未验证'}</p>
+                </div>
+                <h4 style="margin-top: 20px;">完整用户数据：</h4>
+                <pre>${JSON.stringify(user, null, 2)}</pre>
+            `);
+        }
+
+        // 测试4：刷新Token
+        async function testRefreshToken() {
+            const resultDiv = 'refresh-result';
+
+            if (!currentRefreshToken) {
+                showResult(resultDiv, `
+                    <div class="warning">
+                        <h4>⚠️ 请先登录（第2步）</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 正在刷新Token...</p>');
+
+            const API_BASE = getApiBase();
+            const result = await apiRequest(`${API_BASE}/auth/refresh`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    refresh_token: currentRefreshToken
+                })
+            });
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 刷新Token失败</h4>
+                        <p><strong>状态码：</strong>${result.status}</p>
+                        <p><strong>错误信息：</strong>${result.data.message || result.statusText}</p>
+                        ${result.status === 401 ? '<p style="color: #f5576c;">💡 Refresh Token已失效，请重新登录</p>' : ''}
+                    </div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `);
+                return;
+            }
+
+            const responseData = result.data.data || result.data;
+            const oldAccessToken = currentAccessToken;
+            currentAccessToken = responseData.access_token;
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ Token刷新成功！</h4>
+                </div>
+                <div class="info-card">
+                    <h5>🔄 新Access Token</h5>
+                    <div class="token-display">${currentAccessToken}</div>
+                </div>
+                <div class="info-card">
+                    <h5>🔑 旧Access Token（已失效）</h5>
+                    <div class="token-display" style="opacity: 0.5;">${oldAccessToken}</div>
+                </div>
+                <p style="margin-top: 15px; color: #00c853;">
+                    💡 新Token已保存，可以继续使用
+                </p>
+                <h4 style="margin-top: 20px;">完整响应：</h4>
+                <pre>${JSON.stringify(result.data, null, 2)}</pre>
+            `);
+        }
+
+        // 测试5：登出
+        async function testLogout() {
+            const resultDiv = 'logout-result';
+
+            if (!currentAccessToken) {
+                showResult(resultDiv, `
+                    <div class="warning">
+                        <h4>⚠️ 请先登录（第2步）</h4>
+                    </div>
+                `);
+                return;
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 正在登出...</p>');
+
+            const API_BASE = getApiBase();
+            const result = await apiRequest(`${API_BASE}/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${currentAccessToken}`
+                }
+            });
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 登出失败</h4>
+                        <p><strong>状态码：</strong>${result.status}</p>
+                        <p><strong>错误信息：</strong>${result.data.message || result.statusText}</p>
+                    </div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `);
+                return;
+            }
+
+            // 清除本地Token
+            currentAccessToken = '';
+            currentRefreshToken = '';
+            currentCaptchaId = '';
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ 登出成功！</h4>
+                    <p style="margin-top: 10px;">所有Token已清除，请重新登录</p>
+                </div>
+                <h4 style="margin-top: 20px;">完整响应：</h4>
+                <pre>${JSON.stringify(result.data, null, 2)}</pre>
+            `);
+        }
+
+        // 测试6：一键完整流程
+        async function testFullFlow() {
+            const resultDiv = 'full-flow-result';
+            let logs = [];
+
+            function addLog(message, type = 'info') {
+                logs.push({ message, type, time: new Date().toLocaleTimeString() });
+                updateLogs();
+            }
+
+            function updateLogs() {
+                let html = '<div style="font-family: monospace; font-size: 12px;">';
+                logs.forEach(log => {
+                    const color = log.type === 'error' ? '#f5576c' : 
+                                  log.type === 'success' ? '#00c853' : 
+                                  log.type === 'warning' ? '#fa8c16' : '#667eea';
+                    html += `<p style="color: ${color}; margin: 5px 0;">[${log.time}] ${log.message}</p>`;
+                });
+                html += '</div>';
+                showResult(resultDiv, html);
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 开始完整流程测试...</p>');
+            addLog('🚀 开始完整流程测试');
+
+            const API_BASE = getApiBase();
+
+            // 步骤1：获取验证码
+            addLog('📡 步骤1: 获取验证码...');
+            const captchaResult = await apiRequest(`${API_BASE}/auth/captcha`);
+
+            if (!captchaResult.ok) {
+                addLog(`❌ 步骤1失败: ${captchaResult.error || captchaResult.status}`, 'error');
+                addLog('💡 建议: 检查后端服务是否正常运行', 'error');
+                return;
+            }
+
+            const captchaData = captchaResult.data.data || captchaResult.data;
+            currentCaptchaId = captchaData.captcha_id;
+            addLog(`✅ 步骤1成功: 验证码ID = ${currentCaptchaId}`, 'success');
+            addLog(`⚠️  请手动识别验证码并继续...`, 'warning');
+
+            // 显示验证码图片
+            updateLogs();
+            const currentHtml = document.getElementById(resultDiv).innerHTML;
+            showResult(resultDiv, currentHtml + `
+                <div class="info-card" style="margin-top: 15px;">
+                    <h5>🔢 验证码图片</h5>
+                    <img src="${captchaData.image_base64}" class="captcha-image" alt="验证码">
+                    <p style="margin-top: 10px; color: #fa8c16;">
+                        ⚠️ 自动测试暂停：请手动识别验证码<br>
+                        识别后，请填入下方输入框并点击"继续测试"按钮
+                    </p>
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label for="auto-captcha-input">验证码：</label>
+                        <input type="text" id="auto-captcha-input" placeholder="请输入验证码" maxlength="4">
+                    </div>
+                    <button class="success" onclick="continueFullFlow()">继续测试</button>
+                </div>
+            `);
+        }
+
+        // 继续完整流程测试
+        async function continueFullFlow() {
+            const captchaSolution = document.getElementById('auto-captcha-input').value.trim();
+            
+            if (!captchaSolution) {
+                alert('请输入验证码');
+                return;
+            }
+
+            const resultDiv = 'full-flow-result';
+            let logs = [];
+
+            function addLog(message, type = 'info') {
+                logs.push({ message, type, time: new Date().toLocaleTimeString() });
+                updateLogs();
+            }
+
+            function updateLogs() {
+                let html = '<div style="font-family: monospace; font-size: 12px;">';
+                logs.forEach(log => {
+                    const color = log.type === 'error' ? '#f5576c' : 
+                                  log.type === 'success' ? '#00c853' : 
+                                  log.type === 'warning' ? '#fa8c16' : '#667eea';
+                    html += `<p style="color: ${color}; margin: 5px 0;">[${log.time}] ${log.message}</p>`;
+                });
+                html += '</div>';
+                showResult(resultDiv, html);
+            }
+
+            const API_BASE = getApiBase();
+            const username = 'testuser';
+            const password = 'Test@123';
+
+            addLog('🔄 继续完整流程测试...');
+
+            // 步骤2：登录
+            addLog('📡 步骤2: 登录...');
+            const loginResult = await apiRequest(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    captcha_id: currentCaptchaId,
+                    captcha_solution: captchaSolution
+                })
+            });
+
+            if (!loginResult.ok) {
+                const errorData = loginResult.data;
+                addLog(`❌ 步骤2失败: ${errorData.message || loginResult.statusText}`, 'error');
+                if (errorData.code === 3001) {
+                    addLog('💡 验证码错误，请重新开始测试', 'error');
+                }
+                return;
+            }
+
+            const loginData = loginResult.data.data || loginResult.data;
+            currentAccessToken = loginData.access_token;
+            currentRefreshToken = loginData.refresh_token;
+            addLog(`✅ 步骤2成功: 登录成功`, 'success');
+
+            // 步骤3：获取用户信息
+            addLog('📡 步骤3: 获取用户信息...');
+            const userResult = await apiRequest(`${API_BASE}/users/me`, {
+                headers: {
+                    'Authorization': `Bearer ${currentAccessToken}`
+                }
+            });
+
+            if (!userResult.ok) {
+                addLog(`❌ 步骤3失败: ${userResult.data.message || userResult.statusText}`, 'error');
+                return;
+            }
+
+            const user = userResult.data.data || userResult.data;
+            addLog(`✅ 步骤3成功: 获取到用户 "${user.username}" (${user.role})`, 'success');
+
+            // 步骤4：刷新Token
+            addLog('📡 步骤4: 刷新Token...');
+            const refreshResult = await apiRequest(`${API_BASE}/auth/refresh`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    refresh_token: currentRefreshToken
+                })
+            });
+
+            if (!refreshResult.ok) {
+                addLog(`❌ 步骤4失败: ${refreshResult.data.message || refreshResult.statusText}`, 'error');
+                return;
+            }
+
+            const newToken = refreshResult.data.data || refreshResult.data;
+            currentAccessToken = newToken.access_token;
+            addLog(`✅ 步骤4成功: Token刷新成功`, 'success');
+
+            // 步骤5：登出
+            addLog('📡 步骤5: 登出...');
+            const logoutResult = await apiRequest(`${API_BASE}/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${currentAccessToken}`
+                }
+            });
+
+            if (!logoutResult.ok) {
+                addLog(`❌ 步骤5失败: ${logoutResult.data.message || logoutResult.statusText}`, 'error');
+                return;
+            }
+
+            addLog(`✅ 步骤5成功: 登出成功`, 'success');
+            addLog('🎉 完整流程测试成功！所有API正常工作', 'success');
+
+            // 清除Token
+            currentAccessToken = '';
+            currentRefreshToken = '';
+            currentCaptchaId = '';
+
+            // 显示完整结果
+            updateLogs();
+            const currentHtml = document.getElementById(resultDiv).innerHTML;
+            showResult(resultDiv, currentHtml + `
+                <div class="success" style="margin-top: 20px; padding: 20px;">
+                    <h4>🎉 完整流程测试成功！</h4>
+                    <p style="margin-top: 10px;">所有认证API均正常工作：</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✅ GET /auth/captcha - 获取验证码</li>
+                        <li>✅ POST /auth/login - 用户登录</li>
+                        <li>✅ GET /users/me - 获取用户信息</li>
+                        <li>✅ POST /auth/refresh - 刷新Token</li>
+                        <li>✅ POST /auth/logout - 用户登出</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #00c853; font-weight: bold;">
+                        🚀 前端可以安全地调用这些API！
+                    </p>
+                </div>
+            `);
+        }
+    </script>
+</body>
+</html>

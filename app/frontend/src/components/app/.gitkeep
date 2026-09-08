@@ -1,0 +1,6 @@
+# App专属组件目录
+
+存放App平台（Android/iOS）专属的组件
+
+## 组件列表
+- VideoPlayerApp.vue - App视频播放器（基于原生video）

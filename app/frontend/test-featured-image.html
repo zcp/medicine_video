@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>焦点图封面测试</title>
+  <style>
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #1890ff;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+    .section h3 {
+      margin-top: 0;
+      color: #1890ff;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .image-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+    .image-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    .image-card .info {
+      padding: 10px;
+    }
+    .image-card .title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    .image-card .url {
+      font-size: 12px;
+      color: #666;
+      word-break: break-all;
+      margin: 5px 0;
+    }
+    .image-card .status {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .status.success {
+      background: #52c41a;
+      color: white;
+    }
+    .status.error {
+      background: #f5222d;
+      color: white;
+    }
+    .status.loading {
+      background: #faad14;
+      color: white;
+    }
+    .env-info {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .env-info pre {
+      margin: 5px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    button {
+      background: #1890ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #40a9ff;
+    }
+    .log {
+      background: #000;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    .log-entry {
+      margin: 2px 0;
+    }
+    .log-error { color: #f5222d; }
+    .log-success { color: #52c41a; }
+    .log-warn { color: #faad14; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🖼️ 焦点图封面诊断工具</h1>
+    
+    <!-- 环境信息 -->
+    <div class="section">
+      <h3>📋 环境配置检测</h3>
+      <div class="env-info">
+        <div><strong>当前页面URL：</strong><span id="currentUrl"></span></div>
+        <div><strong>推断的Base URL：</strong><span id="baseUrl"></span></div>
+        <div><strong>测试域名：</strong></div>
+        <pre id="testDomains"></pre>
+      </div>
+      <button onclick="detectEnv()">🔍 重新检测环境</button>
+    </div>
+
+    <!-- API数据 -->
+    <div class="section">
+      <h3>📡 焦点图API数据</h3>
+      <button onclick="loadFeaturedData()">🔄 加载焦点图数据</button>
+      <button onclick="testAllUrls()">🧪 测试所有URL</button>
+      <div class="log" id="apiLog"></div>
+    </div>
+
+    <!-- 图片展示 -->
+    <div class="section">
+      <h3>🎨 封面图片测试</h3>
+      <div id="imageGrid" class="image-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // 实际API返回的数据（用户提供的）
+    const featuredData = [
+      {
+        "title": "年度医学峰会",
+        "subtitle": null,
+        "image_url": "/media/featured_content/0b6de235-8260-447a-946f-21c10ec00462/image_1770211927.jpg",
+        "target_type": "room",
+        "target_id": "2eb51291-6a13-490b-9fa7-5b76c5d68736",
+        "id": "0b6de235-8260-447a-946f-21c10ec00462",
+        "sort_order": 0
+      },
+      {
+        "title": "年度医学峰会",
+        "subtitle": null,
+        "image_url": "/media/featured_content/5f9ffa79-f8bf-43fd-b884-9803e7d1ae88/image_1770211949.jpg",
+        "target_type": "room",
+        "target_id": "2eb51291-6a13-490b-9fa7-5b76c5d68736",
+        "id": "5f9ffa79-f8bf-43fd-b884-9803e7d1ae88",
+        "sort_order": 1
+      },
+      {
+        "title": "心脏病手术讨论会",
+        "subtitle": "立即预约",
+        "image_url": "/media/featured_content/98b0d47b-7c10-48ba-99fd-0656b4e6e613/image_1770211958.jpg",
+        "target_type": "room",
+        "target_id": "c9f2c234-7251-40ec-8d8a-a176c1cdeb32",
+        "id": "98b0d47b-7c10-48ba-99fd-0656b4e6e613",
+        "sort_order": 2
+      },
+      {
+        "title": "专家新年经验总结分享会",
+        "subtitle": null,
+        "image_url": "/media/featured_content/b5b133a3-05c1-42fa-9e93-46bd32472d64/image_1770211967.jpg",
+        "target_type": "room",
+        "target_id": "01487334-85fa-4d86-9e0f-67414711f915",
+        "id": "b5b133a3-05c1-42fa-9e93-46bd32472d64",
+        "sort_order": 3
+      }
+    ];
+
+    // 可能的域名（根据你的实际情况调整）
+    const possibleDomains = [
+      'https://mp.dayilive.com',
+      'http://localhost:8000',
+      'http://127.0.0.1:8000',
+    ];
+
+    let logContainer;
+
+    function log(message, type = 'info') {
+      if (!logContainer) logContainer = document.getElementById('apiLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function detectEnv() {
+      const currentUrl = window.location.href;
+      document.getElementById('currentUrl').textContent = currentUrl;
+      
+      // 推断base URL
+      const url = new URL(currentUrl);
+      const baseUrl = `${url.protocol}//${url.host}`;
+      document.getElementById('baseUrl').textContent = baseUrl;
+      
+      document.getElementById('testDomains').textContent = possibleDomains.join('\n');
+      
+      log('环境检测完成', 'success');
+    }
+
+    function loadFeaturedData() {
+      log('使用静态数据（已提供的API返回）', 'info');
+      log(`共 ${featuredData.length} 条焦点图数据`, 'success');
+      
+      featuredData.forEach((item, index) => {
+        log(`${index + 1}. ${item.title} - ${item.image_url}`, 'info');
+      });
+      
+      renderImages();
+    }
+
+    function resolveImageUrl(relativeUrl, domain) {
+      if (!relativeUrl) return '';
+      if (relativeUrl.startsWith('http')) return relativeUrl;
+      if (relativeUrl.startsWith('//')) return 'https:' + relativeUrl;
+      return domain + relativeUrl;
+    }
+
+    function renderImages() {
+      const grid = document.getElementById('imageGrid');
+      grid.innerHTML = '';
+      
+      featuredData.forEach(item => {
+        possibleDomains.forEach(domain => {
+          const card = createImageCard(item, domain);
+          grid.appendChild(card);
+        });
+      });
+    }
+
+    function createImageCard(item, domain) {
+      const card = document.createElement('div');
+      card.className = 'image-card';
+      
+      const fullUrl = resolveImageUrl(item.image_url, domain);
+      
+      card.innerHTML = `
+        <img src="${fullUrl}" alt="${item.title}" 
+          onload="onImageLoad(this)" 
+          onerror="onImageError(this)">
+        <div class="info">
+          <div class="title">${item.title}</div>
+          ${item.subtitle ? `<div style="color: #1890ff; font-size: 12px;">CTA: ${item.subtitle}</div>` : ''}
+          <div class="url"><strong>域名：</strong>${domain}</div>
+          <div class="url"><strong>完整URL：</strong>${fullUrl}</div>
+          <span class="status loading">加载中...</span>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    function onImageLoad(img) {
+      const status = img.parentElement.querySelector('.status');
+      status.textContent = '✅ 加载成功';
+      status.className = 'status success';
+      log(`图片加载成功: ${img.src}`, 'success');
+    }
+
+    function onImageError(img) {
+      const status = img.parentElement.querySelector('.status');
+      status.textContent = '❌ 加载失败';
+      status.className = 'status error';
+      log(`图片加载失败: ${img.src}`, 'error');
+      
+      // 显示占位图
+      img.style.display = 'none';
+      const placeholder = document.createElement('div');
+      placeholder.style.cssText = 'width:100%;height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;';
+      placeholder.textContent = '图片加载失败';
+      img.parentElement.insertBefore(placeholder, img);
+    }
+
+    async function testAllUrls() {
+      log('开始测试所有URL...', 'info');
+      
+      for (const item of featuredData) {
+        log(`\n测试: ${item.title}`, 'info');
+        
+        for (const domain of possibleDomains) {
+          const fullUrl = resolveImageUrl(item.image_url, domain);
+          
+          try {
+            const response = await fetch(fullUrl, { method: 'HEAD' });
+            if (response.ok) {
+              log(`  ✅ ${domain} - 成功 (${response.status})`, 'success');
+            } else {
+              log(`  ❌ ${domain} - 失败 (${response.status})`, 'error');
+            }
+          } catch (error) {
+            log(`  ❌ ${domain} - 错误: ${error.message}`, 'error');
+          }
+        }
+      }
+      
+      log('\n测试完成！', 'success');
+    }
+
+    // 页面加载时自动执行
+    window.onload = function() {
+      detectEnv();
+      loadFeaturedData();
+    };
+  </script>
+</body>
+</html>

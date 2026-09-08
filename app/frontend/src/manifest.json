@@ -1,0 +1,95 @@
+{
+    "name" : "LiveSaaS",
+    "appid" : "__UNI__1A0301F",
+    "description" : "直播SaaS平台移动端应用",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "app-plus" : {
+        "compatible" : {
+            "ignoreVersion" : true
+        },
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        "modules" : {
+            "VideoPlayer" : {
+                "description" : "视频播放模块 - 直播观看必需"
+            },
+            "LivePlayer" : {
+                "description" : "直播播放器模块 - 外部流直播播放（V15）"
+            },
+            "Camera" : {
+                "description" : "相机模块 - 推流功能需要"
+            },
+            "Gallery" : {
+                "description" : "相册模块 - 封面上传需要（uni.chooseImage）"
+            },
+            "LivePusher" : {
+                "description" : "推流模块 - 直播推流功能（未来使用）"
+            },
+            "OAuth" : {}
+        },
+        "distribute" : {
+            "android" : {
+                "permissions" : [
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>"
+                ],
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a" ],
+                "minSdkVersion" : 21,
+                "targetSdkVersion" : 33,
+                "packagename" : "com.livesaas.app",
+                "networkSecurityConfig" : "./hybrid/html/network_security_config.xml"
+            },
+            "ios" : {
+                "dSYMs" : false,
+                "privacyDescription" : {
+                    "NSPhotoLibraryUsageDescription" : "需要访问相册以选择直播封面图片",
+                    "NSPhotoLibraryAddUsageDescription" : "需要保存图片到相册",
+                    "NSCameraUsageDescription" : "需要使用相机拍摄直播封面或进行直播推流",
+                    "NSMicrophoneUsageDescription" : "需要使用麦克风进行直播推流和语音互动"
+                },
+                "idfa" : false,
+                "bundle" : "com.livesaas.app"
+            },
+            "sdkConfigs" : {
+                "oauth" : {
+                    "univerify" : {}
+                }
+            }
+        }
+    },
+    "mp-weixin" : {
+        "appid" : "wxfa6bac37fec625a8",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "usingComponents" : true
+    },
+    "h5" : {
+        "template" : "index.html",
+        "router" : {
+            "mode" : "hash"
+        },
+        "title" : "LiveSaaS"
+    },
+    "vueVersion" : "3",
+    "locale" : "auto",
+    "fallbackLocale" : "zh-Hans"
+}
