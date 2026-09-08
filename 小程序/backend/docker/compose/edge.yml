@@ -1,0 +1,40 @@
+# SRS 流媒体 + Nginx 反向代理（Linux/服务器默认）
+
+services:
+  srs:
+    image: ossrs/srs:6
+    restart: unless-stopped
+    ports:
+      - "1935:1935"
+    volumes:
+      - ../../data/srs:/usr/local/srs/objs/nginx/html
+      - ../../logs/srs:/var/log/srs
+      - ../../srs/srs.conf:/usr/local/srs/conf/srs.conf:ro
+    entrypoint: ["./objs/srs", "-c", "/usr/local/srs/conf/srs.conf"]
+    networks:
+      - live-network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - /var/www/html/user-service:/var/www/html/user-service:ro
+      - /var/www/html/media-download:/var/www/html/media-download:ro
+      - /var/www/html/live-center:/var/www/html/live-center:ro
+      - /var/www/html/live-core-media:/var/www/html/live-core-media:ro
+      - ../../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../../nginx/ssl:/etc/nginx/ssl:ro
+      - ../../data/srs:/var/www/srs:ro
+      - /var/www/mp.dayilive.com:/var/www/mp.dayilive.com:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - srs
+      - live_core_service
+      - media_download_service
+      - user_service
+    networks:
+      - live-network

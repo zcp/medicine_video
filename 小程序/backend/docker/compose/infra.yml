@@ -1,0 +1,42 @@
+# PostgreSQL + Redis（带 healthcheck）
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - ../../.env.docker
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+      LIVE_CORE_DB: ${LIVE_CORE_DB:-live_core_test}
+      MEDIA_DOWNLOAD_DB: ${MEDIA_DOWNLOAD_DB:-media_download_test}
+      USERS_SERVICE_DB: ${USER_DB:-users_service_test}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../../init-db.sh:/docker-entrypoint-initdb.d/01-init-db.sh:ro
+      - ../../backend/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - live-network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 8
+    networks:
+      - live-network

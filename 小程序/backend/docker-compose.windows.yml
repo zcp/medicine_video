@@ -1,0 +1,9 @@
+# Windows 本地开发覆盖层
+#
+# ⚠️ 必须与 docker-compose.yml 叠加使用，不要单独使用本文件：
+#   docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d
+#
+# 快捷方式: start-dev.bat 或 dc-dev.bat up -d
+
+include:
+  - docker/compose/overrides/windows.yml

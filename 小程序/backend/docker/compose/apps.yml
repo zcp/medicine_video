@@ -1,0 +1,87 @@
+# 后端应用服务
+# 应用配置统一走 env_file: ../../.env.docker
+# 本文件只写编排相关覆盖（容器内主机名、端口、卷、依赖）
+
+x-backend-common: &backend-common
+  restart: unless-stopped
+  env_file:
+    - ../../.env.docker
+  networks:
+    - live-network
+
+x-backend-wait-infra: &backend-wait-infra
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  live_core_service:
+    <<: [*backend-common, *backend-wait-infra]
+    build:
+      context: ../../backend/live_core_service
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_DB: live_core_test
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      ROOM_MEDIA_ROOT_PATH: /app/media
+    volumes:
+      - live-core-media:/app/media
+      # 容器内 pytest：conftest 将仓库 backend 挂到 /backend，供 import backend.users
+      - ../../backend:/backend:ro
+
+  user_service:
+    <<: [*backend-common, *backend-wait-infra]
+    build:
+      context: ../../backend/users
+    ports:
+      - "8002:8002"
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_DB: users_service_test
+      REDIS_URL: redis://redis:6379/0
+      # EMAIL_PROVIDER / SMTP_* / SMS_PROVIDER / WECHAT_* 等
+      # 一律从 env_file（../../.env.docker）注入，勿在此用 ${VAR:-mock}
+      # 覆盖，否则会盖掉 .env.docker 里的 smtp 真发配置
+    volumes:
+      - users-uploads:/app/uploads
+
+  media_download_service:
+    <<: [*backend-common, *backend-wait-infra]
+    build:
+      context: ../../backend/media_download_service
+    ports:
+      - "8001:8001"
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_DB: media_download_test
+    volumes:
+      - media_download:/media_download/storage
+
+  celery_worker:
+    <<: [*backend-common, *backend-wait-infra]
+    build:
+      context: ../../backend/live_core_service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      live_core_service:
+        condition: service_started
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_DB: live_core_test
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    command: >
+      celery -A app.tasks.celery_app worker
+      --include=app.tasks.session_processing
+      -l info
+      -c 10

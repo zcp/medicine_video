@@ -1,0 +1,64 @@
+============================= test session starts =============================
+platform win32 -- Python 3.9.7, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\is99z\PycharmProjects\live-streaming-saas\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.9.7', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '7.4.3', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '3.7.1', 'Faker': '37.4.2', 'asyncio': '0.21.1', 'base-url': '2.1.0', 'cov': '4.1.0', 'env': '1.1.1', 'html': '4.1.1', 'metadata': '3.1.0', 'mock': '3.12.0', 'ordering': '0.6', 'repeat': '0.9.1', 'rerunfailures': '12.0', 'selenium': '4.0.2', 'sugar': '0.9.7', 'timeout': '2.2.0', 'tornasync': '0.6.0.post2', 'trio': '0.8.0', 'twisted': '1.14.3', 'variables': '3.0.0', 'xdist': '3.3.1'}, 'Base URL': '', 'Driver': None, 'Capabilities': {}}
+sensitiveurl: .*
+rootdir: C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service
+configfile: pytest.ini
+plugins: anyio-3.7.1, Faker-37.4.2, asyncio-0.21.1, base-url-2.1.0, cov-4.1.0, env-1.1.1, html-4.1.1, metadata-3.1.0, mock-3.12.0, ordering-0.6, repeat-0.9.1, rerunfailures-12.0, selenium-4.0.2, sugar-0.9.7, timeout-2.2.0, tornasync-0.6.0.post2, trio-0.8.0, twisted-1.14.3, variables-3.0.0, xdist-3.3.1
+asyncio: mode=strict
+collecting ... collected 12 items / 2 errors
+
+=================================== ERRORS ====================================
+_________ ERROR collecting tests/unit/test_service_homepage_search.py _________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_service_homepage_search.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_service_homepage_search.py:13: in <module>
+    from app.services.homepage_search_service import HomepageSearchService
+app\services\homepage_search_service.py:34: in <module>
+    from app.core.logging import get_logger
+E   ModuleNotFoundError: No module named 'app.core.logging'
+_______ ERROR collecting tests/integration/test_api_homepage_search.py ________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\integration\test_api_homepage_search.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_api_homepage_search.py:13: in <module>
+    from app.main import app
+app\main.py:6: in <module>
+    from app.api.v1.api import api_router
+app\api\v1\api.py:11: in <module>
+    from app.api.v1.endpoints import internal, health, experts, user_behavior, user_preference_notification, brand, homepage_search
+app\api\v1\endpoints\homepage_search.py:16: in <module>
+    from app.api.dependencies import get_db, get_current_user
+E   ModuleNotFoundError: No module named 'app.api.dependencies'
+============================== warnings summary ===============================
+app\core\config.py:149
+  C:\\Users\\is99z\\PycharmProjects\\live-streaming-saas\\backend\\live_core_service\\app\\core\\config.py:149: UserWarning: \n  ============================================================\n  \u26a0\ufe0f  \u5f00\u53d1\u73af\u5883\u914d\u7f6e\u8b66\u544a\uff1a\n  \u26a0\ufe0f  \u4f7f\u7528\u9ed8\u8ba4\u6570\u636e\u5e93\u5bc6\u7801 '324zq999'\uff0c\u5efa\u8bae\u5728 .env \u6587\u4ef6\u4e2d\u8bbe\u7f6e\u81ea\u5b9a\u4e49\u5bc6\u7801============================================================\n    warnings.warn(warning_message, UserWarning)
+
+app\api\v1\endpoints\batch_import.py:27
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\api\v1\endpoints\batch_import.py:27: DeprecationWarning: `regex` has been depreacated, please use `pattern` instead
+    mode: str = Query("dry_run", regex="^(dry_run|apply)$"),
+
+app\api\v1\endpoints\batch_import.py:28
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\api\v1\endpoints\batch_import.py:28: DeprecationWarning: `regex` has been depreacated, please use `pattern` instead
+    encoding_hint: Optional[str] = Query(None, regex="^(utf-8-sig|utf-8|gbk)$"),
+
+app\schemas\session_import.py:21
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\schemas\session_import.py:21: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.3/migration/
+    @validator('status')
+
+app\schemas\session_import.py:27
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\schemas\session_import.py:27: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.3/migration/
+    @validator('playback_url')
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/unit/test_service_homepage_search.py
+ERROR tests/integration/test_api_homepage_search.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!
+======================== 5 warnings, 2 errors in 2.58s ========================

@@ -1,0 +1,105 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\is99z\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.10.11', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '7.4.3', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '3.6.2', 'Faker': '40.1.2', 'asyncio': '0.21.1', 'base-url': '2.1.0', 'cov': '4.1.0', 'env': '1.1.1', 'html': '4.1.1', 'metadata': '3.1.0', 'mock': '3.12.0', 'ordering': '0.6', 'repeat': '0.9.1', 'rerunfailures': '12.0', 'selenium': '4.0.2', 'sugar': '0.9.7', 'timeout': '2.2.0', 'variables': '3.0.0', 'xdist': '3.3.1'}, 'Base URL': '', 'Driver': None, 'Capabilities': {}}
+sensitiveurl: .*
+rootdir: C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service
+configfile: pytest.ini
+plugins: anyio-3.6.2, Faker-40.1.2, asyncio-0.21.1, base-url-2.1.0, cov-4.1.0, env-1.1.1, html-4.1.1, metadata-3.1.0, mock-3.12.0, ordering-0.6, repeat-0.9.1, rerunfailures-12.0, selenium-4.0.2, sugar-0.9.7, timeout-2.2.0, variables-3.0.0, xdist-3.3.1
+asyncio: mode=strict
+collecting ... collected 0 items / 3 errors
+
+=================================== ERRORS ====================================
+_______________ ERROR collecting tests/unit/test_crud_brand.py ________________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_crud_brand.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_crud_brand.py:16: in <module>
+    from app.crud import brand as crud
+app\crud\brand.py:22: in <module>
+    from app.core.exceptions import (
+E   ImportError: cannot import name 'NotFoundException' from 'app.core.exceptions' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\core\exceptions.py)
+------------------------------- Captured stdout -------------------------------
+2026-01-18 11:44:32,760 INFO sqlalchemy.engine.Engine select version()
+2026-01-18 11:44:32,760 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-01-18 11:44:32,761 INFO sqlalchemy.engine.Engine select current_schema()
+2026-01-18 11:44:32,762 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-01-18 11:44:32,763 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-01-18 11:44:32,763 INFO sqlalchemy.engine.Engine [raw sql] {}
+------------------------------- Captured stderr -------------------------------
+INFO:app.database:尝试连接数据库: server=localhost, port=5432, database=live_core_test, user=postgres
+INFO:sqlalchemy.engine.Engine:select version()
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:sqlalchemy.engine.Engine:select current_schema()
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:sqlalchemy.engine.Engine:show standard_conforming_strings
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:app.database:数据库连接成功！
+INFO:backend.users.app.database:正在初始化数据库连接...
+______________ ERROR collecting tests/unit/test_service_brand.py ______________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_service_brand.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_service_brand.py:15: in <module>
+    from app.services.brand_service import BrandService
+app\services\brand_service.py:18: in <module>
+    from app.crud import brand as crud
+app\crud\brand.py:22: in <module>
+    from app.core.exceptions import (
+E   ImportError: cannot import name 'NotFoundException' from 'app.core.exceptions' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\core\exceptions.py)
+____________ ERROR collecting tests/integration/test_api_brand.py _____________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\integration\test_api_brand.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_api_brand.py:18: in <module>
+    from app.database import async_session_factory
+E   ImportError: cannot import name 'async_session_factory' from 'app.database' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\database.py)
+============================== warnings summary ===============================
+app\core\config.py:149
+  C:\\Users\\is99z\\PycharmProjects\\live-streaming-saas\\backend\\live_core_service\\app\\core\\config.py:149: UserWarning: \n  ============================================================\n  \u26a0\ufe0f  \u5f00\u53d1\u73af\u5883\u914d\u7f6e\u8b66\u544a\uff1a\n  \u26a0\ufe0f  \u4f7f\u7528\u9ed8\u8ba4\u6570\u636e\u5e93\u5bc6\u7801 '324zq999'\uff0c\u5efa\u8bae\u5728 .env \u6587\u4ef6\u4e2d\u8bbe\u7f6e\u81ea\u5b9a\u4e49\u5bc6\u7801============================================================\n    warnings.warn(warning_message, UserWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/unit/test_crud_brand.py
+ERROR tests/unit/test_service_brand.py
+ERROR tests/integration/test_api_brand.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!
+======================== 1 warning, 3 errors in 0.85s =========================
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\is99z\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.10.11', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '7.4.3', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '3.6.2', 'Faker': '40.1.2', 'asyncio': '0.21.1', 'base-url': '2.1.0', 'cov': '4.1.0', 'env': '1.1.1', 'html': '4.1.1', 'metadata': '3.1.0', 'mock': '3.12.0', 'ordering': '0.6', 'repeat': '0.9.1', 'rerunfailures': '12.0', 'selenium': '4.0.2', 'sugar': '0.9.7', 'timeout': '2.2.0', 'variables': '3.0.0', 'xdist': '3.3.1'}, 'Base URL': '', 'Driver': None, 'Capabilities': {}}
+sensitiveurl: .*
+rootdir: C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service
+configfile: pytest.ini
+plugins: anyio-3.6.2, Faker-40.1.2, asyncio-0.21.1, base-url-2.1.0, cov-4.1.0, env-1.1.1, html-4.1.1, metadata-3.1.0, mock-3.12.0, ordering-0.6, repeat-0.9.1, rerunfailures-12.0, selenium-4.0.2, sugar-0.9.7, timeout-2.2.0, variables-3.0.0, xdist-3.3.1
+asyncio: mode=strict
+collecting ... collected 48 items / 1 error
+
+=================================== ERRORS ====================================
+______________ ERROR collecting tests/unit/test_service_brand.py ______________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_service_brand.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_service_brand.py:15: in <module>
+    from app.services.brand_service import BrandService
+app\services\brand_service.py:26: in <module>
+    from app.core.exceptions import (
+E   ImportError: cannot import name 'NotFoundException' from 'app.core.exceptions' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\core\exceptions.py)
+============================== warnings summary ===============================
+app\core\config.py:149
+  C:\\Users\\is99z\\PycharmProjects\\live-streaming-saas\\backend\\live_core_service\\app\\core\\config.py:149: UserWarning: \n  ============================================================\n  \u26a0\ufe0f  \u5f00\u53d1\u73af\u5883\u914d\u7f6e\u8b66\u544a\uff1a\n  \u26a0\ufe0f  \u4f7f\u7528\u9ed8\u8ba4\u6570\u636e\u5e93\u5bc6\u7801 '324zq999'\uff0c\u5efa\u8bae\u5728 .env \u6587\u4ef6\u4e2d\u8bbe\u7f6e\u81ea\u5b9a\u4e49\u5bc6\u7801============================================================\n    warnings.warn(warning_message, UserWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/unit/test_service_brand.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+========================= 1 warning, 1 error in 1.24s =========================

@@ -1,0 +1,17 @@
+---
+description: 本仓（后端）全项目 AI 习惯。编码与文档任务均适用。自 Live-Saas-Wechat 迁入并裁剪。
+alwaysApply: true
+---
+
+# 项目 AI 习惯
+
+真源：[AI-工作约定](add-docs/AI-工作约定.md)。
+
+- 分流：Read [`.cursor/agents/`](.cursor/agents/) 的 [explorer](.cursor/agents/explorer.md) / [backend](.cursor/agents/backend.md) / [docs](.cursor/agents/docs.md)（只贴角色名不算）
+- 执行：非单句问答 → Skill [action-checklist](.cursor/skills/action-checklist/SKILL.md)（最小化最友好 + 防填洞 → **可见**行动清单 → 按步做 → 自测）；默念清单不算
+- 仓库约定：Skill [live-saas-workflow](.cursor/skills/live-saas-workflow/SKILL.md)（模板/命名、补丁 vs 重写、Docker 重建）
+- **改代码须有文档依据**：字段严格对齐契约；**摘录必要字段**；缺失/行业常见缺口须提醒并建议、未确认不进代码；见 [AI-工作约定 §4.1](add-docs/AI-工作约定.md)
+- Skill/Agent 点名相关文档须用可跳转 Markdown 链接（相对仓库根）；见 [AI-工作约定 §8](add-docs/AI-工作约定.md)
+- 简体中文；每次行动采用**最小化、最友好**修改方案
+- 报 bug / 排查不得按「单句问答」跳过清单
+- 改 `live_core_service` 后用 `rebuild-live-core-only`；禁止日常 `down -v` 清库

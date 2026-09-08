@@ -1,0 +1,90 @@
+{
+  "module_name": "liveroom_official_accounts",
+  "functional_module_name": "直播间与公众号关联",
+  "design_doc_path": "docs/03_系统设计/直播核心功能设计文档_v6_直播间与公众号关联CSM维度设计文档.md",
+  "project_path": "live_core_service",
+  "output_base_dir": "docs/提示词/直播核心功能模块",
+  "auto_fix": true,
+  "max_fix_iterations": 3,
+  "start_time": "2026-02-01T00:00:00Z",
+  "last_update": "2026-02-01T00:00:00Z",
+  "current_step": "step7",
+  "current_substep": null,
+  "current_subtask": null,
+  "overall_status": "COMPLETED",
+  "steps": {
+    "step1": {
+      "status": "COMPLETED",
+      "current_subtask": null,
+      "subtasks": {
+        "step1.1": {
+          "status": "COMPLETED",
+          "output": "docs/提示词/直播核心功能模块/直播间与公众号关联---数据库模型代码生成提示词.md",
+          "timestamp": "2026-02-01T00:00:00Z"
+        },
+        "step1.2": {
+          "status": "COMPLETED",
+          "output": "docs/提示词/直播核心功能模块/直播间与公众号关联---Pydantic模型代码生成提示词.md",
+          "timestamp": "2026-02-01T00:00:00Z"
+        }
+      },
+      "outputs": [
+        "docs/提示词/直播核心功能模块/直播间与公众号关联---数据库模型代码生成提示词.md",
+        "docs/提示词/直播核心功能模块/直播间与公众号关联---Pydantic模型代码生成提示词.md"
+      ],
+      "timestamp": "2026-02-01T00:00:00Z"
+    },
+    "step2": {
+      "status": "COMPLETED",
+      "outputs": [
+        "backend/live_core_service/app/models/liveroom_official_accounts.py",
+        "backend/live_core_service/app/schemas/liveroom_official_accounts.py"
+      ],
+      "timestamp": "2026-02-01T00:00:00Z"
+    },
+    "step3": {
+      "status": "COMPLETED",
+      "substeps": {
+        "step3.1": {
+          "status": "COMPLETED",
+          "outputs": [
+            "docs/提示词/直播核心功能模块/直播间与公众号关联SQLAlchemy模型与Pydantic模型一致性检查提示词.md",
+            "docs/提示词/直播核心功能模块/直播间与公众号关联数据库模型一致性验证提示词.md"
+          ]
+        },
+        "step3.2": {
+          "status": "COMPLETED",
+          "reports": [
+            "docs/提示词/直播核心功能模块/直播间与公众号关联SQLAlchemy模型与Pydantic模型一致性检查报告.md",
+            "docs/提示词/直播核心功能模块/直播间与公众号关联数据库模型一致性验证报告.md"
+          ]
+        }
+      },
+      "timestamp": "2026-02-01T00:00:00Z"
+    },
+    "step4": {
+      "status": "COMPLETED",
+      "outputs": [
+        "docs/提示词/直播核心功能模块/直播间与公众号关联---crud_service_endpoint代码生成提示词母版.md",
+        "docs/提示词/直播核心功能模块/直播间与公众号关联---CRUD层代码生成提示词.md",
+        "docs/提示词/直播核心功能模块/直播间与公众号关联---Service层和API层代码生成提示词.md"
+      ],
+      "timestamp": "2026-02-01T00:00:00Z"
+    },
+    "step6": {
+      "status": "COMPLETED",
+      "outputs": [
+        "backend/live_core_service/app/crud/liveroom_official_accounts.py",
+        "backend/live_core_service/app/services/liveroom_official_accounts_service.py",
+        "backend/live_core_service/app/api/v1/endpoints/liveroom_official_accounts.py"
+      ],
+      "timestamp": "2026-02-01T00:00:00Z"
+    },
+    "step7": {
+      "status": "COMPLETED",
+      "report": "docs/提示词/直播核心功能模块/直播间与公众号关联---API的URL一致性检查报告.md",
+      "timestamp": "2026-02-01T00:00:00Z"
+    }
+  },
+  "fix_history": []
+}

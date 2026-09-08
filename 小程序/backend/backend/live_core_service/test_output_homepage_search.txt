@@ -1,0 +1,93 @@
+============================= test session starts =============================
+platform win32 -- Python 3.9.7, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\is99z\PycharmProjects\live-streaming-saas\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.9.7', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '7.4.3', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '3.7.1', 'Faker': '37.4.2', 'asyncio': '0.21.1', 'base-url': '2.1.0', 'cov': '4.1.0', 'env': '1.1.1', 'html': '4.1.1', 'metadata': '3.1.0', 'mock': '3.12.0', 'ordering': '0.6', 'repeat': '0.9.1', 'rerunfailures': '12.0', 'selenium': '4.0.2', 'sugar': '0.9.7', 'timeout': '2.2.0', 'tornasync': '0.6.0.post2', 'trio': '0.8.0', 'twisted': '1.14.3', 'variables': '3.0.0', 'xdist': '3.3.1'}, 'Base URL': '', 'Driver': None, 'Capabilities': {}}
+sensitiveurl: .*
+rootdir: C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service
+configfile: pytest.ini
+plugins: anyio-3.7.1, Faker-37.4.2, asyncio-0.21.1, base-url-2.1.0, cov-4.1.0, env-1.1.1, html-4.1.1, metadata-3.1.0, mock-3.12.0, ordering-0.6, repeat-0.9.1, rerunfailures-12.0, selenium-4.0.2, sugar-0.9.7, timeout-2.2.0, tornasync-0.6.0.post2, trio-0.8.0, twisted-1.14.3, variables-3.0.0, xdist-3.3.1
+asyncio: mode=strict
+collecting ... collected 0 items / 3 errors
+
+=================================== ERRORS ====================================
+__________ ERROR collecting tests/unit/test_crud_homepage_search.py ___________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_crud_homepage_search.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_crud_homepage_search.py:12: in <module>
+    from app.crud import homepage_search as crud
+app\crud\__init__.py:7: in <module>
+    from . import homepage_search
+app\crud\homepage_search.py:19: in <module>
+    from app.models.live_core import LiveRoom, LiveSession, Expert, SessionStatistics
+E   ImportError: cannot import name 'Expert' from 'app.models.live_core' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\models\live_core.py)
+------------------------------- Captured stdout -------------------------------
+2026-01-19 08:08:15,243 INFO sqlalchemy.engine.Engine select version()
+2026-01-19 08:08:15,245 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-01-19 08:08:15,245 INFO sqlalchemy.engine.Engine select current_schema()
+2026-01-19 08:08:15,245 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-01-19 08:08:15,246 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-01-19 08:08:15,246 INFO sqlalchemy.engine.Engine [raw sql] {}
+------------------------------- Captured stderr -------------------------------
+INFO:app.database:尝试连接数据库: server=localhost, port=5432, database=live_core_test, user=postgres
+INFO:sqlalchemy.engine.Engine:select version()
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:sqlalchemy.engine.Engine:select current_schema()
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:sqlalchemy.engine.Engine:show standard_conforming_strings
+INFO:sqlalchemy.engine.Engine:[raw sql] {}
+INFO:app.database:数据库连接成功！
+INFO:backend.users.app.database:正在初始化数据库连接...
+_________ ERROR collecting tests/unit/test_service_homepage_search.py _________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\unit\test_service_homepage_search.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_service_homepage_search.py:13: in <module>
+    from app.services.homepage_search_service import HomepageSearchService
+app\services\__init__.py:8: in <module>
+    from .health_service import HealthService
+app\services\health_service.py:7: in <module>
+    from app.crud import health as crud_health
+app\crud\__init__.py:7: in <module>
+    from . import homepage_search
+app\crud\homepage_search.py:19: in <module>
+    from app.models.live_core import LiveRoom, LiveSession, Expert, SessionStatistics
+E   ImportError: cannot import name 'Expert' from 'app.models.live_core' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\models\live_core.py)
+_______ ERROR collecting tests/integration/test_api_homepage_search.py ________
+ImportError while importing test module 'C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\tests\integration\test_api_homepage_search.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_api_homepage_search.py:13: in <module>
+    from app.main import app
+app\main.py:6: in <module>
+    from app.api.v1.api import api_router
+app\api\v1\api.py:9: in <module>
+    from app.api.v1.endpoints import room, session, topic, live_features
+app\api\v1\endpoints\room.py:19: in <module>
+    from app.services.room_service import RoomService
+app\services\__init__.py:8: in <module>
+    from .health_service import HealthService
+app\services\health_service.py:7: in <module>
+    from app.crud import health as crud_health
+app\crud\__init__.py:7: in <module>
+    from . import homepage_search
+app\crud\homepage_search.py:19: in <module>
+    from app.models.live_core import LiveRoom, LiveSession, Expert, SessionStatistics
+E   ImportError: cannot import name 'Expert' from 'app.models.live_core' (C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\models\live_core.py)
+============================== warnings summary ===============================
+app\core\config.py:149
+  C:\\Users\\is99z\\PycharmProjects\\live-streaming-saas\\backend\\live_core_service\\app\\core\\config.py:149: UserWarning: \n  ============================================================\n  \u26a0\ufe0f  \u5f00\u53d1\u73af\u5883\u914d\u7f6e\u8b66\u544a\uff1a\n  \u26a0\ufe0f  \u4f7f\u7528\u9ed8\u8ba4\u6570\u636e\u5e93\u5bc6\u7801 '324zq999'\uff0c\u5efa\u8bae\u5728 .env \u6587\u4ef6\u4e2d\u8bbe\u7f6e\u81ea\u5b9a\u4e49\u5bc6\u7801============================================================\n    warnings.warn(warning_message, UserWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/unit/test_crud_homepage_search.py
+ERROR tests/unit/test_service_homepage_search.py
+ERROR tests/integration/test_api_homepage_search.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!
+======================== 1 warning, 3 errors in 0.99s =========================

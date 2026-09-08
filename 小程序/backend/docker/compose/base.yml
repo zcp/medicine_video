@@ -1,0 +1,13 @@
+# 共享网络与数据卷（被 docker-compose.yml include）
+
+name: live-streaming-saas
+
+networks:
+  live-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  media_download:
+  live-core-media:
+  users-uploads:

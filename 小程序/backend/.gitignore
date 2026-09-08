@@ -1,0 +1,58 @@
+# SSL 证书和私钥（永远不要提交到仓库）
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Let's Encrypt 证书目录
+/etc/letsencrypt/
+/var/www/mp.dayilive.com/
+/var/www/certbot/
+
+# 环境变量文件（可能包含敏感信息）
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.docker
+
+# 但不忽略环境变量模板文件
+!.env.example
+!.env.docker.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# 日志文件
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+
+# 依赖和数据目录
+node_modules/
+data/
+.pytest_cache/

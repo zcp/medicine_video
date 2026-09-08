@@ -1,0 +1,150 @@
+INFO:sqlalchemy.engine.Engine:SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO:sqlalchemy.engine.Engine:[cached since 17.03s ago] (UUID('6d984cf9-2bb5-4289-a998-0c54b0081cd6'),)
+INFO:sqlalchemy.engine.Engine:INSERT INTO topics (id, user_id, title, description, banner_url, status) VALUES (%s, %s, %s, %s, %s, %s)
+INFO:sqlalchemy.engine.Engine:[cached since 16.84s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'), UUID('17affe6e-182d-4757-968a-073e3dbd69bf'), '专题_Stand-alone reciprocal algorithm_a870cc09', 'Drop artist field third a believe decade. Bad authority agree. Factor science now talk.', None, 'published')
+INFO:sqlalchemy.engine.Engine:COMMIT
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT topics.id, topics.user_id, topics.title, topics.description, topics.banner_url, topics.status, topics.created_at, topics.updated_at 
+FROM topics 
+WHERE topics.id = %s
+INFO:sqlalchemy.engine.Engine:[cached since 3.172s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'),)
+INFO:sqlalchemy.engine.Engine:SELECT topic_categories.id AS topic_categories_id, topic_categories.topic_id AS topic_categories_topic_id, topic_categories.name AS topic_categories_name, topic_categories.sort_order AS topic_categories_sort_order, topic_categories.created_at AS topic_categories_created_at, topic_categories.updated_at AS topic_categories_updated_at 
+FROM topic_categories 
+WHERE %s = topic_categories.topic_id ORDER BY topic_categories.sort_order
+INFO:sqlalchemy.engine.Engine:[cached since 3.171s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'),)
+INFO:sqlalchemy.engine.Engine:INSERT INTO brands (id, name, slug, logo_url, description, website_url, sort_order, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+INFO:sqlalchemy.engine.Engine:[cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'), '品牌_Williams-Bowman_0e145b05', 'brand-a589b0d2', 'https://dummyimage.com/111x734', 'Eye seat become great Mr. End movement author miss box.', 'https://carr-richardson.org', 0, True)
+INFO:sqlalchemy.engine.Engine:COMMIT
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO:sqlalchemy.engine.Engine:[cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'),)
+INFO:app.crud.brand:创建品牌成功: id=54527eca, name=品牌_Williams-Bowman_0e145b05
+INFO:sqlalchemy.engine.Engine:COMMIT
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO:sqlalchemy.engine.Engine:[cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'),)
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+ERROR:app.crud.brand:绑定直播间品牌失败: InvalidRequestError
+------------------------------ Captured log call ------------------------------
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 INSERT INTO live_rooms (id, parent_room_id, user_id, title, description, cover_url, stream_key, is_private, record_by_default, category_id, external_room_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 14.31s ago] (UUID('c336c9b7-19e5-4c0a-899a-a3fb760fc0c0'), None, UUID('0e053ecc-c289-48a8-b582-dc3d1667ba32'), '直播间_Ward-Clark_e2a13001', None, None, 'stream_key_eacf6bc4ac4b492c', False, True, None, None)
+INFO     sqlalchemy.engine.Engine:log.py:117 ROLLBACK
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT live_rooms.id, live_rooms.parent_room_id, live_rooms.user_id, live_rooms.title, live_rooms.description, live_rooms.cover_url, live_rooms.stream_key, live_rooms.is_private, live_rooms.record_by_default, live_rooms.category_id, live_rooms.external_room_id, live_rooms.created_at, live_rooms.updated_at 
+FROM live_rooms 
+WHERE live_rooms.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 0.7101s ago] (UUID('c336c9b7-19e5-4c0a-899a-a3fb760fc0c0'),)
+INFO     sqlalchemy.engine.Engine:log.py:117 INSERT INTO brands (id, name, slug, logo_url, description, website_url, sort_order, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.04s ago] (UUID('6d984cf9-2bb5-4289-a998-0c54b0081cd6'), '品牌_Newton-Mullins_25cf1656', 'brand-bb7ac76b', 'https://placekitten.com/697/396', 'Blue sit hospital. Inside kind cover day writer. Where art section call go type.', 'https://garcia.com', 0, True)
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.03s ago] (UUID('6d984cf9-2bb5-4289-a998-0c54b0081cd6'),)
+INFO     app.crud.brand:brand.py:138 创建品牌成功: id=6d984cf9, name=品牌_Newton-Mullins_25cf1656
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.03s ago] (UUID('6d984cf9-2bb5-4289-a998-0c54b0081cd6'),)
+INFO     sqlalchemy.engine.Engine:log.py:117 INSERT INTO topics (id, user_id, title, description, banner_url, status) VALUES (%s, %s, %s, %s, %s, %s)
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 16.84s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'), UUID('17affe6e-182d-4757-968a-073e3dbd69bf'), '专题_Stand-alone reciprocal algorithm_a870cc09', 'Drop artist field third a believe decade. Bad authority agree. Factor science now talk.', None, 'published')
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT topics.id, topics.user_id, topics.title, topics.description, topics.banner_url, topics.status, topics.created_at, topics.updated_at 
+FROM topics 
+WHERE topics.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 3.172s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'),)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT topic_categories.id AS topic_categories_id, topic_categories.topic_id AS topic_categories_topic_id, topic_categories.name AS topic_categories_name, topic_categories.sort_order AS topic_categories_sort_order, topic_categories.created_at AS topic_categories_created_at, topic_categories.updated_at AS topic_categories_updated_at 
+FROM topic_categories 
+WHERE %s = topic_categories.topic_id ORDER BY topic_categories.sort_order
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 3.171s ago] (UUID('49b2a557-cb87-4deb-a537-5fd6eabdb8cd'),)
+INFO     sqlalchemy.engine.Engine:log.py:117 INSERT INTO brands (id, name, slug, logo_url, description, website_url, sort_order, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'), '品牌_Williams-Bowman_0e145b05', 'brand-a589b0d2', 'https://dummyimage.com/111x734', 'Eye seat become great Mr. End movement author miss box.', 'https://carr-richardson.org', 0, True)
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'),)
+INFO     app.crud.brand:brand.py:138 创建品牌成功: id=54527eca, name=品牌_Williams-Bowman_0e145b05
+INFO     sqlalchemy.engine.Engine:log.py:117 COMMIT
+INFO     sqlalchemy.engine.Engine:log.py:117 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:log.py:117 SELECT brands.id, brands.name, brands.slug, brands.logo_url, brands.description, brands.website_url, brands.sort_order, brands.is_active, brands.created_at, brands.updated_at 
+FROM brands 
+WHERE brands.id = %s
+INFO     sqlalchemy.engine.Engine:log.py:117 [cached since 17.05s ago] (UUID('54527eca-def1-46a2-ae26-263f98a07741'),)
+INFO     sqlalchemy.engine.Engine:log.py:117 ROLLBACK
+ERROR    app.crud.brand:brand.py:528 绑定直播间品牌失败: InvalidRequestError
+============================== warnings summary ===============================
+app\core\config.py:149
+  C:\\Users\\is99z\\PycharmProjects\\live-streaming-saas\\backend\\live_core_service\\app\\core\\config.py:149: UserWarning: \n  ============================================================\n  \u26a0\ufe0f  \u5f00\u53d1\u73af\u5883\u914d\u7f6e\u8b66\u544a\uff1a\n  \u26a0\ufe0f  \u4f7f\u7528\u9ed8\u8ba4\u6570\u636e\u5e93\u5bc6\u7801 '324zq999'\uff0c\u5efa\u8bae\u5728 .env \u6587\u4ef6\u4e2d\u8bbe\u7f6e\u81ea\u5b9a\u4e49\u5bc6\u7801============================================================\n    warnings.warn(warning_message, UserWarning)
+
+tests/integration/test_api_brand.py::test_get_brands_api_success
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\api\v1\endpoints\batch_import.py:27: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    mode: str = Query("dry_run", regex="^(dry_run|apply)$"),
+
+tests/integration/test_api_brand.py::test_get_brands_api_success
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\api\v1\endpoints\batch_import.py:28: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    encoding_hint: Optional[str] = Query(None, regex="^(utf-8-sig|utf-8|gbk)$"),
+
+tests/integration/test_api_brand.py::test_get_brands_api_success
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\schemas\session_import.py:21: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator('status')
+
+tests/integration/test_api_brand.py::test_get_brands_api_success
+  C:\Users\is99z\PycharmProjects\live-streaming-saas\backend\live_core_service\app\schemas\session_import.py:27: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator('playback_url')
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unit/test_crud_brand.py::test_get_brand_with_topics_success - At...
+FAILED tests/unit/test_crud_brand.py::test_get_brand_with_topics_not_found - ...
+FAILED tests/unit/test_crud_brand.py::test_create_brand_duplicate_name - sqla...
+FAILED tests/unit/test_crud_brand.py::test_get_brands_paginated_with_filters
+FAILED tests/unit/test_crud_brand.py::test_update_brand_duplicate_name - sqla...
+FAILED tests/unit/test_crud_brand.py::test_check_brand_references_with_rooms
+FAILED tests/unit/test_crud_brand.py::test_bind_room_brands_success - sqlalch...
+FAILED tests/unit/test_crud_brand.py::test_bind_room_brands_replace - sqlalch...
+FAILED tests/unit/test_crud_brand.py::test_get_room_brands_success - sqlalche...
+FAILED tests/unit/test_crud_brand.py::test_get_room_brands_for_tab_success - ...
+FAILED tests/unit/test_service_brand.py::test_get_brands_list_success - TypeE...
+FAILED tests/unit/test_service_brand.py::test_get_brand_content_success - Typ...
+FAILED tests/unit/test_service_brand.py::test_create_brand_success - TypeErro...
+FAILED tests/unit/test_service_brand.py::test_get_brand_by_id_success - TypeE...
+FAILED tests/unit/test_service_brand.py::test_update_brand_success - TypeErro...
+FAILED tests/unit/test_service_brand.py::test_batch_add_brand_topics_success
+FAILED tests/unit/test_service_brand.py::test_bind_room_brands_success - app....
+FAILED tests/unit/test_service_brand.py::test_get_room_brands_for_tab_success
+FAILED tests/integration/test_api_brand.py::test_get_brands_api_success - Imp...
+FAILED tests/integration/test_api_brand.py::test_get_brands_api_with_auth - I...
+FAILED tests/integration/test_api_brand.py::test_get_brands_api_with_search
+FAILED tests/integration/test_api_brand.py::test_get_brand_content_api_success
+FAILED tests/integration/test_api_brand.py::test_create_brand_api_success - I...
+FAILED tests/integration/test_api_brand.py::test_create_brand_api_permission_denied
+FAILED tests/integration/test_api_brand.py::test_create_brand_api_duplicate_name
+FAILED tests/integration/test_api_brand.py::test_get_brands_admin_api_success
+FAILED tests/integration/test_api_brand.py::test_get_brand_admin_api_success
+FAILED tests/integration/test_api_brand.py::test_update_brand_api_success - I...
+FAILED tests/integration/test_api_brand.py::test_delete_brand_api_soft_delete
+FAILED tests/integration/test_api_brand.py::test_delete_brand_api_hard_delete
+FAILED tests/integration/test_api_brand.py::test_delete_brand_api_with_refs
+FAILED tests/integration/test_api_brand.py::test_bind_brand_topics_api_success
+FAILED tests/integration/test_api_brand.py::test_unbind_brand_topic_api_success
+FAILED tests/integration/test_api_brand.py::test_get_brand_topics_api_success
+FAILED tests/integration/test_api_brand.py::test_bind_room_brands_api_success
+FAILED tests/integration/test_api_brand.py::test_bind_room_brands_api_replace
+FAILED tests/integration/test_api_brand.py::test_get_room_brands_admin_api_success
+FAILED tests/integration/test_api_brand.py::test_get_room_brands_public_api_success
+FAILED tests/integration/test_api_brand.py::test_get_room_brands_public_api_with_topic_brands
+================= 39 failed, 38 passed, 5 warnings in 17.79s ==================

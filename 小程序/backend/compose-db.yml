@@ -1,0 +1,5 @@
+# 仅启动基础设施（PostgreSQL + Redis），用于本地调试单个后端服务
+
+include:
+  - docker/compose/base.yml
+  - docker/compose/infra.yml

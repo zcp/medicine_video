@@ -1,0 +1,536 @@
+"""
+用户服务层单元测试 - test_user_service.py
+对 app/services/user_service.py 中的 UserService 类进行详细的、隔离的单元测试。
+使用 mocker fixture 模拟所有外部依赖。
+"""
+
+import pytest
+import uuid
+from unittest.mock import AsyncMock, MagicMock
+from faker import Faker
+
+from app.services.user_service import (
+    UserService,
+    UsernameAlreadyExistsError,
+    EmailAlreadyExistsError,
+    InvalidPasswordError,
+    WeakPasswordError,
+    NoUpdateDataProvidedError,
+    ActiveSubscriptionError,
+    CaptchaErrorException,
+    ValidationError
+)
+from app.services.auth_service import InvalidCredentialsException
+from app.schemas.users import UserCreate, UserUpdateSelf
+from app.models.users import User
+
+fake = Faker()
+
+
+class TestUserService:
+    """UserService 测试类"""
+
+    @pytest.fixture
+    def mock_db_session(self):
+        """Mock 数据库会话"""
+        return AsyncMock()
+
+    @pytest.fixture
+    def mock_redis_client(self):
+        """Mock Redis 客户端"""
+        mock_redis = AsyncMock()
+        mock_redis.get = AsyncMock()
+        mock_redis.set = AsyncMock()
+        mock_redis.delete = AsyncMock()
+        return mock_redis
+
+    @pytest.fixture
+    def user_service(self, mock_db_session, mock_redis_client):
+        """创建 UserService 实例"""
+        return UserService(db=mock_db_session, redis_client=mock_redis_client)
+
+    @pytest.fixture
+    def mock_user(self):
+        """Mock 用户对象"""
+        user = MagicMock()
+        user.id = 1
+        user.username = fake.user_name()
+        user.email = fake.email()
+        user.nickname = fake.name()
+        user.password_hash = "old_hashed_password"
+        return user
+
+    @pytest.fixture
+    def register_request(self):
+        """创建注册请求对象"""
+        class RegisterRequest:
+            def __init__(self):
+                self.username = fake.user_name() + str(uuid.uuid4().hex[:8])
+                self.email = fake.email()
+                self.password = "StrongPassword123!"  # 使用符合强度要求的密码
+                self.nickname = fake.name()
+                self.captcha_id = str(uuid.uuid4())
+                self.captcha_solution = "12345"
+                self.agreed_to_terms = True
+        
+        return RegisterRequest()
+
+    @pytest.fixture
+    def update_request(self):
+        """创建更新请求对象"""
+        class UpdateRequest:
+            def __init__(self):
+                self.nickname = fake.name()
+                self.avatar_url = fake.url()
+                self.bio = fake.text(max_nb_chars=100)
+            
+            def model_dump(self, exclude_unset=False):
+                return {
+                    "nickname": self.nickname,
+                    "avatar_url": self.avatar_url,
+                    "bio": self.bio
+                }
+        
+        return UpdateRequest()
+
+    @pytest.fixture
+    def password_request(self):
+        """创建密码修改请求对象"""
+        class PasswordRequest:
+            def __init__(self):
+                self.current_password = "old_password"
+                self.new_password = fake.password(length=8)
+        
+        return PasswordRequest()
+
+    # ========================================================================
+    # 用户注册测试
+    # ========================================================================
+
+    @pytest.mark.asyncio
+    async def test_register_user_success(self, user_service, register_request, mocker):
+        """测试用户注册成功"""
+        # Arrange
+        mock_verify_captcha = mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+        mock_crud_get_by_username = mocker.patch('app.crud.crud_user.get_by_username', return_value=None)
+        mock_crud_get_by_email = mocker.patch('app.crud.crud_user.get_by_email', return_value=None)
+        mock_hash_password = mocker.patch.object(user_service, '_hash_password', return_value='hashed_password')
+        
+        # 创建模拟的新用户对象
+        mock_new_user = MagicMock()
+        mock_new_user.id = 1
+        mock_new_user.username = register_request.username
+        mock_new_user.email = register_request.email
+        mock_new_user.nickname = register_request.nickname
+        
+        mock_crud_create = mocker.patch('app.crud.crud_user.create', return_value=mock_new_user)
+
+        # Act
+        result = await user_service.register_user(register_request)
+
+        # Assert
+        mock_verify_captcha.assert_called_once_with(register_request.captcha_id, register_request.captcha_solution)
+        mock_crud_get_by_username.assert_called_once_with(user_service.db, register_request.username)
+        mock_crud_get_by_email.assert_called_once_with(user_service.db, register_request.email)
+        mock_hash_password.assert_called_once_with(register_request.password)
+        mock_crud_create.assert_called_once()
+        
+        # 验证数据库字段
+        call_args = mock_crud_create.call_args
+        user_in = call_args[0][1]  # 第二个参数是 user_in
+        password_hash = call_args[0][2]  # 第三个参数是 password_hash
+        
+        assert user_in.username == register_request.username
+        assert user_in.email == register_request.email
+        assert user_in.nickname == register_request.nickname
+        assert password_hash == 'hashed_password'
+        
+        assert result == mock_new_user
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_username_exists(self, user_service, register_request, mock_user, mocker):
+        """测试用户名已存在时注册失败"""
+        # Arrange
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+        mocker.patch('app.crud.crud_user.get_by_username', return_value=mock_user)
+
+        # Act & Assert
+        with pytest.raises(UsernameAlreadyExistsError) as exc_info:
+            await user_service.register_user(register_request)
+        
+        assert register_request.username in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_email_exists(self, user_service, register_request, mock_user, mocker):
+        """测试邮箱已存在时注册失败"""
+        # Arrange
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+        mocker.patch('app.crud.crud_user.get_by_username', return_value=None)
+        mocker.patch('app.crud.crud_user.get_by_email', return_value=mock_user)
+
+        # Act & Assert
+        with pytest.raises(EmailAlreadyExistsError) as exc_info:
+            await user_service.register_user(register_request)
+        
+        assert register_request.email in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_terms_not_agreed(self, user_service, register_request, mocker):
+        """未同意服务条款时注册应被拒绝"""
+        register_request.agreed_to_terms = False
+        with pytest.raises(InvalidCredentialsException) as exc_info:
+            await user_service.register_user(register_request)
+        assert "请先同意服务条款和隐私政策" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_captcha_is_wrong(self, user_service, register_request, mocker):
+        """测试验证码错误时注册失败"""
+        # Arrange
+        mocker.patch.object(user_service, '_verify_captcha', return_value=False)
+
+        # Act & Assert
+        with pytest.raises(CaptchaErrorException):
+            await user_service.register_user(register_request)
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_username_invalid(self, user_service, register_request, mocker):
+        """测试用户名格式无效时注册失败"""
+        # Arrange
+        register_request.username = "ab"  # 长度不足
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            await user_service.register_user(register_request)
+        
+        assert exc_info.value.field == "username"
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_email_invalid(self, user_service, register_request, mocker):
+        """测试邮箱格式无效时注册失败"""
+        # Arrange
+        register_request.email = "invalid_email"
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            await user_service.register_user(register_request)
+        
+        assert exc_info.value.field == "email"
+
+    @pytest.mark.asyncio
+    async def test_register_user_fails_if_password_too_short(self, user_service, register_request, mocker):
+        """测试密码过短时注册失败"""
+        # Arrange
+        register_request.password = "12345"  # 长度不足
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            await user_service.register_user(register_request)
+        
+        assert exc_info.value.field == "password"
+
+    # ========================================================================
+    # 用户资料更新测试
+    # ========================================================================
+
+    @pytest.mark.asyncio
+    async def test_update_profile_success(self, user_service, mock_user, update_request, mocker):
+        """测试更新用户资料成功"""
+        # Arrange
+        updated_user = MagicMock()
+        updated_user.id = mock_user.id
+        updated_user.nickname = update_request.nickname
+        
+        mock_crud_update = mocker.patch('app.crud.crud_user.update', return_value=updated_user)
+
+        # Act
+        result = await user_service.update_profile(mock_user, update_request)
+
+        # Assert
+        mock_crud_update.assert_called_once()
+        call_args = mock_crud_update.call_args
+        
+        # 检查传递给 crud_user.update 的参数
+        assert call_args[0][0] == user_service.db  # 第一个参数是 db
+        assert call_args[0][1] == mock_user  # 第二个参数是 user_to_update
+        
+        obj_in = call_args[0][2]  # 第三个参数是 obj_in (update_data)
+        assert isinstance(obj_in, dict)
+        assert obj_in['nickname'] == update_request.nickname
+        
+        assert result == updated_user
+
+    @pytest.mark.asyncio
+    async def test_update_profile_fails_if_no_data_provided(self, user_service, mock_user, mocker):
+        """测试没有提供更新数据时失败"""
+        # Arrange
+        empty_request = MagicMock()
+        empty_request.model_dump.return_value = {}
+
+        # Act & Assert
+        with pytest.raises(NoUpdateDataProvidedError):
+            await user_service.update_profile(mock_user, empty_request)
+
+    @pytest.mark.asyncio
+    async def test_update_profile_fails_if_nickname_too_long(self, user_service, mock_user, mocker):
+        """测试昵称过长时更新失败"""
+        # Arrange
+        long_nickname_request = MagicMock()
+        long_nickname_request.model_dump.return_value = {"nickname": "a" * 51}  # 超过50个字符
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            await user_service.update_profile(mock_user, long_nickname_request)
+        
+        assert exc_info.value.field == "nickname"
+
+    # ========================================================================
+    # 密码修改测试
+    # ========================================================================
+
+    @pytest.mark.asyncio
+    async def test_change_password_success(self, user_service, mock_user, password_request, mocker):
+        """测试修改密码成功"""
+        # Arrange
+        mock_verify_password = mocker.patch.object(user_service, '_verify_password')
+        mock_verify_password.side_effect = lambda pwd, hash_val: pwd == 'old_password' and hash_val == 'old_hashed_password'
+
+        mock_validate_password_strength = mocker.patch.object(user_service, '_validate_password_strength',
+                                                              return_value=True)
+        mock_hash_password = mocker.patch.object(user_service, '_hash_password', return_value='new_hashed_password')
+        mock_crud_update = mocker.patch('app.crud.crud_user.update')
+        mock_blacklist_tokens = mocker.patch.object(user_service, '_blacklist_user_tokens')
+
+        # Act
+        await user_service.change_password(mock_user, password_request)
+
+        # Assert
+        # 验证 _verify_password 被调用了两次
+        assert mock_verify_password.call_count == 2
+
+        # 检查第一次调用（验证当前密码）
+        first_call = mock_verify_password.call_args_list[0]
+        assert first_call.args == ('old_password', 'old_hashed_password')
+
+        # 检查第二次调用（检查新旧密码是否相同）
+        second_call = mock_verify_password.call_args_list[1]
+        assert second_call.args == (password_request.new_password, 'old_hashed_password')
+
+        mock_validate_password_strength.assert_called_once_with(password_request.new_password)
+        mock_hash_password.assert_called_once_with(password_request.new_password)
+        mock_crud_update.assert_called_once()
+
+        # 检查传递给 crud_user.update 的参数
+        call_args = mock_crud_update.call_args
+        obj_in = call_args[0][2]  # 第三个参数是 obj_in
+        assert obj_in['password_hash'] == 'new_hashed_password'
+
+        mock_blacklist_tokens.assert_called_once_with(mock_user.id)
+
+    @pytest.mark.asyncio
+    async def test_change_password_fails_if_current_password_is_wrong(self, user_service, mock_user, password_request, mocker):
+        """测试当前密码错误时修改失败"""
+        # Arrange
+        mocker.patch.object(user_service, '_verify_password', return_value=False)
+
+        # Act & Assert
+        with pytest.raises(InvalidPasswordError):
+            await user_service.change_password(mock_user, password_request)
+
+    @pytest.mark.asyncio
+    async def test_change_password_fails_if_new_password_is_weak(self, user_service, mock_user, password_request, mocker):
+        """测试新密码强度不足时修改失败"""
+        # Arrange
+        mocker.patch.object(user_service, '_verify_password', return_value=True)
+        mocker.patch.object(user_service, '_validate_password_strength', return_value=False)
+
+        # Act & Assert
+        with pytest.raises(WeakPasswordError):
+            await user_service.change_password(mock_user, password_request)
+
+    @pytest.mark.asyncio
+    async def test_change_password_fails_if_new_password_same_as_current(self, user_service, mock_user, password_request, mocker):
+        """测试新密码与当前密码相同时修改失败"""
+        # Arrange
+        password_request.new_password = "old_password"  # 新密码与旧密码相同
+        
+        mock_verify_password = mocker.patch.object(user_service, '_verify_password', return_value=True)
+        mocker.patch.object(user_service, '_validate_password_strength', return_value=True)
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            await user_service.change_password(mock_user, password_request)
+        
+        assert exc_info.value.field == "new_password"
+
+    # ========================================================================
+    # 账户注销测试
+    # ========================================================================
+
+    @pytest.mark.asyncio
+    async def test_deactivate_account_success(self, user_service, mock_user, mocker):
+        """测试注销账户成功"""
+        # Arrange
+        deleted_user = MagicMock()
+        deleted_user.id = mock_user.id
+        
+        mocker.patch.object(user_service, '_verify_captcha', return_value=True)
+        mock_crud_remove = mocker.patch('app.crud.crud_user.remove', return_value=deleted_user)
+        mock_blacklist_tokens = mocker.patch.object(user_service, '_blacklist_user_tokens')
+        mock_cleanup = mocker.patch.object(
+            user_service, '_notify_live_core_deactivate_cleanup', new_callable=AsyncMock
+        )
+
+        # Act
+        await user_service.deactivate_account(
+            mock_user,
+            captcha_id="test-id",
+            captcha_solution="12345",
+        )
+
+        # Assert
+        mock_crud_remove.assert_called_once_with(user_service.db, mock_user.id)
+        mock_blacklist_tokens.assert_called_once_with(mock_user)
+        # 16-D1：注销不调删房；16-D2：仅 best-effort 清私货
+        mock_cleanup.assert_called_once_with(mock_user.public_id)
+
+    @pytest.mark.asyncio
+    async def test_deactivate_account_fails_if_captcha_is_wrong(self, user_service, mock_user, mocker):
+        """测试注销账户时图形验证码错误"""
+        mocker.patch.object(user_service, '_verify_captcha', return_value=False)
+        mock_crud_remove = mocker.patch('app.crud.crud_user.remove')
+
+        with pytest.raises(CaptchaErrorException):
+            await user_service.deactivate_account(
+                mock_user,
+                captcha_id="test-id",
+                captcha_solution="wrong",
+            )
+
+        mock_crud_remove.assert_not_called()
+
+    # ========================================================================
+    # 内部工具方法测试
+    # ========================================================================
+
+    def test_hash_password(self, user_service):
+        """测试密码哈希"""
+        password = "test_password"
+        hashed = user_service._hash_password(password)
+        
+        assert isinstance(hashed, str)
+        assert len(hashed) == 64  # SHA256 hex length
+        assert hashed != password
+
+    def test_verify_password(self, user_service):
+        """测试密码验证"""
+        password = "test_password"
+        correct_hash = user_service._hash_password(password)
+        wrong_hash = "wrong_hash"
+        
+        assert user_service._verify_password(password, correct_hash) is True
+        assert user_service._verify_password(password, wrong_hash) is False
+
+    def test_validate_password_strength(self, user_service):
+        """测试密码强度验证"""
+        assert user_service._validate_password_strength("123456") is False
+        assert user_service._validate_password_strength("12345") is False
+        assert user_service._validate_password_strength("") is False
+        strong_password = "StrongP@ssw0rd!"
+        assert user_service._validate_password_strength(strong_password) is True
+
+    def test_validate_username(self, user_service):
+        """测试用户名验证"""
+        assert user_service._validate_username("validuser123") is True
+        assert user_service._validate_username("valid_user") is True
+        assert user_service._validate_username("ab") is False  # 太短
+        assert user_service._validate_username("a" * 51) is False  # 太长
+        assert user_service._validate_username("user@name") is False  # 包含非法字符
+        assert user_service._validate_username("") is False  # 空字符串
+
+    def test_validate_email(self, user_service):
+        """测试邮箱验证"""
+        assert user_service._validate_email("test@example.com") is True
+        assert user_service._validate_email("user.name@domain.co.uk") is True
+        assert user_service._validate_email("invalid_email") is False  # 缺少@
+        assert user_service._validate_email("test@domain") is False  # 缺少.
+        assert user_service._validate_email("@domain.com") is False  # 缺少用户名
+        assert user_service._validate_email("") is False  # 空字符串
+
+    @pytest.mark.asyncio
+    async def test_verify_captcha_success(self, user_service):
+        """测试验证码校验成功"""
+        # Arrange
+        user_service.redis_client.get.return_value = "12345"
+
+        # Act
+        result = await user_service._verify_captcha("test-id", "12345")
+
+        # Assert
+        assert result is True
+        user_service.redis_client.delete.assert_called_once_with("captcha:solution:test-id")
+
+    @pytest.mark.asyncio
+    async def test_verify_captcha_failure(self, user_service):
+        """测试验证码校验失败"""
+        # Arrange
+        user_service.redis_client.get.return_value = "54321"
+
+        # Act
+        result = await user_service._verify_captcha("test-id", "12345")
+
+        # Assert
+        assert result is False
+        user_service.redis_client.delete.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_verify_captcha_not_found(self, user_service):
+        """测试验证码不存在时校验失败"""
+        # Arrange
+        user_service.redis_client.get.return_value = None
+
+        # Act
+        result = await user_service._verify_captcha("test-id", "12345")
+
+        # Assert
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_blacklist_user_tokens_success(self, user_service):
+        """测试将用户令牌加入黑名单成功"""
+        # Arrange
+        user_id = 123
+
+        # Act
+        await user_service._blacklist_user_tokens(user_id)
+
+        # Assert
+        user_service.redis_client.set.assert_called_once_with(
+            f"user_tokens_blacklisted:{user_id}", 
+            "1", 
+            ex=3600 * 24 * 7
+        )
+
+    @pytest.mark.asyncio
+    async def test_blacklist_user_tokens_handles_exception(self, user_service, mocker):
+        """测试令牌黑名单添加异常处理"""
+        # Arrange
+        user_service.redis_client.set.side_effect = Exception("Redis error")
+        mock_logger = mocker.patch('app.services.user_service.logger')
+
+        # Act
+        await user_service._blacklist_user_tokens(123)
+
+        # Assert
+        mock_logger.error.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_check_active_subscriptions(self, user_service):
+        """测试检查活跃订阅（预留方法）"""
+        # Act
+        result = await user_service._check_active_subscriptions(123)
+
+        # Assert
+        assert result is False  # 目前总是返回 False 

@@ -1,0 +1,5 @@
+# @deprecated 请改用 docker-compose.yml
+# 保留此文件仅为向后兼容
+
+include:
+  - docker-compose.yml

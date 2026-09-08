@@ -1,0 +1,32 @@
+# Windows 本地开发覆盖：避免端口冲突、使用相对路径、禁用 SSL nginx
+
+services:
+  postgres:
+    command: ["postgres", "-c", "listen_addresses=*", "-c", "port=5432"]
+    ports:
+      - "5433:5432"
+
+  redis:
+    ports:
+      - "6380:6379"
+
+  live_core_service:
+    volumes:
+      - ../../../data/live_core_media:/app/media
+      # 供容器内 pytest 导入 backend.users（conftest 将 / 加入 sys.path）
+      - ../../../backend:/backend:ro
+
+  srs:
+    ports:
+      - "1935:1935"
+      - "8081:8080"
+
+  nginx:
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ../../../nginx/nginx.windows.conf:/etc/nginx/nginx.conf:ro
+      - ../../../nginx/ssl:/etc/nginx/ssl:ro
+      - ../../../data/srs:/var/www/srs:ro
+      - ../../../data/live_core_media:/var/www/html/live-core-media:ro
