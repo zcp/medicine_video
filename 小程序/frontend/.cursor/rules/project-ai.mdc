@@ -1,0 +1,20 @@
+---
+description: Live-Saas-Wechat 全项目 AI 习惯。编码与文档任务均适用。
+alwaysApply: true
+---
+
+# 项目 AI 习惯
+
+真源：[AI-工作约定](docs/AI-工作约定.md)。
+
+- 分流：Read [`.cursor/agents/`](.cursor/agents/) 的 [explorer](.cursor/agents/explorer.md) / [frontend](.cursor/agents/frontend.md) / [docs](.cursor/agents/docs.md)（只贴角色名不算；**不**另开 designer）
+- 执行：非单句问答 → Skill [action-checklist](.cursor/skills/action-checklist/SKILL.md)（最小化最友好 + 防填洞 → **可见**行动清单 → 按步做 → 自测）；默念清单不算
+- 仓库约定：Skill [live-saas-workflow](.cursor/skills/live-saas-workflow/SKILL.md)（分流、S/M/L、模板/命名、规范按需 @、补丁 vs 重写）
+- **改代码须有文档依据**：字段严格对齐契约；**摘录必要字段**；缺失/行业常见缺口须提醒并建议、未确认不进代码；见 [AI-工作约定 §4.1](docs/AI-工作约定.md)
+- **可验收**：主路径 + 契约 + 关键态 + **L2 手测**（见 [acceptance-handtest](.cursor/skills/acceptance-handtest/SKILL.md)）；`docs/05` 按需查表；测试文件按需（[§4.2](docs/AI-工作约定.md)）；勿每步正式报告
+- **写前端设计**：先 [§5.1 体验钉](docs/AI-工作约定.md)（受众/闭环/首屏/关键态/非目标），再契约落地；一份文即可，勿默认第三本「页面设计」
+- 管理端列表/选择器：见 Agent [frontend](.cursor/agents/frontend.md)「管理端表面」
+- Skill/Agent 点名相关文档须用可跳转 Markdown 链接（相对仓库根）；见 [AI-工作约定 §8](docs/AI-工作约定.md)
+- Skills 分工见 [.cursor/skills/README.md](.cursor/skills/README.md)
+- 简体中文；每次行动采用**最小化、最友好**修改方案
+- 报 bug / 排查不得按「单句问答」跳过清单

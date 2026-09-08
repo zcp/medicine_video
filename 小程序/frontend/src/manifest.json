@@ -1,0 +1,127 @@
+{
+  "name": "医学直播平台",
+  "appid": "__UNI__LIVE_SAAS",
+  "description": "专业医学知识分享平台",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {},
+    "distribute": {
+      "android": {
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\" />",
+          "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\" />",
+          "<uses-permission android:name=\"android.permission.VIBRATE\" />",
+          "<uses-permission android:name=\"android.permission.READ_LOGS\" />",
+          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+          "<uses-feature android:name=\"android.hardware.camera.autofocus\" />",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+          "<uses-permission android:name=\"android.permission.CAMERA\" />",
+          "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\" />",
+          "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />",
+          "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\" />",
+          "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
+          "<uses-permission android:name=\"android.permission.FLASHLIGHT\" />",
+          "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\" />"
+        ]
+      },
+      "ios": {},
+      "sdkConfigs": {}
+    }
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "enhance": true,
+      "postcss": true,
+      "preloadBackgroundData": false,
+      "minified": false,
+      "newFeature": true,
+      "coverView": true,
+      "nodeModules": false,
+      "autoAudits": false,
+      "showShadowRootLog": true,
+      "scopeDataCheck": false,
+      "uglifyFileName": false,
+      "checkInvalidKey": true,
+      "checkSiteMap": true,
+      "uploadWithSourceMap": true,
+      "compileHotReLoad": false,
+      "lazyloadPlaceholderEnable": false,
+      "useMultiFrameRuntime": true,
+      "useApiHook": true,
+      "useApiHostProcess": true,
+      "babelSetting": {
+        "ignore": [],
+        "disablePlugins": [],
+        "outputPath": ""
+      },
+      "enableEngineNative": false,
+      "useIsolateContext": true,
+      "userConfirmedPrivacyRules": false,
+      "userConfirmedBundleSwitch": false,
+      "packNpmManually": false,
+      "packNpmRelationList": [],
+      "minifyWXSS": false,
+      "disableUseStrict": false,
+      "minifyWXML": false,
+      "minify": false
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "获取您的地理位置信息用于推荐附近的医疗资源"
+      }
+    },
+    "requiredPrivateInfos": [
+      "getLocation"
+    ],
+    "lazyCodeLoading": "requiredComponents",
+    "darkmode": false,
+    "optimization": {
+      "subPackages": true
+    }
+  },
+  "mp-alipay": {
+    "usingComponents": true,
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "mp-baidu": {
+    "usingComponents": true,
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "mp-toutiao": {
+    "usingComponents": true,
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "h5": {
+    "template": "index.html",
+    "router": {
+      "mode": "hash",
+      "base": "./"
+    },
+    "optimization": {
+      "treeShaking": {
+        "enable": true
+      }
+    },
+    "title": "医学直播平台",
+    "domain": "https://live.medical.com"
+  },
+  "vueVersion": "3",
+  "locale": "zh-Hans",
+  "fallbackLocale": "zh-Hans"
+}

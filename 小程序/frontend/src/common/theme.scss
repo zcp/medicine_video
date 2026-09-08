@@ -1,0 +1,519 @@
+/**
+ * 主题样式系统
+ * 基于uni.scss设计令牌的主题化样式定义
+ * 支持亮色/暗色主题切换和品牌主题定制
+ */
+
+@import './uni.scss';
+
+// ================== 主题基础定义 ==================
+
+/**
+ * 亮色主题（默认主题）
+ */
+$theme-light: (
+  // 主要颜色
+  primary: $color-primary,
+  primary-light: $color-primary-light,
+  primary-dark: $color-primary-dark,
+  secondary: $color-secondary,
+  
+  // 功能颜色
+  success: $color-success,
+  warning: $color-warning,
+  danger: $color-danger,
+  info: $color-info,
+  
+  // 文本颜色
+  text-primary: $color-text-primary,
+  text-regular: $color-text-regular,
+  text-secondary: $color-text-secondary,
+  text-placeholder: $color-text-placeholder,
+  text-disabled: $color-text-disabled,
+  text-inverse: #FFFFFF,
+  
+  // 背景颜色
+  background: $color-background,
+  background-light: $color-background-light,
+  surface: $color-surface,
+  surface-light: $color-surface-light,
+  surface-secondary: #F8F9FA,
+  overlay: $color-mask,
+  
+  // 边框颜色
+  border: $color-border,
+  border-light: $color-border-light,
+  border-dark: $color-border-dark,
+  divider: $color-border,
+  
+  // 医学直播专用
+  live-active: $color-live,
+  live-inactive: $color-offline,
+  expert-bg: #F0F7FF,
+  patient-bg: #F8FFED
+);
+
+/**
+ * 暗色主题
+ */
+$theme-dark: (
+  // 主要颜色
+  primary: #409EFF,
+  primary-light: #79BBFF,
+  primary-dark: #337ECC,
+  secondary: #85CE61,
+  
+  // 功能颜色
+  success: #85CE61,
+  warning: #EEBC6C,
+  danger: #F78989,
+  info: #A6A9AD,
+  
+  // 文本颜色
+  text-primary: #E5E6EB,
+  text-regular: #B2B2B2,
+  text-secondary: #8B8B8B,
+  text-placeholder: #6B6B6B,
+  text-disabled: #4B4B4B,
+  text-inverse: #333333,
+  
+  // 背景颜色
+  background: #1C1C1C,
+  background-light: #2A2A2A,
+  surface: #2F2F2F,
+  surface-light: #3A3A3A,
+  surface-secondary: #242424,
+  overlay: rgba(0, 0, 0, 0.7),
+  
+  // 边框颜色
+  border: #404040,
+  border-light: #4A4A4A,
+  border-dark: #353535,
+  divider: #404040,
+  
+  // 医学直播专用
+  live-active: #FF8A80,
+  live-inactive: #757575,
+  expert-bg: #1E2832,
+  patient-bg: #1F2B1A
+);
+
+// ================== 主题混合器 ==================
+
+/**
+ * 主题颜色混合器
+ * @param {string} $property - CSS属性名
+ * @param {string} $color-key - 颜色键名
+ * @param {string} $fallback - 回退颜色
+ */
+@mixin theme-color($property, $color-key, $fallback: null) {
+  #{$property}: map-get($theme-light, $color-key);
+  
+  @at-root {
+    [data-theme='dark'] & {
+      #{$property}: map-get($theme-dark, $color-key);
+    }
+  }
+  
+  @if $fallback != null {
+    @supports not (color: var(--theme-#{$color-key})) {
+      #{$property}: $fallback;
+    }
+  }
+}
+
+/**
+ * 背景主题混合器
+ * @param {string} $bg-key - 背景键名
+ */
+@mixin theme-background($bg-key) {
+  @include theme-color(background-color, $bg-key);
+}
+
+/**
+ * 文本主题混合器
+ * @param {string} $text-key - 文本键名
+ */
+@mixin theme-text($text-key) {
+  @include theme-color(color, $text-key);
+}
+
+/**
+ * 边框主题混合器
+ * @param {string} $border-key - 边框键名
+ */
+@mixin theme-border($border-key) {
+  @include theme-color(border-color, $border-key);
+}
+
+// ================== 组件主题样式 ==================
+
+/**
+ * 卡片主题
+ */
+@mixin card-theme {
+  @include theme-background(surface);
+  @include theme-border(border);
+  border-width: $border-width-base;
+  border-style: solid;
+  border-radius: $border-radius-md;
+  box-shadow: $card-shadow;
+  
+  &:hover {
+    box-shadow: $card-shadow-hover;
+  }
+}
+
+/**
+ * 按钮主题
+ */
+@mixin button-theme($type: 'primary') {
+  @if $type == 'primary' {
+    @include theme-background(primary);
+    @include theme-color(color, text-inverse);
+    
+    &:hover {
+      @include theme-background(primary-light);
+    }
+    
+    &:active {
+      @include theme-background(primary-dark);
+    }
+  } @else if $type == 'secondary' {
+    @include theme-background(surface);
+    @include theme-text(text-primary);
+    @include theme-border(border);
+    border-width: $border-width-base;
+    border-style: solid;
+    
+    &:hover {
+      @include theme-background(surface-light);
+    }
+  } @else if $type == 'text' {
+    background: transparent;
+    @include theme-text(primary);
+    border: none;
+    
+    &:hover {
+      @include theme-background(surface-secondary);
+    }
+  }
+  
+  border-radius: $border-radius-base;
+  transition: $transition-base;
+  
+  &:disabled {
+    @include theme-background(surface-secondary);
+    @include theme-text(text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+/**
+ * 输入框主题
+ */
+@mixin input-theme {
+  @include theme-background(surface);
+  @include theme-text(text-primary);
+  @include theme-border(border);
+  border-width: $border-width-base;
+  border-style: solid;
+  border-radius: $border-radius-base;
+  padding: $spacing-sm $spacing-base;
+  transition: $transition-base;
+  
+  &::placeholder {
+    @include theme-text(text-placeholder);
+  }
+  
+  &:focus {
+    @include theme-border(primary);
+    outline: none;
+  }
+  
+  &:disabled {
+    @include theme-background(surface-secondary);
+    @include theme-text(text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+/**
+ * 导航栏主题
+ */
+@mixin navbar-theme {
+  @include theme-background(surface);
+  @include theme-border(border);
+  border-bottom-width: $border-width-base;
+  border-bottom-style: solid;
+  
+  .navbar-title {
+    @include theme-text(text-primary);
+    font-size: $navbar-title-size;
+    font-weight: $font-weight-medium;
+  }
+  
+  .navbar-icon {
+    @include theme-text(text-secondary);
+    
+    &:hover {
+      @include theme-text(primary);
+    }
+  }
+}
+
+/**
+ * TabBar主题
+ */
+@mixin tabbar-theme {
+  @include theme-background(tabbar-background);
+  @include theme-border(border);
+  border-top-width: $border-width-base;
+  border-top-style: solid;
+  
+  .tabbar-item {
+    @include theme-text(tabbar-color);
+    
+    &.active {
+      @include theme-text(tabbar-color-active);
+    }
+  }
+  
+  .tabbar-badge {
+    @include theme-background(danger);
+    @include theme-color(color, text-inverse);
+  }
+}
+
+// ================== 医学直播专用主题 ==================
+
+/**
+ * 直播间主题
+ */
+@mixin live-room-theme {
+  @include theme-background(background);
+  
+  .live-player {
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+  }
+  
+  .live-status {
+    &.live {
+      @include theme-background(live-active);
+      @include theme-color(color, text-inverse);
+    }
+    
+    &.offline {
+      @include theme-background(live-inactive);
+      @include theme-color(color, text-inverse);
+    }
+  }
+  
+  .live-chat {
+    @include theme-background(surface);
+    @include theme-border(border);
+    border-radius: $border-radius-md;
+  }
+  
+  .live-controls {
+    @include theme-background(surface);
+    backdrop-filter: blur(10px);
+  }
+}
+
+/**
+ * 专家卡片主题
+ */
+@mixin expert-card-theme {
+  @include card-theme;
+  @include theme-background(expert-bg);
+  
+  .expert-name {
+    @include theme-text(text-primary);
+    font-weight: $font-weight-medium;
+  }
+  
+  .expert-title {
+    @include theme-text(text-secondary);
+    font-size: $font-size-sm;
+  }
+  
+  .expert-status {
+    &.online {
+      @include theme-color(color, success);
+    }
+    
+    &.offline {
+      @include theme-color(color, text-disabled);
+    }
+  }
+}
+
+/**
+ * 病例卡片主题
+ */
+@mixin patient-card-theme {
+  @include card-theme;
+  @include theme-background(patient-bg);
+  
+  .patient-info {
+    @include theme-text(text-primary);
+  }
+  
+  .patient-id {
+    @include theme-text(text-secondary);
+    font-family: $font-family-number;
+  }
+  
+  .urgency-level {
+    &.high {
+      @include theme-color(color, danger);
+    }
+    
+    &.medium {
+      @include theme-color(color, warning);
+    }
+    
+    &.low {
+      @include theme-color(color, success);
+    }
+  }
+}
+
+// ================== 响应式主题适配 ==================
+
+/**
+ * 移动端主题优化
+ */
+@mixin mobile-theme-optimizations {
+  // 增加触摸目标大小
+  .btn, .link, .tab-item {
+    min-height: 88rpx; // 44px, 符合无障碍标准
+    min-width: 88rpx;
+  }
+  
+  // 优化文字大小
+  body {
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+  }
+  
+  // 优化间距
+  .page-container {
+    padding: $page-padding;
+  }
+  
+  // 优化滚动
+  .scroll-view {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// ================== 主题切换工具类 ==================
+
+/**
+ * 主题切换根类
+ */
+.theme-light {
+  color-scheme: light;
+}
+
+.theme-dark {
+  color-scheme: dark;
+}
+
+/**
+ * 主题过渡动画
+ */
+.theme-transition {
+  transition: background-color $duration-base $ease-in-out,
+              color $duration-base $ease-in-out,
+              border-color $duration-base $ease-in-out;
+}
+
+// ================== CSS 自定义属性主题 ==================
+
+/**
+ * 亮色主题CSS变量
+ */
+[data-theme='light'] {
+  @each $key, $value in $theme-light {
+    --theme-#{$key}: #{$value};
+  }
+}
+
+/**
+ * 暗色主题CSS变量
+ */
+[data-theme='dark'] {
+  @each $key, $value in $theme-dark {
+    --theme-#{$key}: #{$value};
+  }
+}
+
+/**
+ * 系统主题自动检测
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    @each $key, $value in $theme-dark {
+      --theme-#{$key}: #{$value};
+    }
+  }
+}
+
+// ================== 导出工具函数 ==================
+
+/**
+ * 获取主题颜色函数（用于CSS中）
+ */
+@function theme-var($key) {
+  @return var(--theme-#{$key});
+}
+
+/**
+ * 主题媒体查询
+ */
+@mixin theme-media($theme) {
+  @if $theme == 'light' {
+    @media (prefers-color-scheme: light) {
+      @content;
+    }
+  } @else if $theme == 'dark' {
+    @media (prefers-color-scheme: dark) {
+      @content;
+    }
+  }
+}
+
+// ================== 使用示例 ==================
+
+/*
+// 使用示例：
+
+.my-component {
+  @include card-theme;
+  @include theme-text(text-primary);
+  
+  .title {
+    @include theme-text(text-primary);
+    font-weight: $font-weight-medium;
+  }
+  
+  .description {
+    @include theme-text(text-secondary);
+  }
+  
+  .button {
+    @include button-theme('primary');
+  }
+}
+
+// 或者使用CSS变量：
+.my-other-component {
+  background: theme-var(surface);
+  color: theme-var(text-primary);
+  border: 1px solid theme-var(border);
+}
+*/

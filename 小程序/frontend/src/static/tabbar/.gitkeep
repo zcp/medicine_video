@@ -1,0 +1,15 @@
+# TabBar 静态资源目录
+# 
+# 当前状态：阶段一开发中，暂时使用纯文字TabBar
+# 
+# 后续优化方案：
+# 1. 使用PNG图标文件（传统方案）
+# 2. 使用CustomTabBar组件 + uni-icons（已创建 components/common/CustomTabBar.vue）
+# 3. 使用IconFont字体图标
+#
+# 如需启用图标TabBar，可以：
+# - 方案1：在此目录添加PNG图标文件，在pages.json中配置iconPath
+# - 方案2：使用CustomTabBar组件替换系统TabBar
+#
+# 建议图标尺寸：78x78px (微信小程序标准)
+# 支持格式：PNG，支持透明背景

@@ -1,0 +1,34 @@
+<view class="tabbar">
+  <view class="tabbar__card">
+    <view class="tabbar__row">
+    <view class="tab {{selected === 0 ? 'is-active' : ''}}" data-index="0" bindtap="onSwitchTab">
+      <text class="iconfont icon-shipin tab__icon"></text>
+      <text class="tab__text">首页</text>
+    </view>
+
+    <view class="tab {{selected === 1 ? 'is-active' : ''}}" data-index="1" bindtap="onSwitchTab">
+      <text class="iconfont icon-shoucang tab__icon"></text>
+      <text class="tab__text">品牌</text>
+    </view>
+
+    <view wx:if="{{showCreate}}" class="tabbar__spacer" aria-hidden="true"></view>
+
+    <view class="tab {{selected === 2 ? 'is-active' : ''}}" data-index="2" bindtap="onSwitchTab">
+      <text class="iconfont icon-yisheng tab__icon"></text>
+      <text class="tab__text">专家</text>
+    </view>
+
+    <view class="tab {{selected === 3 ? 'is-active' : ''}}" data-index="3" bindtap="onSwitchTab">
+      <text class="iconfont icon-yonghu tab__icon"></text>
+      <text class="tab__text">我的</text>
+    </view>
+
+    <!-- 管理员不展示创建直播入口 -->
+    <view wx:if="{{showCreate}}" class="add" bindtap="onAddTap" aria-label="创建直播">
+      <view class="add__btn">
+        <text class="add__plus">+</text>
+      </view>
+    </view>
+    </view>
+  </view>
+</view>

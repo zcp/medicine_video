@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真实API数据获取测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        button.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .result h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+            border: 1px solid #e0e0e0;
+        }
+        .loading {
+            color: #667eea;
+            font-weight: 500;
+        }
+        .error {
+            color: #f5576c;
+            padding: 15px;
+            background: #fff5f5;
+            border-radius: 8px;
+            border-left: 4px solid #f5576c;
+        }
+        .success {
+            color: #00c853;
+            padding: 15px;
+            background: #f1f8f4;
+            border-radius: 8px;
+            border-left: 4px solid #00c853;
+        }
+        .video-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .video-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .video-card h5 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .video-card p {
+            color: #666;
+            font-size: 13px;
+            margin: 4px 0;
+        }
+        .video-card .play-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 真实API数据获取测试工具</h1>
+            <p>用于测试后端API连通性，获取可用的视频数据</p>
+        </div>
+
+        <div class="content">
+            <!-- API配置 -->
+            <div class="section">
+                <h3>⚙️ API配置</h3>
+                <p><strong>后端地址：</strong><code id="api-base">https://124.220.235.226</code></p>
+                <p style="margin-top: 10px; color: #666; font-size: 13px;">
+                    💡 如果测试失败，请检查：<br>
+                    1. 后端服务是否正常运行<br>
+                    2. 网络是否可访问（CORS跨域问题）<br>
+                    3. API路径是否正确
+                </p>
+            </div>
+
+            <!-- 第1步：获取房间列表 -->
+            <div class="section">
+                <h3>🏠 第1步：获取房间列表</h3>
+                <div class="button-group">
+                    <button onclick="testGetRoomList()">获取房间列表</button>
+                    <button class="secondary" onclick="clearResult('rooms-result')">清空结果</button>
+                </div>
+                <div id="rooms-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第2步：获取房间详情 -->
+            <div class="section">
+                <h3>🔍 第2步：获取房间详情</h3>
+                <div class="button-group">
+                    <input type="text" id="room-id-input" placeholder="输入房间ID" 
+                           style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; flex: 1; max-width: 300px;">
+                    <button onclick="testGetRoomDetail()">获取房间详情</button>
+                    <button class="secondary" onclick="clearResult('room-detail-result')">清空结果</button>
+                </div>
+                <div id="room-detail-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第3步：获取场次列表 -->
+            <div class="section">
+                <h3>📋 第3步：获取场次列表（Sessions）</h3>
+                <div class="button-group">
+                    <input type="text" id="session-room-id-input" placeholder="输入房间ID" 
+                           style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; flex: 1; max-width: 300px;">
+                    <button onclick="testGetSessionList()">获取场次列表</button>
+                    <button class="secondary" onclick="clearResult('sessions-result')">清空结果</button>
+                </div>
+                <div id="sessions-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第4步：获取场次详情 -->
+            <div class="section">
+                <h3>🎬 第4步：获取场次详情（获取播放地址）</h3>
+                <div class="button-group">
+                    <input type="text" id="session-id-input" placeholder="输入场次ID" 
+                           style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; flex: 1; max-width: 300px;">
+                    <button onclick="testGetSessionDetail()">获取场次详情</button>
+                    <button class="secondary" onclick="clearResult('session-detail-result')">清空结果</button>
+                </div>
+                <div id="session-detail-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- 第5步：一键测试完整流程 -->
+            <div class="section" style="border-left-color: #00c853;">
+                <h3>🚀 第5步：一键测试完整流程</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                    自动执行：获取房间列表 → 获取第一个房间详情 → 获取场次列表 → 获取场次详情 → 显示播放地址
+                </p>
+                <div class="button-group">
+                    <button class="success" onclick="testFullFlow()">🎯 一键测试完整流程</button>
+                    <button class="secondary" onclick="clearResult('full-flow-result')">清空结果</button>
+                </div>
+                <div id="full-flow-result" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://124.220.235.226:8000/api/v1';
+        document.getElementById('api-base').textContent = API_BASE;
+
+        // 工具函数：发送API请求
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    data = { raw: text };
+                }
+
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    data: data
+                };
+            } catch (error) {
+                return {
+                    ok: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // 清空结果
+        function clearResult(elementId) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'none';
+            el.innerHTML = '';
+        }
+
+        // 显示结果
+        function showResult(elementId, html) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.innerHTML = html;
+        }
+
+        // 测试1：获取房间列表
+        async function testGetRoomList() {
+            const resultDiv = 'rooms-result';
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取房间列表...</p>');
+
+            const result = await apiRequest(`${API_BASE}/rooms?page=1&size=20`);
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 请求失败</h4>
+                        <p><strong>错误信息：</strong>${result.error || result.status}</p>
+                        <p style="margin-top: 10px;">可能的原因：</p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>后端服务未启动</li>
+                            <li>网络连接问题</li>
+                            <li>CORS跨域限制</li>
+                        </ul>
+                    </div>
+                `);
+                return;
+            }
+
+            const rooms = result.data.data?.items || result.data.items || [];
+            const total = result.data.data?.total || result.data.total || 0;
+
+            if (rooms.length === 0) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>⚠️ 没有找到房间数据</h4>
+                        <p>后端API返回成功，但房间列表为空。</p>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                    </div>
+                `);
+                return;
+            }
+
+            let html = `
+                <div class="success">
+                    <h4>✅ 获取成功！找到 ${rooms.length} 个房间（共 ${total} 个）</h4>
+                </div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="number">${total}</div>
+                        <div class="label">总房间数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${rooms.length}</div>
+                        <div class="label">当前显示</div>
+                    </div>
+                </div>
+            `;
+
+            rooms.forEach((room, index) => {
+                html += `
+                    <div class="video-card">
+                        <h5>🎬 ${room.title || '未命名房间'}</h5>
+                        <p><strong>房间ID：</strong><code>${room.id}</code></p>
+                        <p><strong>当前场次ID：</strong>${room.current_session_id ? `<code>${room.current_session_id}</code>` : '<span style="color: #999;">无</span>'}</p>
+                        <p><strong>状态：</strong>${room.live_status || '未知'}</p>
+                        <button class="secondary play-btn" onclick="testGetRoomDetail('${room.id}')">
+                            查看该房间详情
+                        </button>
+                    </div>
+                `;
+            });
+
+            showResult(resultDiv, html);
+        }
+
+        // 测试2：获取房间详情
+        async function testGetRoomDetail(roomId) {
+            roomId = roomId || document.getElementById('room-id-input').value.trim();
+            if (!roomId) {
+                alert('请输入房间ID');
+                return;
+            }
+
+            const resultDiv = 'room-detail-result';
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取房间详情...</p>');
+
+            const result = await apiRequest(`${API_BASE}/rooms/${roomId}`);
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 获取房间详情失败</h4>
+                        <p><strong>房间ID：</strong>${roomId}</p>
+                        <p><strong>错误：</strong>${result.error || result.status}</p>
+                    </div>
+                `);
+                return;
+            }
+
+            const room = result.data.data || result.data;
+
+            showResult(resultDiv, `
+                <div class="success">
+                    <h4>✅ 获取房间详情成功</h4>
+                </div>
+                <div class="video-card">
+                    <h5>🏠 ${room.title || '未命名房间'}</h5>
+                    <p><strong>房间ID：</strong><code>${room.id}</code></p>
+                    <p><strong>当前场次ID：</strong>${room.current_session_id ? `<code>${room.current_session_id}</code>` : '<span style="color: #f5576c;">❌ 无current_session_id（这可能是问题所在）</span>'}</p>
+                    <p><strong>状态：</strong>${room.live_status || '未知'}</p>
+                    <p><strong>描述：</strong>${room.description || '无'}</p>
+                    ${room.current_session_id ? 
+                        `<button class="success play-btn" onclick="testGetSessionDetail('${room.current_session_id}')">
+                            获取该场次详情
+                        </button>` :
+                        `<button class="secondary play-btn" onclick="testGetSessionList('${room.id}')">
+                            尝试获取该房间的场次列表
+                        </button>`
+                    }
+                </div>
+                <h4 style="margin-top: 20px;">完整数据：</h4>
+                <pre>${JSON.stringify(room, null, 2)}</pre>
+            `);
+        }
+
+        // 测试3：获取场次列表
+        async function testGetSessionList(roomId) {
+            roomId = roomId || document.getElementById('session-room-id-input').value.trim();
+            if (!roomId) {
+                alert('请输入房间ID');
+                return;
+            }
+
+            const resultDiv = 'sessions-result';
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取场次列表...</p>');
+
+            const result = await apiRequest(`${API_BASE}/rooms/${roomId}/sessions?page=1&size=10`);
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 获取场次列表失败</h4>
+                        <p><strong>房间ID：</strong>${roomId}</p>
+                        <p><strong>错误：</strong>${result.error || result.status}</p>
+                        <p style="margin-top: 10px;"><strong>⚠️ 这可能是你昨天遇到的问题！</strong></p>
+                        <p>可能原因：</p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>该房间没有创建任何场次</li>
+                            <li>API路径不正确</li>
+                            <li>需要认证token</li>
+                        </ul>
+                    </div>
+                `);
+                return;
+            }
+
+            const sessions = result.data.data?.items || result.data.items || [];
+            const total = result.data.data?.total || result.data.total || 0;
+
+            if (sessions.length === 0) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>⚠️ 该房间没有场次数据</h4>
+                        <p>API请求成功，但该房间下没有创建任何场次。</p>
+                        <p style="margin-top: 10px;"><strong>💡 解决方案：</strong>请在后台管理系统中为该房间创建场次。</p>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                    </div>
+                `);
+                return;
+            }
+
+            let html = `
+                <div class="success">
+                    <h4>✅ 获取场次列表成功！找到 ${sessions.length} 个场次（共 ${total} 个）</h4>
+                </div>
+            `;
+
+            sessions.forEach((session, index) => {
+                html += `
+                    <div class="video-card">
+                        <h5>🎬 ${session.title || '未命名场次'}</h5>
+                        <p><strong>场次ID：</strong><code>${session.id}</code></p>
+                        <p><strong>状态：</strong>${session.status || '未知'}</p>
+                        <p><strong>开始时间：</strong>${session.start_time || '未设置'}</p>
+                        <button class="success play-btn" onclick="testGetSessionDetail('${session.id}')">
+                            获取播放地址
+                        </button>
+                    </div>
+                `;
+            });
+
+            showResult(resultDiv, html);
+        }
+
+        // 测试4：获取场次详情（最关键 - 包含播放地址）
+        async function testGetSessionDetail(sessionId) {
+            sessionId = sessionId || document.getElementById('session-id-input').value.trim();
+            if (!sessionId) {
+                alert('请输入场次ID');
+                return;
+            }
+
+            const resultDiv = 'session-detail-result';
+            showResult(resultDiv, '<p class="loading">⏳ 正在获取场次详情...</p>');
+
+            const result = await apiRequest(`${API_BASE}/sessions/${sessionId}`);
+
+            if (!result.ok) {
+                showResult(resultDiv, `
+                    <div class="error">
+                        <h4>❌ 获取场次详情失败</h4>
+                        <p><strong>场次ID：</strong>${sessionId}</p>
+                        <p><strong>错误：</strong>${result.error || result.status}</p>
+                    </div>
+                `);
+                return;
+            }
+
+            const session = result.data.data || result.data;
+
+            // 额外尝试获取直播流地址：/sessions/{id}/stream-url（若后端未开放将返回404）
+            let liveStreamUrl = null;
+            try {
+                const liveRes = await apiRequest(`${API_BASE}/sessions/${sessionId}/stream-url`);
+                if (liveRes.ok) {
+                    const streamData = liveRes.data?.data || liveRes.data;
+                    liveStreamUrl = streamData?.url || streamData?.stream_url || null;
+                }
+            } catch (e) {
+                // 忽略异常，后端可能未开放该接口
+                liveStreamUrl = null;
+            }
+
+            const playbackUrl = session.playback_url || session.live_url || liveStreamUrl;
+
+            let html = `
+                <div class="${playbackUrl ? 'success' : 'error'}">
+                    <h4>${playbackUrl ? '✅ 成功获取播放地址！' : '⚠️ 场次详情中没有播放地址'}</h4>
+                </div>
+                <div class="video-card">
+                    <h5>🎬 ${session.title || '未命名场次'}</h5>
+                    <p><strong>场次ID：</strong><code>${session.id}</code></p>
+                    <p><strong>状态：</strong>${session.status || '未知'}</p>
+                    <p><strong>开始时间：</strong>${session.start_time || '未设置'}</p>
+                    <p><strong>回放地址：</strong>${session.playback_url ? `<code>${session.playback_url}</code>` : '<span style="color: #999;">无</span>'}</p>
+                    <p><strong>直播地址：</strong>${(session.live_url || liveStreamUrl) ? `<code>${session.live_url || liveStreamUrl}</code>` : '<span style="color: #999;">无</span>'}</p>
+                    ${playbackUrl ? 
+                        `<p style="margin-top: 15px; padding: 15px; background: #f1f8f4; border-radius: 8px; border-left: 4px solid #00c853;">
+                            <strong>🎉 可以使用此播放地址！</strong><br>
+                            将此场次ID传递给LiveView页面即可播放：<br>
+                            <code>http://localhost:5173/pages/app/live/LiveView?sessionId=${sessionId}</code>
+                        </p>` :
+                        `<p style="margin-top: 15px; padding: 15px; background: #fff5f5; border-radius: 8px; border-left: 4px solid #f5576c;">
+                            <strong>❌ 问题：</strong>该场次没有设置播放地址<br>
+                            请在后台管理系统中为该场次配置播放URL。
+                        </p>`
+                    }
+                </div>
+                <h4 style="margin-top: 20px;">完整数据：</h4>
+                <pre>${JSON.stringify(session, null, 2)}</pre>
+            `;
+
+            showResult(resultDiv, html);
+        }
+
+        // 测试5：一键测试完整流程
+        async function testFullFlow() {
+            const resultDiv = 'full-flow-result';
+            let logs = [];
+
+            function addLog(message, type = 'info') {
+                logs.push({ message, type, time: new Date().toLocaleTimeString() });
+                updateLogs();
+            }
+
+            function updateLogs() {
+                let html = '<div style="font-family: monospace; font-size: 12px;">';
+                logs.forEach(log => {
+                    const color = log.type === 'error' ? '#f5576c' : 
+                                  log.type === 'success' ? '#00c853' : '#667eea';
+                    html += `<p style="color: ${color}; margin: 5px 0;">[${log.time}] ${log.message}</p>`;
+                });
+                html += '</div>';
+                showResult(resultDiv, html);
+            }
+
+            showResult(resultDiv, '<p class="loading">⏳ 开始测试完整流程...</p>');
+            addLog('🚀 开始测试完整流程');
+
+            // 步骤1：获取房间列表
+            addLog('📡 步骤1: 获取房间列表...');
+            const roomsResult = await apiRequest(`${API_BASE}/rooms?page=1&size=1`);
+            
+            if (!roomsResult.ok) {
+                addLog(`❌ 步骤1失败: ${roomsResult.error || roomsResult.status}`, 'error');
+                addLog('💡 建议: 检查后端服务是否正常运行', 'error');
+                return;
+            }
+
+            const rooms = roomsResult.data.data?.items || roomsResult.data.items || [];
+            if (rooms.length === 0) {
+                addLog('❌ 步骤1失败: 没有房间数据', 'error');
+                addLog('💡 建议: 在后台管理系统中创建房间', 'error');
+                return;
+            }
+
+            const room = rooms[0];
+            addLog(`✅ 步骤1成功: 找到房间 "${room.title}" (ID: ${room.id})`, 'success');
+
+            // 步骤2：检查current_session_id
+            addLog('📡 步骤2: 检查房间是否有current_session_id...');
+            let sessionId = room.current_session_id;
+
+            if (sessionId) {
+                addLog(`✅ 步骤2成功: 房间有current_session_id = ${sessionId}`, 'success');
+            } else {
+                addLog('⚠️  步骤2: 房间没有current_session_id，尝试获取场次列表...');
+                
+                // 步骤2.1：获取场次列表
+                const sessionsResult = await apiRequest(`${API_BASE}/rooms/${room.id}/sessions?page=1&size=1`);
+                
+                if (!sessionsResult.ok) {
+                    addLog(`❌ 步骤2.1失败: ${sessionsResult.error || sessionsResult.status}`, 'error');
+                    addLog('💡 这可能是你昨天遇到的问题！', 'error');
+                    addLog('💡 建议: 为该房间创建场次', 'error');
+                    return;
+                }
+
+                const sessions = sessionsResult.data.data?.items || sessionsResult.data.items || [];
+                if (sessions.length === 0) {
+                    addLog('❌ 步骤2.1失败: 该房间没有场次', 'error');
+                    addLog('💡 建议: 在后台管理系统中为该房间创建场次', 'error');
+                    return;
+                }
+
+                sessionId = sessions[0].id;
+                addLog(`✅ 步骤2.1成功: 从场次列表获取到sessionId = ${sessionId}`, 'success');
+            }
+
+            // 步骤3：获取场次详情
+            addLog('📡 步骤3: 获取场次详情...');
+            const sessionResult = await apiRequest(`${API_BASE}/sessions/${sessionId}`);
+
+            if (!sessionResult.ok) {
+                addLog(`❌ 步骤3失败: ${sessionResult.error || sessionResult.status}`, 'error');
+                return;
+            }
+
+            const session = sessionResult.data.data || sessionResult.data;
+            addLog(`✅ 步骤3成功: 获取到场次 "${session.title}"`, 'success');
+
+            // 步骤3.1：尝试获取直播流地址
+            addLog('📡 步骤3.1: 尝试获取直播流地址...');
+            let liveStreamUrl = null;
+            const liveRes = await apiRequest(`${API_BASE}/sessions/${sessionId}/stream-url`);
+            if (liveRes.ok) {
+                const streamData = liveRes.data?.data || liveRes.data;
+                liveStreamUrl = streamData?.url || streamData?.stream_url || null;
+                if (liveStreamUrl) {
+                    addLog(`✅ 获取到直播地址: ${liveStreamUrl}`, 'success');
+                } else {
+                    addLog('⚠️ 接口已响应但未返回直播地址', 'error');
+                }
+            } else {
+                addLog('⚠️ 直播流接口未开放或返回404', 'error');
+            }
+
+            // 步骤4：检查播放地址
+            addLog('📡 步骤4: 检查播放地址...');
+            const playbackUrl = session.playback_url || session.live_url || liveStreamUrl;
+
+            if (playbackUrl) {
+                addLog(`✅ 步骤4成功: 找到播放地址!`, 'success');
+                addLog(`🎬 播放地址: ${playbackUrl}`, 'success');
+                addLog(`🎯 可以使用的LiveView URL:`, 'success');
+                addLog(`   http://localhost:5173/pages/app/live/LiveView?sessionId=${sessionId}`, 'success');
+                
+                // 显示完整结果
+                updateLogs();
+                const currentHtml = document.getElementById(resultDiv).innerHTML;
+                showResult(resultDiv, currentHtml + `
+                    <div class="success" style="margin-top: 20px; padding: 20px;">
+                        <h4>🎉 完整流程测试成功！</h4>
+                        <p style="margin-top: 10px;"><strong>可用的数据：</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>房间ID：</strong><code>${room.id}</code></li>
+                            <li><strong>场次ID：</strong><code>${sessionId}</code></li>
+                            <li><strong>播放地址：</strong><code>${playbackUrl}</code></li>
+                            <li><strong>直播地址（若有）：</strong><code>${liveStreamUrl ?? '无'}</code></li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>测试播放：</strong></p>
+                        <button class="success play-btn" onclick="window.open('http://localhost:5173/pages/app/live/LiveView?sessionId=${sessionId}', '_blank')">
+                            在新标签页中打开LiveView播放页面
+                        </button>
+                    </div>
+                    <div class="video-card" style="margin-top: 20px;">
+                        <h5>📋 场次详情</h5>
+                        <pre>${JSON.stringify(session, null, 2)}</pre>
+                    </div>
+                `);
+            } else {
+                addLog(`❌ 步骤4失败: 场次中没有播放地址`, 'error');
+                addLog(`💡 建议: 在后台管理系统中为该场次设置playback_url或live_url`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

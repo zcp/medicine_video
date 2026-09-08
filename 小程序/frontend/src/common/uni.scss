@@ -1,0 +1,365 @@
+/**
+ * 直播SaaS平台微信小程序设计令牌
+ * 基于微信小程序设计规范和医学直播平台品牌设计
+ * 所有设计变量都严格遵循移动端UI设计文档
+ */
+
+// ================== 颜色系统 ==================
+
+// 主色调 - 品牌主色（以认证基准文档为最高优先级）
+// 说明：页面/组件禁止硬编码颜色，必须通过 tokens 引用。
+$color-primary: #0F766E;
+$color-primary-light: #159488;
+$color-primary-lighter: #27A79A;
+$color-primary-dark: #0B5C56;
+$color-primary-darker: #084743;
+
+// 辅助色系 - 医学安全绿色
+$color-secondary: #67C23A;
+$color-secondary-light: #85CE61;
+$color-secondary-dark: #529B2E;
+
+// 功能色系
+$color-success: #67C23A;
+$color-success-light: #E1F3D8;
+$color-warning: #E6A23C;
+$color-warning-light: #FAECD8;
+$color-danger: #F56C6C;
+$color-danger-light: #FDE2E2;
+$color-info: #909399;
+$color-info-light: #F4F4F5;
+
+// 中性色系 - 微信小程序标准
+$color-text-primary: #333333;
+$color-text-regular: #606266;
+$color-text-secondary: #909399;
+$color-text-placeholder: #C0C4CC;
+$color-text-disabled: #D3D4D6;
+
+// 背景色系
+$color-background: #F5F5F5;
+$color-background-light: #FAFAFA;
+$color-surface: #FFFFFF;
+$color-surface-light: #FCFCFC;
+$color-mask: rgba(0, 0, 0, 0.5);
+
+// 边框色系
+$color-border: #EBEEF5;
+$color-border-light: #F2F6FC;
+$color-border-lighter: #F5F7FA;
+$color-border-dark: #E4E7ED;
+
+// 直播专用色系
+$color-live: #FF6B6B;
+$color-live-light: #FFE5E5;
+$color-offline: #909399;
+$color-replay: #E6A23C;
+
+// 品牌色系
+$color-brand-primary: $color-primary;
+$color-brand-gold: #FFD700;
+$color-brand-silver: #C0C0C0;
+
+// ================== 字体系统 ==================
+
+// 字体族
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+$font-family-number: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+
+// 字体大小 - 微信小程序标准
+$font-size-xs: 20rpx;   // 10px
+$font-size-sm: 24rpx;   // 12px
+$font-size-base: 28rpx; // 14px
+$font-size-lg: 32rpx;   // 16px
+$font-size-xl: 36rpx;   // 18px
+$font-size-2xl: 40rpx;  // 20px
+$font-size-3xl: 48rpx;  // 24px
+$font-size-4xl: 56rpx;  // 28px
+$font-size-5xl: 64rpx;  // 32px
+
+// 字重
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// 行高
+$line-height-xs: 1.2;
+$line-height-sm: 1.4;
+$line-height-base: 1.5;
+$line-height-lg: 1.6;
+$line-height-xl: 1.8;
+
+// ================== 间距系统 ==================
+
+// 基础间距 - 8rpx基准网格
+$spacing-xs: 8rpx;    // 4px
+$spacing-sm: 16rpx;   // 8px
+$spacing-base: 24rpx; // 12px
+$spacing-md: 32rpx;   // 16px
+$spacing-lg: 48rpx;   // 24px
+$spacing-xl: 64rpx;   // 32px
+$spacing-2xl: 96rpx;  // 48px
+$spacing-3xl: 128rpx; // 64px
+
+// 页面边距
+$page-padding: 32rpx; // 16px
+$page-padding-sm: 24rpx; // 12px
+
+// 组件间距
+$component-margin: 32rpx; // 16px
+$component-padding: 24rpx; // 12px
+
+// ================== 圆角系统 ==================
+
+$border-radius-xs: 4rpx;   // 2px
+$border-radius-sm: 8rpx;   // 4px
+$border-radius-base: 12rpx; // 6px
+$border-radius-md: 16rpx;   // 8px
+$border-radius-lg: 20rpx;   // 10px
+$border-radius-xl: 24rpx;   // 12px
+$border-radius-2xl: 32rpx;  // 16px
+$border-radius-circle: 50%;
+$border-radius-full: 9999rpx;
+
+// ================== 边框系统 ==================
+
+$border-width-thin: 1rpx;  // 0.5px
+$border-width-base: 2rpx;  // 1px
+$border-width-thick: 4rpx; // 2px
+
+// 边框样式
+$border-style: solid;
+$border-base: $border-width-base $border-style $color-border;
+$border-light: $border-width-base $border-style $color-border-light;
+
+// ================== 阴影系统 ==================
+
+$shadow-xs: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+$shadow-base: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+$shadow-md: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 12rpx 32rpx rgba(0, 0, 0, 0.18);
+
+// 卡片阴影
+$card-shadow: $shadow-sm;
+$card-shadow-hover: $shadow-md;
+
+// ================== Z轴层级 ==================
+
+$z-index-modal: 1000;
+$z-index-overlay: 900;
+$z-index-dropdown: 800;
+$z-index-sticky: 700;
+$z-index-fixed: 600;
+$z-index-tooltip: 500;
+$z-index-popover: 400;
+$z-index-navbar: 300;
+$z-index-tabbar: 200;
+$z-index-normal: 1;
+$z-index-below: -1;
+
+// ================== 动画系统 ==================
+
+// 动画持续时间（认证基准：180–220ms）
+$duration-fast: 0.18s;
+$duration-base: 0.2s;
+$duration-slow: 0.22s;
+
+// 动画缓动函数
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// 过渡效果
+$transition-base: all $duration-base $ease-in-out;
+$transition-fast: all $duration-fast $ease-in-out;
+$transition-color: color $duration-base $ease-in-out;
+$transition-transform: transform $duration-base $ease-in-out;
+
+// ================== 布局系统 ==================
+
+// ================== 列表三轨体系（Content / Action Column / Index Rail） ==================
+// 语义来自设计系统规则文档：仅定义 tokens，页面/组件使用这些 tokens，禁止魔法数。
+$layout-list-indexrail-inset: 24rpx; // IndexRail 距屏幕右侧 inset
+$layout-list-indexrail-width: 56rpx; // IndexRail 轨道宽度预估（用于列表容器预留空间，避免魔法数）
+$layout-list-actioncolumn-width: 96rpx; // 右侧操作栏位占位宽度（>=44px 等效热区）
+$layout-list-actioncolumn-inset: 24rpx; // 操作控件距离内容区最右侧的 inset
+$layout-list-safe-gap-between-action-and-index: 16rpx; // 操作栏与 IndexRail 的最小安全间距
+
+// 容器最大宽度
+$container-max-width: 750rpx;
+
+// 网格系统
+$grid-columns: 12;
+$grid-gutter: 32rpx; // 16px
+
+// 断点系统 - 适配不同屏幕
+$breakpoint-xs: 320px;  // 小屏手机
+$breakpoint-sm: 375px;  // 标准手机
+$breakpoint-md: 414px;  // 大屏手机
+$breakpoint-lg: 768px;  // 平板
+$breakpoint-xl: 1024px; // 桌面
+
+// ================== 组件尺寸 ==================
+
+// 按钮尺寸
+$button-height-sm: 56rpx;   // 28px
+$button-height-base: 72rpx; // 36px
+$button-height-lg: 88rpx;   // 44px
+
+// 输入框尺寸
+$input-height-sm: 64rpx;    // 32px
+$input-height-base: 80rpx;  // 40px
+$input-height-lg: 96rpx;    // 48px
+
+// 头像尺寸
+$avatar-size-xs: 48rpx;     // 24px
+$avatar-size-sm: 64rpx;     // 32px
+$avatar-size-base: 80rpx;   // 40px
+$avatar-size-lg: 96rpx;     // 48px
+$avatar-size-xl: 128rpx;    // 64px
+
+// 图标尺寸
+$icon-size-xs: 24rpx;       // 12px
+$icon-size-sm: 32rpx;       // 16px
+$icon-size-base: 40rpx;     // 20px
+$icon-size-lg: 48rpx;       // 24px
+$icon-size-xl: 56rpx;       // 28px
+
+// ================== TabBar系统 ==================
+
+$tabbar-height: 100rpx;     // 50px
+$tabbar-icon-size: 44rpx;   // 22px
+$tabbar-text-size: 20rpx;   // 10px
+$tabbar-background: $color-surface;
+$tabbar-color: $color-text-secondary;
+$tabbar-color-active: $color-primary;
+
+// TabBar 专用阴影（向上投影，用于底部悬浮分隔感）
+$shadow-tabbar: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+
+// ================== 导航栏系统 ==================
+
+$navbar-height: 88rpx;      // 44px
+$navbar-background: $color-surface;
+$navbar-text-color: $color-text-primary;
+$navbar-title-size: $font-size-lg;
+
+// ================== 医学直播专用 ==================
+
+// 直播间相关
+$live-room-padding: $spacing-md;
+$live-player-ratio: 56.25%; // 16:9比例
+$live-chat-height: 400rpx;   // 200px
+
+// 专家卡片
+$expert-card-width: 340rpx;  // 170px
+$expert-avatar-size: $avatar-size-xl;
+
+// 品牌卡片
+$brand-card-height: 240rpx;  // 120px
+$brand-logo-size: 120rpx;    // 60px
+
+// Feed流
+$feed-item-spacing: $spacing-md;
+$feed-image-ratio: 75%;      // 4:3比例
+
+// ================== CSS变量导出 ==================
+// 微信小程序对 :root 支持不稳；同时挂到 page，保证组件内 var(--color-*) 可继承
+
+page,
+:root {
+  // 颜色变量
+  --color-primary: #{$color-primary};
+  --color-primary-light: #{$color-primary-light};
+  --color-primary-dark: #{$color-primary-dark};
+  --color-primary-soft: #{rgba($color-primary, 0.10)};
+  --color-primary-soft-strong: #{rgba($color-primary, 0.16)};
+  --color-success: #{$color-success};
+  --color-warning: #{$color-warning};
+  --color-danger: #{$color-danger};
+  --color-info: #{$color-info};
+
+  // 直播语义色
+  --color-live: #{$color-live};
+  --color-live-light: #{$color-live-light};
+  --color-offline: #{$color-offline};
+  --color-replay: #{$color-replay};
+
+  // 功能色浅背景（用于 Banner/Tag 等“克制”的语义底色）
+  --color-success-light: #{$color-success-light};
+  --color-warning-light: #{$color-warning-light};
+  --color-danger-light: #{$color-danger-light};
+  --color-info-light: #{$color-info-light};
+  
+  --color-text-primary: #{$color-text-primary};
+  --color-text-regular: #{$color-text-regular};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-text-tertiary: #{$color-text-placeholder};
+  --color-text-placeholder: #{$color-text-placeholder};
+  --color-text-disabled: #{$color-text-disabled};
+  --color-text-inverse: #{$color-surface};
+  
+  --color-background: #{$color-background};
+  --color-surface: #{$color-surface};
+  --color-surface-light: #{$color-surface-light};
+  --color-border: #{$color-border};
+  --color-border-light: #{$color-border-light};
+  --color-border-dark: #{$color-border-dark};
+  --color-mask: #{$color-mask};
+
+  // 背景语义变量（用于业务组件，避免散落 fallback）
+  --color-bg-primary: #{$color-surface};
+  --color-bg-secondary: #{$color-background};
+  --color-bg-tertiary: #{$color-border-light};
+  
+  // 字体变量
+  --font-family-base: #{$font-family-base};
+  --font-size-base: #{$font-size-base};
+  --line-height-base: #{$line-height-base};
+  
+  // 间距变量
+  --spacing-xs: #{$spacing-xs};
+  --spacing-sm: #{$spacing-sm};
+  --spacing-base: #{$spacing-base};
+  --spacing-md: #{$spacing-md};
+  --spacing-lg: #{$spacing-lg};
+  --spacing-xl: #{$spacing-xl};
+  
+  // 圆角变量
+  --border-radius-xs: #{$border-radius-xs};
+  --border-radius-sm: #{$border-radius-sm};
+  --border-radius-base: #{$border-radius-base};
+  --border-radius-md: #{$border-radius-md};
+  --border-radius-lg: #{$border-radius-lg};
+  --border-radius-full: #{$border-radius-full};
+
+  // 阴影变量
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-tabbar: #{$shadow-tabbar};
+
+  // Z 轴层级
+  --z-index-tabbar: #{$z-index-tabbar};
+
+  // Focus ring（从主色推导，避免硬编码颜色）
+  --color-focus-ring: #{rgba($color-primary, 0.18)};
+  
+  // 动画变量
+  --duration-base: #{$duration-base};
+  --duration-fast: #{$duration-fast};
+  --duration-slow: #{$duration-slow};
+  --ease-in-out: #{$ease-in-out};
+  --transition-base: #{$transition-base};
+
+  // 列表三轨 tokens（布局契约）
+  --layout-list-indexrail-inset: #{$layout-list-indexrail-inset};
+  --layout-list-indexrail-width: #{$layout-list-indexrail-width};
+  --layout-list-actioncolumn-width: #{$layout-list-actioncolumn-width};
+  --layout-list-actioncolumn-inset: #{$layout-list-actioncolumn-inset};
+  --layout-list-safe-gap-between-action-and-index: #{$layout-list-safe-gap-between-action-and-index};
+}

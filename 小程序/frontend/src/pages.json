@@ -1,0 +1,379 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/Home",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationStyle": "custom",
+        "disableScroll": false,
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/home/AllCategories",
+      "style": {
+        "navigationBarTitleText": "全部科室",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/brand/BrandZone",
+      "style": {
+        "navigationBarTitleText": "品牌专区",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 50
+      }
+    },
+    {
+      "path": "pages/brand/BrandDetail",
+      "style": {
+        "navigationBarTitleText": "品牌详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/my-live/MyLive",
+      "style": {
+        "navigationBarTitleText": "我的直播",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/expert/ExpertList",
+      "style": {
+        "navigationBarTitleText": "专家专题",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 50
+      }
+    },
+    {
+      "path": "pages/expert/ExpertDetail",
+      "style": {
+        "navigationBarTitleText": "专家详情"
+      }
+    },
+    {
+      "path": "pages/profile/Profile",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/profile/ProfileEdit",
+      "style": {
+        "navigationBarTitleText": "编辑资料"
+      }
+    },
+    {
+      "path": "pages/profile/CollectionList",
+      "style": {
+        "navigationBarTitleText": "我的收藏",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/profile/ViewHistory",
+      "style": {
+        "navigationBarTitleText": "观看历史",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/profile/SubscriptionList",
+      "style": {
+        "navigationBarTitleText": "我的订阅",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/profile/FollowedExperts",
+      "style": {
+        "navigationBarTitleText": "我的关注",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/profile/Notifications",
+      "style": {
+        "navigationBarTitleText": "通知",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/profile/NotificationDetail",
+      "style": {
+        "navigationBarTitleText": "通知详情"
+      }
+    },
+    {
+      "path": "pages/room/RoomDetail",
+      "style": {
+        "navigationBarTitleText": "房间详情"
+      }
+    },
+    {
+      "path": "pages/live/LiveView",
+      "style": {
+        "navigationBarTitleText": "直播观看",
+        "navigationStyle": "default",
+        "disableScroll": true
+      }
+    },
+    {
+      "path": "pages/live/CreateLive",
+      "style": {
+        "navigationBarTitleText": "创建直播",
+        "navigationStyle": "default"
+      }
+    },
+    {
+      "path": "pages/settings/Settings",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
+      "path": "pages/settings/AccountSecurity",
+      "style": {
+        "navigationBarTitleText": "账号与安全"
+      }
+    },
+    {
+      "path": "pages/settings/BindPhone",
+      "style": {
+        "navigationBarTitleText": "绑定手机号"
+      }
+    },
+    {
+      "path": "pages/settings/BindEmail",
+      "style": {
+        "navigationBarTitleText": "绑定邮箱"
+      }
+    },
+    {
+      "path": "pages/settings/ChangePassword",
+      "style": {
+        "navigationBarTitleText": "修改密码"
+      }
+    },
+    {
+      "path": "pages/about/About",
+      "style": {
+        "navigationBarTitleText": "关于我们"
+      }
+    },
+    {
+      "path": "pages/auth/OneTapLogin",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/auth/Login",
+      "style": {
+        "navigationBarTitleText": "密码登录"
+      }
+    },
+    {
+      "path": "pages/auth/PhoneLogin",
+      "style": {
+        "navigationBarTitleText": "验证码登录"
+      }
+    },
+    {
+      "path": "pages/auth/RegisterChoice",
+      "style": {
+        "navigationBarTitleText": "选择注册方式"
+      }
+    },
+    {
+      "path": "pages/auth/Register",
+      "style": {
+        "navigationBarTitleText": "注册"
+      }
+    },
+    {
+      "path": "pages/auth/ForgotPassword",
+      "style": {
+        "navigationBarTitleText": "重置密码"
+      }
+    },
+    {
+      "path": "pages/admin/category/CategoryList",
+      "style": {
+        "navigationBarTitleText": "专家分类管理",
+        "navigationStyle": "default"
+      }
+    },
+    {
+      "path": "pages/admin/room/AdminRoomList",
+      "style": {
+        "navigationBarTitleText": "直播间运营",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/roomTab/RoomTabManagerShell",
+      "style": {
+        "navigationBarTitleText": "Tab 管理"
+      }
+    },
+    {
+      "path": "pages/admin/featuredContent/FeaturedContentList",
+      "style": {
+        "navigationBarTitleText": "焦点图管理",
+        "enablePullDownRefresh": false,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/roomMessage/RoomMessageList",
+      "style": {
+        "navigationBarTitleText": "讨论管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/tag/TagList",
+      "style": {
+        "navigationBarTitleText": "标签管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/user/UserList",
+      "style": {
+        "navigationBarTitleText": "用户管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/expert/ExpertAdminList",
+      "style": {
+        "navigationBarTitleText": "专家管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/expertDepartment/ExpertDepartmentList",
+      "style": {
+        "navigationBarTitleText": "专家分类管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/expert/MyExpert",
+      "style": {
+        "navigationBarTitleText": "我的专家页",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/admin/brand/BrandAdminList",
+      "style": {
+        "navigationBarTitleText": "品牌管理",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/contentSafety/ContentSafetyRuleList",
+      "style": {
+        "navigationBarTitleText": "发布内容设置",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/admin/contentSafety/ContentSafetyLogList",
+      "style": {
+        "navigationBarTitleText": "发布处理记录",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
+      }
+    },
+    {
+      "path": "pages/user/search/SearchByTag",
+      "style": {
+        "navigationBarTitleText": "按标签搜索"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "医学直播平台",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f5f5",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50,
+    "navigationStyle": "default",
+    "app-plus": {
+      "titleNView": false
+    }
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#909399",
+    "selectedColor": "#0F766E",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/home/Home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/brand/BrandZone",
+        "text": "品牌"
+      },
+      {
+        "pagePath": "pages/expert/ExpertList",
+        "text": "专家"
+      },
+      {
+        "pagePath": "pages/profile/Profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "subpackages",
+      "pages": [
+        {
+          "path": "search/index",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          }
+        }
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/home/Home": {
+      "network": "all",
+      "packages": ["subpackages"]
+    }
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
+  }
+}
