@@ -1,0 +1,36 @@
+{
+    "module_name": "user_preference_notification",
+    "functional_module_name": "用户偏好与通知",
+    "design_doc_path": "docs/03_系统设计/直播核心功能设计文档_v6_用户偏好与通知模块设计文档.md",
+    "project_path": "live_core_service",
+    "output_base_dir": "docs/提示词/直播核心功能模块",
+    "start_time": "2026-01-18T10:00:00Z",
+    "last_update": "2026-01-18T10:00:00Z",
+    "current_step": "step1",
+    "current_substep": null,
+    "current_subtask": "step1.1",
+    "overall_status": "IN_PROGRESS",
+    "auto_fix": true,
+    "max_fix_iterations": 3,
+    "steps": {
+        "step1": {
+            "status": "IN_PROGRESS",
+            "current_subtask": "step1.1",
+            "subtasks": {
+                "step1.1": {
+                    "status": "IN_PROGRESS",
+                    "output": null,
+                    "timestamp": null
+                },
+                "step1.2": {
+                    "status": "PENDING",
+                    "output": null,
+                    "timestamp": null
+                }
+            },
+            "outputs": [],
+            "timestamp": null
+        }
+    },
+    "fix_history": []
+}

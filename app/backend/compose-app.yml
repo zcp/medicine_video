@@ -1,0 +1,130 @@
+services:
+  live_core_service:
+    build: ./backend/live_core_service
+    restart: unless-stopped
+    ports: ["8010:8000"]  # 宿主8010->容器8000；8000被HBuilderX占用，避免端口冲突
+    environment:
+      POSTGRES_DB: "live_core_test"
+      ROOM_MEDIA_ROOT_PATH: "/app/media"  # 新增：使用绝对路径（覆盖 .
+    env_file: .env.docker
+    volumes:
+      - /var/www/html/live-core-media:/app/media  # 新增：挂载到宿主机，实现持久化
+    depends_on: []
+    networks:
+      - live-network
+
+  media_download_service:
+    build: ./backend/media_download_service
+    restart: unless-stopped
+    ports: ["8001:8001"]
+    environment:
+      POSTGRES_DB: "media_download_test"
+    env_file: .env.docker
+    volumes:
+      - media_download:/media_download/storage
+    networks:
+      - live-network
+
+  user_service:
+    build: ./backend/users
+    restart: unless-stopped
+    ports: ["8002:8002"]
+    environment:
+      POSTGRES_DB: "users_service_test"
+    env_file: .env.docker
+    networks:
+      - live-network
+
+
+  # 前端构建容器（只生成静态文件）
+  #media_download_service_frontend:
+  #  build: ../media_download_service_frontend
+  #  volumes:
+  #    - frontend-dist:/app/dist
+  #  ports: ["3000:80"]  # 添加端口映射
+  #  env_file: .env.docker
+  #  networks:
+  #    - live-network
+
+  celery_worker:
+    build: ./backend/live_core_service
+    restart: unless-stopped
+    env_file: .env.docker
+    command: celery -A app.tasks.celery_app worker --include=app.tasks.session_processing,app.tasks.audit_task -l info -c 10
+    networks:
+      - live-network
+
+  celery_beat:
+    build: ./backend/live_core_service
+    restart: unless-stopped
+    env_file: .env.docker
+    command: celery -A app.tasks.celery_app beat -l info
+    depends_on:
+      - redis
+    networks:
+      - live-network
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports: ["5432:5432"]
+    env_file: .env.docker
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - live-network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports: ["6379:6379"]
+    networks:
+      - live-network
+
+  srs:
+    image: ossrs/srs:6
+    restart: unless-stopped
+    ports:
+      - "1935:1935"
+      - "8080:8080"
+    volumes:
+      - ./data/srs:/usr/local/srs/objs/nginx/html
+      - ./logs/srs:/var/log/srs
+      - ./srs/srs.conf:/usr/local/srs/conf/srs.conf # 挂载你的 srs.conf 文件
+    entrypoint: ["./objs/srs", "-c", "/usr/local/srs/conf/srs.conf"] # 明确指定使用 srs.conf
+    networks:
+      - live-network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: ["80:80","443:443"]
+    volumes:
+      # 挂载远程前端文件到容器
+      - /var/www/html/user-service:/var/www/html/user-service:ro
+      - /var/www/html/media-download:/var/www/html/media-download:ro
+      - /var/www/html/live-center:/var/www/html/live-center:ro
+      - /var/www/html/live-core-media:/var/www/html/live-core-media:ro  # 新增：挂载媒体文件目录
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./data/srs:/var/www/srs:ro
+      # SSL 证书目录（自定义位置）
+      - /var/www/mp.dayilive.com:/var/www/mp.dayilive.com:ro
+      # Certbot webroot 验证目录（用于 Let's Encrypt 续期）
+      - /var/www/certbot:/var/www/certbot:ro
+      #- frontend-dist:/usr/share/nginx/html/media-download:ro
+      #- user-frontend-dist:/usr/share/nginx/html/user-service:ro  # 添加这行
+    depends_on: [srs]
+    networks:
+      - live-network
+
+volumes:
+  pgdata:
+  media_download:
+  frontend-dist:
+  user-frontend-dist:
+
+networks:
+  live-network:
+    driver: bridge

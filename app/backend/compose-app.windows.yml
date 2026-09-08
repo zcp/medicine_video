@@ -1,0 +1,123 @@
+services:
+  live_core_service:
+    build: ./backend/live_core_service
+    restart: unless-stopped
+    ports: ["8008:8000"]
+    environment:
+      POSTGRES_DB: "live_core_test"
+      ROOM_MEDIA_ROOT_PATH: "/app/media"  # 使用绝对路径
+    env_file: .env.docker
+    volumes:
+      # Windows 开发环境：使用相对路径
+      - ./data/live_core_media:/app/media
+    depends_on: []
+    networks:
+      - live-network
+
+  media_download_service:
+    build: ./backend/media_download_service
+    restart: unless-stopped
+    # ports: ["8001:8001"]  # Windows 本地开发无需暴露，通过 nginx:8080/api/dl 访问
+    environment:
+      POSTGRES_DB: "media_download_test"
+    env_file: .env.docker
+    volumes:
+      - media_download:/media_download/storage
+    networks:
+      - live-network
+
+  user_service:
+    build: ./backend/users
+    restart: unless-stopped
+    ports: ["8002:8002"]
+    environment:
+      POSTGRES_DB: "users_service_test"
+    env_file: .env.docker
+    volumes:
+      # 持久化用户上传文件（头像等），避免容器重建后丢失
+      - ./data/user_uploads:/app/uploads
+    networks:
+      - live-network
+
+  celery_worker:
+    build: ./backend/live_core_service
+    restart: unless-stopped
+    env_file: .env.docker
+    command: celery -A app.tasks.celery_app worker --include=app.tasks.session_processing -l info -c 10
+    networks:
+      - live-network
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports: ["5433:5432"]  # Windows 开发环境：使用 5433 避免与本地 PostgreSQL 冲突
+    env_file: .env.docker
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - live-network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports: ["6380:6379"]  # Windows 开发环境：使用 6380 避免与本地 Redis 冲突
+    networks:
+      - live-network
+
+  srs:
+    image: ossrs/srs:6
+    restart: unless-stopped
+    ports:
+      - "1935:1935"
+      - "8088:8080"  # Windows 开发环境：改为 8088 避免与 nginx 的 8080 冲突
+    volumes:
+      - ./data/srs:/usr/local/srs/objs/nginx/html
+      - ./logs/srs:/var/log/srs
+      - ./srs/srs.conf:/usr/local/srs/conf/srs.conf
+    entrypoint: ["./objs/srs", "-c", "/usr/local/srs/conf/srs.conf"]
+    networks:
+      - live-network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: 
+      - "8080:80"   # Windows 开发环境：使用 8080 避免与系统 80 端口冲突
+      - "8443:443"  # Windows 开发环境：使用 8443 避免与系统 443 端口冲突
+    volumes:
+      # Windows 开发环境：注释掉生产环境的前端文件挂载
+      # 如果需要测试前端，可以取消注释并指向本地构建的前端文件
+      # - ./frontend/user-service/dist:/var/www/html/user-service:ro
+      # - ./frontend/media-download/dist:/var/www/html/media-download:ro
+      # - ./frontend/live-center/dist:/var/www/html/live-center:ro
+      
+      # 使用本地 nginx 配置（可以创建 nginx.windows.conf）
+      - ./nginx/nginx.windows.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./data/srs:/var/www/srs:ro
+      
+      # 媒体文件目录（Windows 开发环境）
+      - ./data/live_core_media:/var/www/html/live-core-media:ro
+      
+      # Windows 开发环境不需要 SSL 证书目录
+      # - /var/www/mp.dayilive.com:/var/www/mp.dayilive.com:ro
+      # - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - srs
+      - live_core_service
+      - user_service
+      - media_download_service
+    networks:
+      - live-network
+
+volumes:
+  pgdata:
+  media_download:
+  frontend-dist:
+  user-frontend-dist:
+
+networks:
+  live-network:
+    driver: bridge
+

@@ -1,0 +1,88 @@
+# SSL 证书和私钥（永远不要提交到仓库）
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Let's Encrypt 证书目录
+/etc/letsencrypt/
+/var/www/mp.dayilive.com/
+/var/www/certbot/
+
+# 环境变量文件（可能包含敏感信息）
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.docker
+
+# 但不忽略环境变量模板文件
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+
+# 日志文件
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+
+# 运行时上传数据
+data/
+backend/live_core_service/media/
+
+# AI 工具内部状态
+.opencode/
+.reasonix/
+reasonix.toml
+.kilo/
+.kunsdd/
+.github/
+
+# �ַ���ȶԱ���ʱ�ļ�
+
+# 敏感文件：users 服务环境变量备份（含真实凭据，禁止入库）
+backend/users/.env_backup
+
+# 分类实施数据备份（真实数据快照，禁止入库）
+app修改记录/分类实施文档/阶段*备份/
+
+
+# 字符集对比临时文件
+.cmp_tmp/
+
+# 调试产物（接口抓包/联调遗留，禁止入库）
+/msg_p1.json
+/msg_p2.json
+/rooms.json
+
+
+# ���ݿⱸ�ݣ���ʵҵ�����ݿ��գ���ֹ��⣩
+backups/

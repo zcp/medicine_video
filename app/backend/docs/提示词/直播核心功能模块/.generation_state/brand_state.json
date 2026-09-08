@@ -1,0 +1,202 @@
+{
+    "module_name": "brand",
+    "functional_module_name": "品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联",
+    "design_doc_path": "docs/03_系统设计/直播核心功能设计文档_v6_品牌模块设计文档-品牌管理-品牌专题关联.md",
+    "project_path": "live_core_service",
+    "output_base_dir": "docs/提示词/直播核心功能模块",
+    "start_time": "2026-01-18T12:00:00Z",
+    "last_update": "2026-01-18T13:20:00Z",
+    "current_step": "step6",
+    "current_substep": null,
+    "current_subtask": null,
+    "overall_status": "COMPLETED",
+    "step4_completed": true,
+    "step5_completed": true,
+    "step6_completed": true,
+    "steps": {
+        "step1": {
+            "status": "COMPLETED",
+            "current_subtask": null,
+            "subtasks": {
+                "step1.1": {
+                    "status": "COMPLETED",
+                    "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---数据库模型代码生成提示词.md",
+                    "timestamp": "2026-01-18T12:05:00Z"
+                },
+                "step1.2": {
+                    "status": "COMPLETED",
+                    "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---Pydantic模型代码生成提示词.md",
+                    "timestamp": "2026-01-18T12:10:00Z"
+                }
+            },
+            "outputs": [
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---数据库模型代码生成提示词.md",
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---Pydantic模型代码生成提示词.md"
+            ],
+            "timestamp": "2026-01-18T12:10:00Z"
+        },
+        "step2": {
+            "status": "COMPLETED",
+            "current_subtask": null,
+            "subtasks": {
+                "step2.1": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/models/brand.py",
+                    "timestamp": "2026-01-18T12:15:00Z"
+                },
+                "step2.2": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/schemas/brand.py",
+                    "timestamp": "2026-01-18T12:20:00Z"
+                }
+            },
+            "outputs": [
+                "backend/live_core_service/app/models/brand.py",
+                "backend/live_core_service/app/schemas/brand.py"
+            ],
+            "timestamp": "2026-01-18T12:20:00Z"
+        },
+        "step3": {
+            "status": "COMPLETED",
+            "current_subtask": null,
+            "subtasks": {
+                "step3.1": {
+                    "status": "COMPLETED",
+                    "outputs": [
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联SQLAlchemy模型与Pydantic模型一致性检查提示词.md",
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联数据库模型一致性验证提示词.md"
+                    ],
+                    "timestamp": "2026-01-18T12:25:00Z"
+                },
+                "step3.2": {
+                    "status": "COMPLETED",
+                    "reports": [
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联SQLAlchemy模型与Pydantic模型一致性检查报告.md",
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联数据库模型一致性验证报告.md"
+                    ],
+                    "issues": [],
+                    "fix_iterations": 0,
+                    "timestamp": "2026-01-18T12:30:00Z"
+                }
+            },
+            "timestamp": "2026-01-18T12:30:00Z"
+        },
+        "step4": {
+            "status": "COMPLETED",
+            "current_substep": null,
+            "substeps": {
+                "step4.1": {
+                    "status": "COMPLETED",
+                    "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---crud_service_endpoint代码生成提示词母版.md",
+                    "timestamp": "2026-01-18T12:35:00Z"
+                },
+                "step4.1.1": {
+                    "status": "COMPLETED",
+                    "report": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---模块特定母版规范完整性检查报告.md",
+                    "missing_norms": [],
+                    "fix_iterations": 1,
+                    "timestamp": "2026-01-18T12:40:00Z"
+                },
+                "step4.2": {
+                    "status": "COMPLETED",
+                    "current_subtask": null,
+                    "subtasks": {
+                        "step4.2.1": {
+                            "status": "COMPLETED",
+                            "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---CRUD层代码生成提示词.md",
+                            "timestamp": "2026-01-18T12:45:00Z"
+                        },
+                        "step4.2.2": {
+                            "status": "COMPLETED",
+                            "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---Service层和API层代码生成提示词.md",
+                            "timestamp": "2026-01-18T12:50:00Z"
+                        },
+                        "step4.2.3": {
+                            "status": "COMPLETED",
+                            "report": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---具体提示词文档规范完整性检查报告.md",
+                            "missing_norms": {
+                                "crud_layer": [],
+                                "service_api_layer": []
+                            },
+                            "fix_iterations": 0,
+                            "timestamp": "2026-01-18T12:55:00Z"
+                        }
+                    },
+                    "outputs": [
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---CRUD层代码生成提示词.md",
+                        "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---Service层和API层代码生成提示词.md"
+                    ],
+                    "timestamp": "2026-01-18T12:50:00Z"
+                }
+            },
+            "outputs": [
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---crud_service_endpoint代码生成提示词母版.md",
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---CRUD层代码生成提示词.md",
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---Service层和API层代码生成提示词.md"
+            ],
+            "timestamp": "2026-01-18T12:55:00Z"
+        },
+        "step5": {
+            "status": "COMPLETED",
+            "current_substep": null,
+            "substeps": {
+                "step5.1": {
+                    "status": "COMPLETED",
+                    "output": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---代码生成提示词文档与设计文档一致性检测提示词.md",
+                    "timestamp": "2026-01-18T13:00:00Z"
+                },
+                "step5.2": {
+                    "status": "COMPLETED",
+                    "report": "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---代码生成提示词文档与设计文档一致性检测报告.md",
+                    "issues": [],
+                    "consistency": "100%",
+                    "timestamp": "2026-01-18T13:05:00Z"
+                }
+            },
+            "outputs": [
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---代码生成提示词文档与设计文档一致性检测提示词.md",
+                "docs/提示词/直播核心功能模块/品牌模块设计文档-品牌管理-品牌专题关联-品牌直播间关联---代码生成提示词文档与设计文档一致性检测报告.md"
+            ],
+            "timestamp": "2026-01-18T13:05:00Z"
+        },
+        "step6": {
+            "status": "COMPLETED",
+            "current_subtask": null,
+            "subtasks": {
+                "step6.1": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/crud/brand.py",
+                    "timestamp": "2026-01-18T13:10:00Z"
+                },
+                "step6.2": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/services/brand_service.py",
+                    "timestamp": "2026-01-18T13:15:00Z"
+                },
+                "step6.3": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/api/v1/endpoints/brand.py",
+                    "timestamp": "2026-01-18T13:18:00Z"
+                },
+                "step6.4": {
+                    "status": "COMPLETED",
+                    "output": "backend/live_core_service/app/api/v1/api.py",
+                    "action": "路由注册",
+                    "timestamp": "2026-01-18T13:20:00Z"
+                }
+            },
+            "outputs": [
+                "backend/live_core_service/app/crud/brand.py",
+                "backend/live_core_service/app/services/brand_service.py",
+                "backend/live_core_service/app/api/v1/endpoints/brand.py"
+            ],
+            "timestamp": "2026-01-18T13:20:00Z"
+        }
+    },
+    "auto_fix": true,
+    "max_fix_iterations": 3
+}
+
+    "auto_fix": true,
+    "max_fix_iterations": 3
+}
